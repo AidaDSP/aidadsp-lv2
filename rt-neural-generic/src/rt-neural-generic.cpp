@@ -167,7 +167,9 @@ void RtNeuralGeneric::run(LV2_Handle instance, uint32_t n_samples)
         }
     }
 
-    // @TODO: normalization in volume may be useful when switching between models!
+    // @TODO: volume normalization may be useful when switching between models!
+    // @TODO: some offset may be present at neural network output, original code
+    // add a dc block filter in this position
 }
 
 /**********************************************************************************************************************************************************/
