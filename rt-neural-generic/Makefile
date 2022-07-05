@@ -9,7 +9,7 @@ COMPLETE_INSTALL_PATH = $(DESTDIR)$(INSTALL_PATH)/$(NAME).lv2
 CXX ?= g++
 
 # flags
-CXXFLAGS += -std=gnu++0x -O3 -ffast-math -fPIC -DPIC -Wall $(shell pkg-config --cflags RTNeural) -I. -c
+CXXFLAGS += -O3 -std=c++17 -DRTNEURAL_DEFAULT_ALIGNMENT=16 $(shell pkg-config --cflags RTNeural) -I. -c
 LDFLAGS += -shared -lm $(shell pkg-config --libs RTNeural)
 
 # libs
