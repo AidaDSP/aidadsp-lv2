@@ -35,10 +35,7 @@ public:
     // The number of parameters for the model
     // 0 is for a snap shot model
     int params = 0;
-
-private:
     static void loadConfig(File configFile);
-
 };
 
 /**********************************************************************************************************************************************************/
