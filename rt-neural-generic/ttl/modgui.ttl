@@ -1,0 +1,26 @@
+@prefix modgui: <http://moddevices.com/ns/modgui#> .
+@prefix lv2:    <http://lv2plug.in/ns/lv2core#> .
+@prefix ui:     <http://lv2plug.in/ns/extensions/ui#> .
+
+<http://aidadsp.cc/plugins/aidadsp-bundle/rt-neural-generic>
+    modgui:gui [
+        modgui:resourcesDirectory <modgui> ;
+        modgui:iconTemplate <modgui/icon-gain.html> ;
+        modgui:stylesheet <modgui/stylesheet-gain.css> ;
+        modgui:screenshot <modgui/screenshot-gain.png> ;
+        modgui:thumbnail <modgui/thumbnail-gain.png> ;
+        modgui:brand "Aida DSP" ;
+        modgui:label "rt-neural-generic" ;
+        modgui:model "boxy" ;
+        modgui:panel "2-knob" ;
+        modgui:color "gray" ;
+        modgui:port [
+            lv2:index 0 ;
+            lv2:symbol "Gain" ;
+            lv2:name "Gain" ;
+        ] , [
+            lv2:index 1 ;
+            lv2:symbol "Master" ;
+            lv2:name "Master" ;
+        ] ; 
+    ] .
