@@ -35,7 +35,7 @@ public:
     // The number of parameters for the model
     // 0 is for a snap shot model
     int params = 0;
-    static void loadConfig(char *fileName);
+    static void loadConfig(LV2_Handle instance, const char *fileName);
 };
 
 /**********************************************************************************************************************************************************/
@@ -62,32 +62,35 @@ const LV2_Descriptor* lv2_descriptor(uint32_t index)
 
 /**********************************************************************************************************************************************************/
 
-void RtNeuralGeneric::loadConfig(char *fileName)
+void RtNeuralGeneric::loadConfig(LV2_Handle instance, const char *fileName)
 {
+    RtNeuralGeneric *plugin;
+    plugin = (RtNeuralGeneric *) instance;
+
     try {
         // Load the JSON file into the correct model
-        LSTM.load_json(fileName);
+        plugin->LSTM.load_json(fileName);
 
         // Check what the input size is and then update the GUI appropirately
-        if (LSTM.input_size == 1) {
-            params = 0;
+        if (plugin->LSTM.input_size == 1) {
+            plugin->params = 0;
         }
-        else if (LSTM.input_size == 2) {
-            params = 1;
+        else if (plugin->LSTM.input_size == 2) {
+            plugin->params = 1;
         }
-        else if (LSTM.input_size == 3) {
-            params = 2;
+        else if (plugin->LSTM.input_size == 3) {
+            plugin->params = 2;
         }
 
         // If we are good: let's say so
-        model_loaded = 1;
+        plugin->model_loaded = 1;
     }
     catch (const std::exception& e) {
-        DBG("Unable to load json file: " + fileName);
+        std::cout << "Unable to load json file: " << fileName << std::endl;
         std::cout << e.what();
 
         // If we are not good: let's say no
-        model_loaded = 0;
+        plugin->model_loaded = 0;
     }
 }
 
@@ -98,11 +101,11 @@ LV2_Handle RtNeuralGeneric::instantiate(const LV2_Descriptor* descriptor, double
     RtNeuralGeneric *plugin = new RtNeuralGeneric();
 
     // Load lstm model json file
-    loadConfig(LSTM_MODEL_JSON_FILE_NAME);
+    plugin->loadConfig((LV2_Handle)plugin, LSTM_MODEL_JSON_FILE_NAME);
 
     // Before running inference, it is recommended to "reset" the state
     // of your model (if the model has state).
-    LSTM.reset();
+    plugin->LSTM.reset();
 
     return (LV2_Handle)plugin;
 }
@@ -154,16 +157,16 @@ void RtNeuralGeneric::run(LV2_Handle instance, uint32_t n_samples)
     float gain = *plugin->gain;
     float master = *plugin->master;
 
-    if (model_loaded == 1) {
+    if (plugin->model_loaded == 1) {
         // Process LSTM based on input_size (snapshot model or conditioned model)
-        if (LSTM.input_size == 1) {
-            LSTM.process(plugin->in, plugin->out, n_samples);
-        }  
-        else if (LSTM.input_size == 2) {
-            LSTM.process(plugin->in, gain, plugin->out, numSamples);
+        if (plugin->LSTM.input_size == 1) {
+            plugin->LSTM.process(plugin->in, plugin->out_1, n_samples);
         }
-        else if (LSTM.input_size == 3) {
-            LSTM.process(plugin->in, gain, master, plugin->out, numSamples);
+        else if (plugin->LSTM.input_size == 2) {
+            plugin->LSTM.process(plugin->in, gain, plugin->out_1, n_samples);
+        }
+        else if (plugin->LSTM.input_size == 3) {
+            plugin->LSTM.process(plugin->in, gain, master, plugin->out_1, n_samples);
         }
     }
 
