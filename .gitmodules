@@ -1,0 +1,6 @@
+[submodule "modules/RTNeural"]
+	path = modules/RTNeural
+	url = https://github.com/jatinchowdhury18/RTNeural
+[submodule "modules/json"]
+	path = modules/json
+	url = https://github.com/nlohmann/json.git
