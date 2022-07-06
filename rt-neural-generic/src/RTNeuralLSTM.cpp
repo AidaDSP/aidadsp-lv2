@@ -76,8 +76,12 @@ void RT_LSTM::reset()
 {
     if (input_size == 1) {
         model.reset();
-    } else {
+    }
+    else if (input_size == 1) {
         model_cond1.reset();
+    }
+    else if (input_size == 2) {
+        model_cond2.reset();
     }
 }
 
