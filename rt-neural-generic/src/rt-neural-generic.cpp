@@ -8,7 +8,7 @@
 /**********************************************************************************************************************************************************/
 
 #define PLUGIN_URI "http://aidadsp.cc/plugins/aidadsp-bundle/rt-neural-generic"
-#define LSTM_MODEL_JSON_FILE_NAME "./lstm-model.json"
+#define LSTM_MODEL_JSON_FILE_NAME "/home/root/.lv2plugins/rt-neural-generic.lv2/lstm-model.json"
 enum {IN, OUT_1, GAIN, MASTER, PLUGIN_PORT_COUNT};
 
 /**********************************************************************************************************************************************************/
@@ -86,8 +86,8 @@ void RtNeuralGeneric::loadConfig(LV2_Handle instance, const char *fileName)
         plugin->model_loaded = 1;
     }
     catch (const std::exception& e) {
-        std::cout << "Unable to load json file: " << fileName << std::endl;
-        std::cout << e.what();
+        std::cout << std::endl << "Unable to load json file: " << fileName << std::endl;
+        std::cout << e.what() << std::endl;
 
         // If we are not good: let's say no
         plugin->model_loaded = 0;
