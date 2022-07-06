@@ -44,3 +44,7 @@ install(TARGETS rt-neural-generic
 install (DIRECTORY ttl/
   DESTINATION ${LV2_INSTALL_DIR}
 )
+
+install (DIRECTORY ../models
+  DESTINATION ${LV2_INSTALL_DIR}
+)
