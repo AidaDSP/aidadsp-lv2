@@ -48,3 +48,7 @@ install (DIRECTORY ttl/
 install (DIRECTORY ../models
   DESTINATION ${LV2_INSTALL_DIR}
 )
+
+install (FILES ../models/ArchetypePliniElectricSunrise.json
+  DESTINATION ${LV2_INSTALL_DIR} RENAME lstm-model.json
+)
