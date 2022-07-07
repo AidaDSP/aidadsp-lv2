@@ -27,7 +27,7 @@ __*WIP: currently this plugin is under work since CPU consumption is not accepta
 
 ##### Generate json models #####
 
-This imply neural network training. Please follow __*Automated_GuitarAmpModelling.ipynb*__ script available on
+This implies neural network training. Please follow __*Automated_GuitarAmpModelling.ipynb*__ script available on
 
 - [my Automated-GuitarAmpModelling fork](https://github.com/MaxPayne86/Automated-GuitarAmpModelling/tree/aidadsp_devel)
 
