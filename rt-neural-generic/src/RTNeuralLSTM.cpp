@@ -91,7 +91,7 @@ void RT_LSTM::process(const float* inData, float* outData, int numSamples, int b
         if (bypass == 0)
             outData[i] = model.forward(inData + i) + inData[i];
         else
-            outData[i] = inData[i];
+            outData[i] = inData[i] * 2;
     }
 }
 
