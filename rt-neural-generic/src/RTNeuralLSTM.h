@@ -13,9 +13,9 @@ public:
 
     void set_weights(T1 model, const char* filename);
 
-    void process(const float* inData, float* outData, int numSamples);
-    void process(const float* inData, float param, float* outData, int numSamples);
-    void process(const float* inData, float param1, float param2, float* outData, int numSamples);
+    void process(const float* inData, float* outData, int numSamples, int bypass);
+    void process(const float* inData, float param, float* outData, int numSamples, int bypass);
+    void process(const float* inData, float param1, float param2, float* outData, int numSamples, int bypass);
 
     int input_size = 1;
 

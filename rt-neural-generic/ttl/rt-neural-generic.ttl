@@ -63,4 +63,16 @@ lv2:port
     lv2:default 0.5;
     lv2:minimum 0;
     lv2:maximum 1.0;
+],
+[
+    a lv2:ControlPort, lv2:InputPort;
+    lv2:index 4 ;
+    lv2:symbol "Bypass";
+    lv2:name "Bypass";
+    lv2:shortname "Bypass";
+    lv2:default 0;
+    lv2:minimum 0;
+    lv2:maximum 1;
+    lv2:portProperty lv2:integer;
+    lv2:portProperty lv2:toggled;
 ].

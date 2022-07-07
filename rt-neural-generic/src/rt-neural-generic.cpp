@@ -9,7 +9,7 @@
 
 #define PLUGIN_URI "http://aidadsp.cc/plugins/aidadsp-bundle/rt-neural-generic"
 #define LSTM_MODEL_JSON_FILE_NAME "/home/root/.lv2plugins/rt-neural-generic.lv2/lstm-model.json"
-enum {IN, OUT_1, GAIN, MASTER, PLUGIN_PORT_COUNT};
+enum {IN, OUT_1, GAIN, MASTER, BYPASS, PLUGIN_PORT_COUNT};
 
 /**********************************************************************************************************************************************************/
 
@@ -29,6 +29,7 @@ public:
     float *out_1;
     float *gain;
     float *master;
+    int *bypass;
 
     RT_LSTM LSTM;
     int model_loaded = 0;
@@ -145,6 +146,9 @@ void RtNeuralGeneric::connect_port(LV2_Handle instance, uint32_t port, void *dat
         case MASTER:
             plugin->master = (float*) data;
             break;
+        case BYPASS:
+            plugin->bypass = (int*) data;
+            break;
     }
 }
 
@@ -156,17 +160,18 @@ void RtNeuralGeneric::run(LV2_Handle instance, uint32_t n_samples)
     plugin = (RtNeuralGeneric *) instance;
     float gain = *plugin->gain;
     float master = *plugin->master;
+    int bypass = *plugin->bypass;
 
     if (plugin->model_loaded == 1) {
         // Process LSTM based on input_size (snapshot model or conditioned model)
         if (plugin->LSTM.input_size == 1) {
-            plugin->LSTM.process(plugin->in, plugin->out_1, n_samples);
+            plugin->LSTM.process(plugin->in, plugin->out_1, n_samples, bypass);
         }
         else if (plugin->LSTM.input_size == 2) {
-            plugin->LSTM.process(plugin->in, gain, plugin->out_1, n_samples);
+            plugin->LSTM.process(plugin->in, gain, plugin->out_1, n_samples, bypass);
         }
         else if (plugin->LSTM.input_size == 3) {
-            plugin->LSTM.process(plugin->in, gain, master, plugin->out_1, n_samples);
+            plugin->LSTM.process(plugin->in, gain, master, plugin->out_1, n_samples, bypass);
         }
     }
 
