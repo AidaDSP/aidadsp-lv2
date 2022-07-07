@@ -18,7 +18,7 @@ It's a simple headless lv2 plugin inspired by
 - [RTNeural](https://github.com/jatinchowdhury18/RTNeural.git)
 
 This lv2 plugin is a simple wrapper to inference classes used in NeuralPi project. All
-the credits to the original authors.
+the credits go to the original authors.
 
 I've decided to implement this plugin to be able to compile original NeuralPi plugin without JUCE
 and also to eliminate every additional effect that has been added during time.
