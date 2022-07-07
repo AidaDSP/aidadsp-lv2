@@ -8,7 +8,7 @@
 /**********************************************************************************************************************************************************/
 
 #define PLUGIN_URI "http://aidadsp.cc/plugins/aidadsp-bundle/rt-neural-generic"
-#define LSTM_MODEL_JSON_FILE_NAME "/home/root/.lv2plugins/rt-neural-generic.lv2/lstm-model.json"
+#define LSTM_MODEL_JSON_FILE_NAME "lstm-model.json"
 enum {IN, OUT_1, GAIN, MASTER, BYPASS, PLUGIN_PORT_COUNT};
 
 /**********************************************************************************************************************************************************/
@@ -36,7 +36,7 @@ public:
     // The number of parameters for the model
     // 0 is for a snap shot model
     int params = 0;
-    static void loadConfig(LV2_Handle instance, const char *fileName);
+    static void loadConfig(LV2_Handle instance, const char *bundle_path, const char *fileName);
 };
 
 /**********************************************************************************************************************************************************/
@@ -63,14 +63,21 @@ const LV2_Descriptor* lv2_descriptor(uint32_t index)
 
 /**********************************************************************************************************************************************************/
 
-void RtNeuralGeneric::loadConfig(LV2_Handle instance, const char *fileName)
+void RtNeuralGeneric::loadConfig(LV2_Handle instance, const char *bundle_path, const char *fileName)
 {
     RtNeuralGeneric *plugin;
     plugin = (RtNeuralGeneric *) instance;
 
+    std::string filePath;
+
+    filePath.append(bundle_path);
+    filePath.append(fileName);
+
+    std::cout << std::endl << "Loading json file: " << filePath << std::endl;
+
     try {
         // Load the JSON file into the correct model
-        plugin->LSTM.load_json(fileName);
+        plugin->LSTM.load_json(filePath.c_str());
 
         // Check what the input size is and then update the GUI appropirately
         if (plugin->LSTM.input_size == 1) {
@@ -87,7 +94,7 @@ void RtNeuralGeneric::loadConfig(LV2_Handle instance, const char *fileName)
         plugin->model_loaded = 1;
     }
     catch (const std::exception& e) {
-        std::cout << std::endl << "Unable to load json file: " << fileName << std::endl;
+        std::cout << std::endl << "Unable to load json file: " << filePath << std::endl;
         std::cout << e.what() << std::endl;
 
         // If we are not good: let's say no
@@ -102,7 +109,7 @@ LV2_Handle RtNeuralGeneric::instantiate(const LV2_Descriptor* descriptor, double
     RtNeuralGeneric *plugin = new RtNeuralGeneric();
 
     // Load lstm model json file
-    plugin->loadConfig((LV2_Handle)plugin, LSTM_MODEL_JSON_FILE_NAME);
+    plugin->loadConfig((LV2_Handle)plugin, bundle_path, LSTM_MODEL_JSON_FILE_NAME);
 
     // Before running inference, it is recommended to "reset" the state
     // of your model (if the model has state).
