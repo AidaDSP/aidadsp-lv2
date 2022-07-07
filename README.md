@@ -1,29 +1,26 @@
-# README #
-
-This README would normally document whatever steps are necessary to get your application up and running.
+# Aida DSP lv2 plugin bundle #
 
 ### What is this repository for? ###
 
-* Quick summary
-* Version
-* [Learn Markdown](https://bitbucket.org/tutorials/markdowndemo)
+* A bundle of audio plugins from [Aida DSP](http://aidadsp.cc)
+* Bundle version: 1.0
+* This bundle is intended to be used with moddevices's products and derivatives
 
-### How do I get set up? ###
+### Plugin list ###
 
-* Summary of set up
-* Configuration
-* Dependencies
-* Database configuration
-* How to run tests
-* Deployment instructions
+* rt-neural-lv2
 
-### Contribution guidelines ###
+#### rt-neural-lv2 ####
 
-* Writing tests
-* Code review
-* Other guidelines
+Is a simple headless lv2 plugin inspired by
 
-### Who do I talk to? ###
+- [NeuralPi](https://github.com/GuitarML/NeuralPi)
+- [RTNeural](https://github.com/jatinchowdhury18/RTNeural.git)
 
-* Repo owner or admin
-* Other community or team contact
+This lv2 plugin is a simple wrapper to inference classes used in NeuralPi project. All
+the credits to the original authors. I've decided to implement this plugin to be able to compile
+original NeuralPi plugin without JUCE and also to eliminate every additional effect that has been
+added during time.
+
+__*WIP: currently this plugin is under work since CPU consumption is not acceptable, come back later!*__
+
