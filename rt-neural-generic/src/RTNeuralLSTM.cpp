@@ -87,11 +87,18 @@ void RT_LSTM::reset()
 
 void RT_LSTM::process(const float* inData, float* outData, int numSamples, int bypass)
 {
-    for (int i = 0; i < numSamples; ++i) {
-        if (bypass == 0)
-            outData[i] = model.forward(inData + i) + inData[i];
-        else
+    int i;
+
+    if (bypass == 1) {
+        for (i = 0; i < numSamples; ++i) {
             outData[i] = inData[i];
+        }
+    }
+    else
+    {
+        for (i = 0; i < numSamples; ++i) {
+            outData[i] = model.forward(inData + i) + inData[i];
+        }
     }
 }
 
