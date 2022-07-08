@@ -11,15 +11,14 @@ set(RTNEURAL_DEFAULT_ALIGNMENT 16 CACHE STRING "Set RTNeural default alignment" 
 
 # add external libraries
 add_subdirectory(../modules/RTNeural ${CMAKE_CURRENT_BINARY_DIR}/RTNeural)
-add_subdirectory(../modules/json ${CMAKE_CURRENT_BINARY_DIR}/json)
 
 # check for lv2 using pkgconfig
 find_package(PkgConfig)
 pkg_check_modules(LV2 REQUIRED lv2>=1.10.0)
 
 # include and link directories
-include_directories (${LV2_INCLUDE_DIRS} ./src ../modules/RTNeural ../modules/json)
-link_directories (${LV2_LIBRARY_DIRS} ./src ../modules/RTNeural ../modules/json)
+include_directories (${LV2_INCLUDE_DIRS} ./src ../modules/RTNeural ../modules/RTNeural/modules/json)
+link_directories (${LV2_LIBRARY_DIRS} ./src ../modules/RTNeural ../modules/RTNeural/modules/json)
 
 # config libraries
 add_library(rt-neural-generic SHARED
@@ -30,7 +29,7 @@ add_library(rt-neural-generic SHARED
 # configure target
 set_target_properties(rt-neural-generic PROPERTIES PREFIX "")
 set_target_properties(rt-neural-generic PROPERTIES BUILD_WITH_INSTALL_RPATH TRUE)
-target_link_libraries(rt-neural-generic ${LV2_LIBRARIES} RTNeural nlohmann_json::nlohmann_json)
+target_link_libraries(rt-neural-generic ${LV2_LIBRARIES} RTNeural)
 target_compile_definitions(rt-neural-generic PUBLIC)
 
 # setup install dir
