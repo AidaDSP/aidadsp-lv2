@@ -7,6 +7,7 @@ project (rt-neural-generic)
 # flags and definitions
 set(CMAKE_CXX_STANDARD 17)
 set(RTNEURAL_XSIMD ON CACHE BOOL "Use RTNeural with this backend" FORCE)
+set(RTNEURAL_DEFAULT_ALIGNMENT 16 CACHE STRING "Set RTNeural default alignment" FORCE)
 
 # add external libraries
 add_subdirectory(../modules/RTNeural ${CMAKE_CURRENT_BINARY_DIR}/RTNeural)
