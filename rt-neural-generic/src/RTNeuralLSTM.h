@@ -33,6 +33,6 @@ private:
         RTNeural::DenseT<float, 20, 1>> model_cond2;
 
     // Pre-Allowcate arrays for feeding the models
-    float inArray1[2] = { 0.0, 0.0 };
-    float inArray2[3] = { 0.0, 0.0, 0.0 };
+    float inArray1 alignas(RTNEURAL_DEFAULT_ALIGNMENT)[2] = { 0.0, 0.0 };
+    float inArray2 alignas(RTNEURAL_DEFAULT_ALIGNMENT)[3] = { 0.0, 0.0, 0.0 };
 };
