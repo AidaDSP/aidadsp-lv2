@@ -38,7 +38,7 @@ target_compile_definitions(rt-neural-generic PUBLIC)
 # cxxflags, release
 set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3 -DNDEBUG -s")
 
-# linker flags
+# linker flags, release
 set(CMAKE_SHARED_LINKER_FLAGS_RELEASE "${CMAKE_SHARED_LINKER_FLAGS_RELEASE} -Wl,--strip-all")
 
 # setup install dir
