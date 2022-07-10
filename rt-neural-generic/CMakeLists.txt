@@ -36,7 +36,7 @@ target_link_libraries(rt-neural-generic ${LV2_LIBRARIES} RTNeural)
 target_compile_definitions(rt-neural-generic PUBLIC)
 
 # cxxflags, release
-set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3 -DNDEBUG -s")
+set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3 -Wl,--strip-all")
 
 # linker flags, release
 set(CMAKE_SHARED_LINKER_FLAGS_RELEASE "${CMAKE_SHARED_LINKER_FLAGS_RELEASE} -Wl,--strip-all")
