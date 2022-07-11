@@ -92,6 +92,8 @@ void RtNeuralGeneric::loadConfig(LV2_Handle instance, const char *bundle_path, c
 
         // If we are good: let's say so
         plugin->model_loaded = 1;
+
+        std::cout << std::endl << "Successfully loaded json file: " << filePath << std::endl;
     }
     catch (const std::exception& e) {
         std::cout << std::endl << "Unable to load json file: " << filePath << std::endl;
