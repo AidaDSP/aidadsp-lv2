@@ -16,11 +16,11 @@
         modgui:knob "blue" ;
         modgui:port [
             lv2:index 0 ;
-            lv2:symbol "Gain" ;
-            lv2:name "Gain" ;
+            lv2:symbol "Param1" ;
+            lv2:name "Param1" ;
         ] , [
             lv2:index 1 ;
-            lv2:symbol "Master" ;
-            lv2:name "Master" ;
+            lv2:symbol "Param2" ;
+            lv2:name "Param2" ;
         ] ;
     ] .

@@ -70,7 +70,7 @@ lv2:port
     lv2:symbol "Master";
     lv2:name "Master";
     lv2:shortname "Master";
-    lv2:default 0.5;
+    lv2:default 0;
     lv2:minimum 0;
     lv2:maximum 1.0;
 ],
