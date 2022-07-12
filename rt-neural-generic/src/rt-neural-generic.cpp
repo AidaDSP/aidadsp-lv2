@@ -159,7 +159,7 @@ void RtNeuralGeneric::connect_port(LV2_Handle instance, uint32_t port, void *dat
         case PARAM1:
             plugin->param1 = (float*) data;
             break;
-        case PARAM1:
+        case PARAM2:
             plugin->param2 = (float*) data;
             break;
         case MASTER:
@@ -215,8 +215,8 @@ void RtNeuralGeneric::run(LV2_Handle instance, uint32_t n_samples)
 
     // Apply master gain setting with a ramp to avoid zypper noise
     for(int i=0; i<n_samples; i++) {
-        tmp = plugin->out1[i];
-        plugin->out1[i] = (master_old + ((master - master_old)/n_samples) * i) * tmp;
+        tmp = plugin->out_1[i];
+        plugin->out_1[i] = (master_old + ((master - master_old)/n_samples) * i) * tmp;
     }
 }
 
