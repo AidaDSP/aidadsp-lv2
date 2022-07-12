@@ -30,6 +30,7 @@ public:
     float *gain;
     float *master;
     int *bypass;
+    int bypass_old;
 
     RT_LSTM LSTM;
     int model_loaded = 0;
@@ -73,11 +74,13 @@ void RtNeuralGeneric::loadConfig(LV2_Handle instance, const char *bundle_path, c
     filePath.append(bundle_path);
     filePath.append(fileName);
 
-    std::cout << std::endl << "Loading json file: " << filePath << std::endl;
+    std::cout << "Loading json file: " << filePath << std::endl;
 
     try {
         // Load the JSON file into the correct model
         plugin->LSTM.load_json(filePath.c_str());
+
+        std::cout << "Model hidden_size: " << plugin->LSTM.input_size << std::endl;
 
         // Check what the input size is and then update the GUI appropirately
         if (plugin->LSTM.input_size == 1) {
@@ -93,7 +96,7 @@ void RtNeuralGeneric::loadConfig(LV2_Handle instance, const char *bundle_path, c
         // If we are good: let's say so
         plugin->model_loaded = 1;
 
-        std::cout << std::endl << "Successfully loaded json file: " << filePath << std::endl;
+        std::cout << "Successfully loaded json file: " << filePath << std::endl;
     }
     catch (const std::exception& e) {
         std::cout << std::endl << "Unable to load json file: " << filePath << std::endl;
@@ -116,6 +119,8 @@ LV2_Handle RtNeuralGeneric::instantiate(const LV2_Descriptor* descriptor, double
     // Before running inference, it is recommended to "reset" the state
     // of your model (if the model has state).
     plugin->LSTM.reset();
+
+    plugin->bypass_old = 0;
 
     return (LV2_Handle)plugin;
 }
@@ -169,24 +174,34 @@ void RtNeuralGeneric::run(LV2_Handle instance, uint32_t n_samples)
     plugin = (RtNeuralGeneric *) instance;
     float gain = *plugin->gain;
     float master = *plugin->master;
-    int bypass = *plugin->bypass;
+    int bypass = *plugin->bypass; // NOTE: since float 1.0 is sent instead of (int 32bit) 1, then we have 1065353216 as 1
 
-    if (plugin->model_loaded == 1) {
-        // Process LSTM based on input_size (snapshot model or conditioned model)
-        if (plugin->LSTM.input_size == 1) {
-            plugin->LSTM.process(plugin->in, plugin->out_1, n_samples, bypass);
-        }
-        else if (plugin->LSTM.input_size == 2) {
-            plugin->LSTM.process(plugin->in, gain, plugin->out_1, n_samples, bypass);
-        }
-        else if (plugin->LSTM.input_size == 3) {
-            plugin->LSTM.process(plugin->in, gain, master, plugin->out_1, n_samples, bypass);
-        }
+    if (bypass != plugin->bypass_old) {
+        std::cout << "Bypass status changed to: " << bypass << std::endl;
+        plugin->bypass_old = bypass;
     }
 
-    // @TODO: volume normalization may be useful when switching between models!
-    // @TODO: some offset may be present at neural network output, original code
-    // add a dc block filter in this position
+    if (bypass == 0) {
+        if (plugin->model_loaded == 1) {
+            // Process LSTM based on input_size (snapshot model or conditioned model)
+            if (plugin->LSTM.input_size == 1) {
+                plugin->LSTM.process(plugin->in, plugin->out_1, n_samples);
+            }
+            else if (plugin->LSTM.input_size == 2) {
+                plugin->LSTM.process(plugin->in, gain, plugin->out_1, n_samples);
+            }
+            else if (plugin->LSTM.input_size == 3) {
+                plugin->LSTM.process(plugin->in, gain, master, plugin->out_1, n_samples);
+            }
+            // @TODO: volume normalization may be useful when switching between models!
+            // @TODO: some offset may be present at neural network output, original code
+            // add a dc block filter in this position
+        }
+    }
+    else
+    {
+        std::copy(plugin->in, plugin->in + n_samples, plugin->out_1); // Passthrough
+    }
 }
 
 /**********************************************************************************************************************************************************/
