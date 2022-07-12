@@ -36,3 +36,25 @@ This implies neural network training. Please follow __*Automated_GuitarAmpModell
 Since I was not satisfied with dataset proposed by orignal authors I've put together one:
 
 - [Thomann Stompenberg Dataset](https://github.com/MaxPayne86/ThomannStompenbergDataset)
+
+### Build ###
+
+Below a guide on how to cross compile this bundle with [aidadsp sdk](https://drive.google.com/drive/folders/1-AAfAP-FAddCw0LJuvzsW8m_1lWHKXaV?usp=sharing).
+You can extract cmake commands to fit your build system.
+
+- RTNEURAL_XSIMD=ON or RTNEURAL_EIGEN=ON to select an available backend for RTNeural library
+- RTNEURAL_LSTM_MODEL_HIDDEN_SIZE specifies the lstm models you want to load since model size need to be specified at compile time
+
+for other options see [RTNeural](https://github.com/jatinchowdhury18/RTNeural.git) project.
+
+```
+1. install sdk with ./poky-glibc-x86_64-aidadsp-sdk-image-aarch64-nanopi-neo2-toolchain-2.1.15.sh
+3. source environment-setup-aarch64-poky-linux
+4. git clone https://github.com/AidaDSP/aidadsp-lv2.git && cd aidadsp-lv2
+5. mkdir build && cd build
+6. cmake -DCMAKE_BUILD_TYPE=Release -DRTNEURAL_XSIMD=ON -DRTNEURAL_LSTM_MODEL_HIDDEN_SIZE:STRING="16" -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON ../
+7. cmake --build .
+8. make install DESTDIR="/tmp/"
+
+bundle will be placed in /tmp/ ready to be copied on your device
+```
