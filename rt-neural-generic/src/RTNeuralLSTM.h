@@ -20,6 +20,10 @@ public:
     int input_size = 1;
     int hidden_size = RTNEURAL_LSTM_MODEL_HIDDEN_SIZE;
 
+    float param_old = 0;
+    float param1_old = 0;
+    float param2_old = 0;
+
 private:
     RTNeural::ModelT<float, 1, 1,
         RTNeural::LSTMLayerT<float, 1, RTNEURAL_LSTM_MODEL_HIDDEN_SIZE>,

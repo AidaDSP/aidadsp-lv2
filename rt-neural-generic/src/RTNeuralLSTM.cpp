@@ -80,7 +80,6 @@ void RT_LSTM::load_json(const char* filename)
     }
 }
 
-
 void RT_LSTM::reset()
 {
     if (input_size == 1) {
@@ -88,9 +87,12 @@ void RT_LSTM::reset()
     }
     else if (input_size == 1) {
         model_cond1.reset();
+        param_old = 0;
     }
     else if (input_size == 2) {
         model_cond2.reset();
+        param1_old = 0;
+        param2_old = 0;
     }
 }
 
@@ -105,7 +107,8 @@ void RT_LSTM::process(const float* inData, float param, float* outData, int numS
 {
     for (int i = 0; i < numSamples; ++i) {
         inArray1[0] = inData[i];
-        inArray1[1] = param;
+        inArray1[1] = param_old + ((param - param_old)/numSamples) * i;
+        param_old = param;
         outData[i] = model_cond1.forward(inArray1) + inData[i];
     }
 }
@@ -114,9 +117,10 @@ void RT_LSTM::process(const float* inData, float param1, float param2, float* ou
 {
     for (int i = 0; i < numSamples; ++i) {
         inArray2[0] = inData[i];
-        inArray2[1] = param1;
-        inArray2[2] = param2;
+        inArray2[1] = param1_old + ((param1 - param1_old)/numSamples) * i;
+        inArray2[2] = param2_old + ((param2 - param2_old)/numSamples) * i;
+        param1_old = param1;
+        param2_old = param2;
         outData[i] = model_cond2.forward(inArray2) + inData[i];
     }
 }
-
