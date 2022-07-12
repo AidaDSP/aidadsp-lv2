@@ -9,7 +9,7 @@
 
 #define PLUGIN_URI "http://aidadsp.cc/plugins/aidadsp-bundle/rt-neural-generic"
 #define LSTM_MODEL_JSON_FILE_NAME "lstm-model.json"
-enum {IN, OUT_1, GAIN, MASTER, BYPASS, PLUGIN_PORT_COUNT};
+enum {IN, OUT_1, PARAM1, PARAM2, MASTER, BYPASS, PLUGIN_PORT_COUNT};
 
 /**********************************************************************************************************************************************************/
 
@@ -27,8 +27,10 @@ public:
     static const void* extension_data(const char* uri);
     float *in;
     float *out_1;
-    float *gain;
+    float *param1;
+    float *param2;
     float *master;
+    float master_old;
     int *bypass;
     int bypass_old;
 
@@ -154,8 +156,11 @@ void RtNeuralGeneric::connect_port(LV2_Handle instance, uint32_t port, void *dat
         case OUT_1:
             plugin->out_1 = (float*) data;
             break;
-        case GAIN:
-            plugin->gain = (float*) data;
+        case PARAM1:
+            plugin->param1 = (float*) data;
+            break;
+        case PARAM1:
+            plugin->param2 = (float*) data;
             break;
         case MASTER:
             plugin->master = (float*) data;
@@ -172,9 +177,14 @@ void RtNeuralGeneric::run(LV2_Handle instance, uint32_t n_samples)
 {
     RtNeuralGeneric *plugin;
     plugin = (RtNeuralGeneric *) instance;
-    float gain = *plugin->gain;
+    float param1 = *plugin->param1;
+    float param2 = *plugin->param2;
     float master = *plugin->master;
+    float master_old = plugin->master_old;
     int bypass = *plugin->bypass; // NOTE: since float 1.0 is sent instead of (int 32bit) 1, then we have 1065353216 as 1
+    float tmp;
+
+    plugin->master_old = master;
 
     if (bypass != plugin->bypass_old) {
         std::cout << "Bypass status changed to: " << bypass << std::endl;
@@ -188,10 +198,10 @@ void RtNeuralGeneric::run(LV2_Handle instance, uint32_t n_samples)
                 plugin->LSTM.process(plugin->in, plugin->out_1, n_samples);
             }
             else if (plugin->LSTM.input_size == 2) {
-                plugin->LSTM.process(plugin->in, gain, plugin->out_1, n_samples);
+                plugin->LSTM.process(plugin->in, param1, plugin->out_1, n_samples);
             }
             else if (plugin->LSTM.input_size == 3) {
-                plugin->LSTM.process(plugin->in, gain, master, plugin->out_1, n_samples);
+                plugin->LSTM.process(plugin->in, param1, param2, plugin->out_1, n_samples);
             }
             // @TODO: volume normalization may be useful when switching between models!
             // @TODO: some offset may be present at neural network output, original code
@@ -201,6 +211,12 @@ void RtNeuralGeneric::run(LV2_Handle instance, uint32_t n_samples)
     else
     {
         std::copy(plugin->in, plugin->in + n_samples, plugin->out_1); // Passthrough
+    }
+
+    // Apply master gain setting with a ramp to avoid zypper noise
+    for(int i=0; i<n_samples; i++) {
+        tmp = plugin->out1[i];
+        plugin->out1[i] = (master_old + ((master - master_old)/n_samples) * i) * tmp;
     }
 }
 
