@@ -80,7 +80,7 @@ void RtNeuralGeneric::loadConfig(LV2_Handle instance, const char *bundle_path, c
         // Load the JSON file into the correct model
         plugin->LSTM.load_json(filePath.c_str());
 
-        std::cout << "Model hidden_size: " << plugin->LSTM.input_size << std::endl;
+        std::cout << "Model hidden_size: " << plugin->LSTM.hidden_size << std::endl;
 
         // Check what the input size is and then update the GUI appropirately
         if (plugin->LSTM.input_size == 1) {

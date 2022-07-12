@@ -37,7 +37,7 @@ void RT_LSTM::set_weights(T1 model, const char* filename)
 
     std::vector<float> lstm_bias_ih = weights_json["/state_dict/rec.bias_ih_l0"_json_pointer];
     std::vector<float> lstm_bias_hh = weights_json["/state_dict/rec.bias_hh_l0"_json_pointer];
-    for (int i = 0; i < RTNEURAL_DEFAULT_ALIGNMENT*4; ++i)
+    for (int i = 0; i < hidden_size*4; ++i)
         lstm_bias_hh[i] += lstm_bias_ih[i];
     lstm.setBVals(lstm_bias_hh);
 
@@ -46,18 +46,27 @@ void RT_LSTM::set_weights(T1 model, const char* filename)
 
     std::vector<float> dense_bias = weights_json["/state_dict/lin.bias"_json_pointer];
     dense.setBias(dense_bias.data());
-
 }
+
 void RT_LSTM::load_json(const char* filename)
 {
-    // Read in the JSON file
+    // Open the JSON file
     std::ifstream i2(filename);
     nlohmann::json weights_json;
     i2 >> weights_json;
 
-    // Get the input size of the JSON file
+    // Get the input size from the JSON file
     int input_size_json = weights_json["/model_data/input_size"_json_pointer];
     input_size = input_size_json;
+
+    // Get the hidden_size from the JSON file
+    int hidden_size_json = weights_json["/model_data/hidden_size"_json_pointer];
+    hidden_size = hidden_size_json;
+
+    // ModelT is defined with a fixed size at compile time, this size should match the model's hidden_size
+    if(hidden_size != RTNEURAL_LSTM_MODEL_HIDDEN_SIZE) {
+        throw std::invalid_argument("Tried to load LSTM model with wrong hidden_size");
+    }
 
     // Load the appropriate model
     if (input_size == 1) {
