@@ -177,13 +177,14 @@ void RtNeuralGeneric::run(LV2_Handle instance, uint32_t n_samples)
 {
     RtNeuralGeneric *plugin;
     plugin = (RtNeuralGeneric *) instance;
+
     float param1 = *plugin->param1;
     float param2 = *plugin->param2;
-    float master = *plugin->master;
-    float master_old = plugin->master_old;
     int bypass = *plugin->bypass; // NOTE: since float 1.0 is sent instead of (int 32bit) 1, then we have 1065353216 as 1
-    float tmp;
+    float master, master_old, tmp;
 
+    master = *plugin->master;
+    master_old = plugin->master_old;
     plugin->master_old = master;
 
     if (bypass != plugin->bypass_old) {
