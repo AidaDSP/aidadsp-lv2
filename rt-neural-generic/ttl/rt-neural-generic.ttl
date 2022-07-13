@@ -50,7 +50,7 @@ lv2:port
     lv2:symbol "Param1";
     lv2:name "Param1";
     lv2:shortname "P1";
-    lv2:default 0.5;
+    lv2:default 0;
     lv2:minimum 0;
     lv2:maximum 1.0;
 ],
@@ -60,7 +60,7 @@ lv2:port
     lv2:symbol "Param2";
     lv2:name "Param2";
     lv2:shortname "P2";
-    lv2:default 0.5;
+    lv2:default 0;
     lv2:minimum 0;
     lv2:maximum 1.0;
 ],
@@ -70,9 +70,9 @@ lv2:port
     lv2:symbol "Master";
     lv2:name "Master";
     lv2:shortname "Master";
-    lv2:default 0;
-    lv2:minimum 0;
-    lv2:maximum 1.0;
+    lv2:default 1;
+    lv2:minimum 1;
+    lv2:maximum 10.0;
 ],
 [
     a lv2:ControlPort, lv2:InputPort;
