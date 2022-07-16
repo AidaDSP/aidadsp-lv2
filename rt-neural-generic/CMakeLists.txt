@@ -9,7 +9,7 @@ set(CMAKE_CXX_STANDARD 17)
 
 set(RTNEURAL_XSIMD ON CACHE BOOL "Use RTNeural with this backend")
 message("RTNEURAL_XSIMD in ${CMAKE_PROJECT_NAME} = ${RTNEURAL_XSIMD}")
-set(RTNEURAL_LSTM_MODEL_HIDDEN_SIZE "16" CACHE STRING "Set hidden size in RTNeuralLSTM class")
+set(RTNEURAL_LSTM_MODEL_HIDDEN_SIZE "12" CACHE STRING "Set hidden size in RTNeuralLSTM class")
 message("RTNEURAL_LSTM_MODEL_HIDDEN_SIZE in ${CMAKE_PROJECT_NAME} = ${RTNEURAL_LSTM_MODEL_HIDDEN_SIZE}")
 
 # add external libraries
@@ -58,6 +58,6 @@ install (DIRECTORY ../models
   DESTINATION ${LV2_INSTALL_DIR}
 )
 
-install (FILES ../models/ArchetypePliniElectricSunrise.json
+install (FILES ../models/48kHz/RNN3-LSTM-12/ArchetypePliniElectricSunriseRiff.json
   DESTINATION ${LV2_INSTALL_DIR} RENAME lstm-model.json
 )
