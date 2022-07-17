@@ -35,12 +35,6 @@ set_target_properties(rt-neural-generic PROPERTIES BUILD_WITH_INSTALL_RPATH TRUE
 target_link_libraries(rt-neural-generic ${LV2_LIBRARIES} RTNeural)
 target_compile_definitions(rt-neural-generic PUBLIC RTNEURAL_LSTM_MODEL_HIDDEN_SIZE=${RTNEURAL_LSTM_MODEL_HIDDEN_SIZE})
 
-# cxxflags, release
-set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3 -Wl,--strip-all")
-
-# linker flags, release
-set(CMAKE_SHARED_LINKER_FLAGS_RELEASE "${CMAKE_SHARED_LINKER_FLAGS_RELEASE} -Wl,--strip-all")
-
 # setup install dir
 set(LV2_INSTALL_DIR ${DESTDIR}${PREFIX}/rt-neural-generic.lv2)
 
