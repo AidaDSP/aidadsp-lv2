@@ -3,7 +3,9 @@
 #include <string.h>
 #include <math.h>
 #include <lv2.h>
-#include "RTNeuralLSTM.h"
+
+#include <iostream>
+#include <RTNeural/RTNeural.h>
 
 /**********************************************************************************************************************************************************/
 
@@ -34,12 +36,20 @@ public:
     int *bypass;
     int bypass_old;
 
-    RT_LSTM LSTM;
     int model_loaded = 0;
-    // The number of parameters for the model
-    // 0 is for a snap shot model
-    int params = 0;
-    static void loadConfig(LV2_Handle instance, const char *bundle_path, const char *fileName);
+    // The input vector size for the model
+    // 1 is for a snap shot model otherwise is a conditioned model
+    int input_size = 0;
+    static void loadModel(LV2_Handle instance, const char *bundle_path, const char *fileName);
+
+private:
+    std::unique_ptr<RTNeural::Model<float>> model;
+
+    // Pre-Allowcate arrays for feeding the models
+    float inArray1 alignas(RTNEURAL_DEFAULT_ALIGNMENT)[2] = { 0.0, 0.0 };
+    float inArray2 alignas(RTNEURAL_DEFAULT_ALIGNMENT)[3] = { 0.0, 0.0, 0.0 };
+
+    static float calcGain(float gain, float gain_old, uint32_t n_samples, uint32_t index);
 };
 
 /**********************************************************************************************************************************************************/
@@ -66,7 +76,14 @@ const LV2_Descriptor* lv2_descriptor(uint32_t index)
 
 /**********************************************************************************************************************************************************/
 
-void RtNeuralGeneric::loadConfig(LV2_Handle instance, const char *bundle_path, const char *fileName)
+// Apply gain setting with a ramp to avoid zypper noise
+float RtNeuralGeneric::calcGain(float gain, float gain_old, uint32_t n_samples, uint32_t index) {
+    return (gain_old + ((gain - gain_old)/n_samples) * index);
+}
+
+/**********************************************************************************************************************************************************/
+
+void RtNeuralGeneric::loadModel(LV2_Handle instance, const char *bundle_path, const char *fileName)
 {
     RtNeuralGeneric *plugin;
     plugin = (RtNeuralGeneric *) instance;
@@ -79,21 +96,10 @@ void RtNeuralGeneric::loadConfig(LV2_Handle instance, const char *bundle_path, c
     std::cout << "Loading json file: " << filePath << std::endl;
 
     try {
-        // Load the JSON file into the correct model
-        plugin->LSTM.load_json(filePath.c_str());
+        std::ifstream jsonStream(filePath, std::ifstream::binary);
+        plugin->model = RTNeural::json_parser::parseJson<float>(jsonStream, true);
 
-        std::cout << "Model hidden_size: " << plugin->LSTM.hidden_size << std::endl;
-
-        // Check what the input size is and then update the GUI appropirately
-        if (plugin->LSTM.input_size == 1) {
-            plugin->params = 0;
-        }
-        else if (plugin->LSTM.input_size == 2) {
-            plugin->params = 1;
-        }
-        else if (plugin->LSTM.input_size == 3) {
-            plugin->params = 2;
-        }
+        plugin->input_size = plugin->model->layers[0]->in_size;
 
         // If we are good: let's say so
         plugin->model_loaded = 1;
@@ -116,11 +122,11 @@ LV2_Handle RtNeuralGeneric::instantiate(const LV2_Descriptor* descriptor, double
     RtNeuralGeneric *plugin = new RtNeuralGeneric();
 
     // Load lstm model json file
-    plugin->loadConfig((LV2_Handle)plugin, bundle_path, LSTM_MODEL_JSON_FILE_NAME);
+    plugin->loadModel((LV2_Handle)plugin, bundle_path, LSTM_MODEL_JSON_FILE_NAME);
 
     // Before running inference, it is recommended to "reset" the state
     // of your model (if the model has state).
-    plugin->LSTM.reset();
+    plugin->model->reset();
 
     plugin->bypass_old = 0;
 
@@ -182,6 +188,7 @@ void RtNeuralGeneric::run(LV2_Handle instance, uint32_t n_samples)
     float param2 = *plugin->param2;
     int bypass = *plugin->bypass; // NOTE: since float 1.0 is sent instead of (int 32bit) 1, then we have 1065353216 as 1
     float master, master_old, tmp;
+    uint32_t i;
 
     master = *plugin->master;
     master_old = plugin->master_old;
@@ -194,15 +201,33 @@ void RtNeuralGeneric::run(LV2_Handle instance, uint32_t n_samples)
 
     if (bypass == 0) {
         if (plugin->model_loaded == 1) {
-            // Process LSTM based on input_size (snapshot model or conditioned model)
-            if (plugin->LSTM.input_size == 1) {
-                plugin->LSTM.process(plugin->in, plugin->out_1, n_samples);
-            }
-            else if (plugin->LSTM.input_size == 2) {
-                plugin->LSTM.process(plugin->in, param1, plugin->out_1, n_samples);
-            }
-            else if (plugin->LSTM.input_size == 3) {
-                plugin->LSTM.process(plugin->in, param1, param2, plugin->out_1, n_samples);
+            // Process model based on input_size (snapshot model or conditioned model)
+            switch(plugin->input_size) {
+                case 1:
+                    for(i=0; i<n_samples; i++) {
+                        plugin->out_1[i] = plugin->model->forward(plugin->in + i) + plugin->in[i];
+                        plugin->out_1[i] *= plugin->calcGain(master, master_old, n_samples, i);
+                    }
+                    break;
+                case 2:
+                    for(i=0; i<n_samples; i++) {
+                        plugin->inArray1[0] = plugin->in[i];
+                        plugin->inArray1[1] = param1;
+                        plugin->out_1[i] = plugin->model->forward(plugin->inArray1) + plugin->in[i];
+                        plugin->out_1[i] *= plugin->calcGain(master, master_old, n_samples, i);
+                    }
+                    break;
+                case 3:
+                    for(i=0; i<n_samples; i++) {
+                        plugin->inArray2[0] = plugin->in[i];
+                        plugin->inArray2[1] = param1;
+                        plugin->inArray2[2] = param2;
+                        plugin->out_1[i] = plugin->model->forward(plugin->inArray2) + plugin->in[i];
+                        plugin->out_1[i] *= plugin->calcGain(master, master_old, n_samples, i);
+                    }
+                    break;
+                default:
+                    break;
             }
             // @TODO: volume normalization may be useful when switching between models!
             // @TODO: some offset may be present at neural network output, original code
@@ -212,12 +237,6 @@ void RtNeuralGeneric::run(LV2_Handle instance, uint32_t n_samples)
     else
     {
         std::copy(plugin->in, plugin->in + n_samples, plugin->out_1); // Passthrough
-    }
-
-    // Apply master gain setting with a ramp to avoid zypper noise
-    for(int i=0; i<n_samples; i++) {
-        tmp = plugin->out_1[i];
-        plugin->out_1[i] = (master_old + ((master - master_old)/n_samples) * i) * tmp;
     }
 }
 
