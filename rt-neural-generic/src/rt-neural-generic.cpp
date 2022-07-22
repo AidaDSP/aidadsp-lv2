@@ -45,9 +45,15 @@ void RtNeuralGeneric::loadModel(LV2_Handle instance, const char *bundle_path, co
 
     try {
         std::ifstream jsonStream(filePath, std::ifstream::binary);
-        plugin->model = RTNeural::json_parser::parseJson<float>(jsonStream, true);
+        //nlohmann::json modelData;
+        //jsonStream >> modelData;
+        //plugin->model = RTNeural::json_parser::parseJson<float>(jsonStream, true);
+        plugin->model.parseJson(jsonStream, true);
 
-        plugin->input_size = plugin->model->layers[0]->in_size;
+        //plugin->input_size = plugin->model.layers[0]->in_size; /* @TODO: gives private access error in this context */
+        //plugin->input_size = modelData["in_shape"].back().get<int>();
+        plugin->input_size = 1;
+        //plugin->hidden_size = modelData["layers"] at (1)["shape"].back().get<int>();
 
         // If we are good: let's say so
         plugin->model_loaded = 1;
@@ -69,12 +75,18 @@ LV2_Handle RtNeuralGeneric::instantiate(const LV2_Descriptor* descriptor, double
 {
     RtNeuralGeneric *plugin = new RtNeuralGeneric();
 
-    // Load lstm model json file
-    plugin->loadModel((LV2_Handle)plugin, bundle_path, LSTM_MODEL_JSON_FILE_NAME);
+    // Load model json file
+    plugin->loadModel((LV2_Handle)plugin, bundle_path, JSON_MODEL_FILE_NAME);
 
     // Before running inference, it is recommended to "reset" the state
     // of your model (if the model has state).
-    plugin->model->reset();
+    plugin->model.reset();
+
+    // Pre-buffer to avoid "clicks" during initialization
+    float in[2048] = { };
+    for(int i=0; i<2048; i++) {
+        plugin->model.forward(in + i);
+    }
 
     plugin->bypass_old = 0;
 
