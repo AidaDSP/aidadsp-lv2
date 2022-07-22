@@ -12,7 +12,7 @@
 /**********************************************************************************************************************************************************/
 
 #define PLUGIN_URI "http://aidadsp.cc/plugins/aidadsp-bundle/rt-neural-generic"
-#define LSTM_MODEL_JSON_FILE_NAME "lstm-model.json"
+#define JSON_MODEL_FILE_NAME "model.json"
 enum {IN, OUT_1, PARAM1, PARAM2, MASTER, BYPASS, PLUGIN_PORT_COUNT};
 
 /**********************************************************************************************************************************************************/
@@ -42,10 +42,27 @@ public:
     // The input vector size for the model
     // 1 is for a snap shot model otherwise is a conditioned model
     int input_size = 0;
+    int hidden_size = 0;
     static void loadModel(LV2_Handle instance, const char *bundle_path, const char *fileName);
 
 private:
-    std::unique_ptr<RTNeural::Model<float>> model;
+    /* Dynamic: whatever json model but very slow performance */
+    //std::unique_ptr<RTNeural::Model<float>> model;
+
+    /* LSTM 12 */
+    RTNeural::ModelT<float, 1, 1,
+        RTNeural::LSTMLayerT<float, 1, 12>,
+        RTNeural::DenseT<float, 12, 1>> model;
+
+    /* LSTM 16 */
+    /*RTNeural::ModelT<float, 1, 1,
+        RTNeural::LSTMLayerT<float, 1, 16>,
+        RTNeural::DenseT<float, 16, 1>> model;*/
+
+    /* GRU 8 */
+    /*RTNeural::ModelT<float, 1, 1,
+        RTNeural::GRULayerT<float, 1, 8>,
+        RTNeural::DenseT<float, 8, 1>> model;*/
 
     // Pre-Allowcate arrays for feeding the models
     float inArray1 alignas(RTNEURAL_DEFAULT_ALIGNMENT)[2] = { 0.0, 0.0 };
