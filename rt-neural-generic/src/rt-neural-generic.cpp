@@ -165,7 +165,7 @@ void RtNeuralGeneric::run(LV2_Handle instance, uint32_t n_samples)
             switch(plugin->input_size) {
                 case 1:
                     for(i=0; i<n_samples; i++) {
-                        plugin->out_1[i] = plugin->model->forward(plugin->in + i) + plugin->in[i];
+                        plugin->out_1[i] = plugin->model.forward(plugin->in + i);
                         plugin->out_1[i] *= plugin->calcGain(master, master_old, n_samples, i);
                     }
                     break;
@@ -173,7 +173,7 @@ void RtNeuralGeneric::run(LV2_Handle instance, uint32_t n_samples)
                     for(i=0; i<n_samples; i++) {
                         plugin->inArray1[0] = plugin->in[i];
                         plugin->inArray1[1] = param1;
-                        plugin->out_1[i] = plugin->model->forward(plugin->inArray1) + plugin->in[i];
+                        plugin->out_1[i] = plugin->model.forward(plugin->inArray1);
                         plugin->out_1[i] *= plugin->calcGain(master, master_old, n_samples, i);
                     }
                     break;
@@ -182,7 +182,7 @@ void RtNeuralGeneric::run(LV2_Handle instance, uint32_t n_samples)
                         plugin->inArray2[0] = plugin->in[i];
                         plugin->inArray2[1] = param1;
                         plugin->inArray2[2] = param2;
-                        plugin->out_1[i] = plugin->model->forward(plugin->inArray2) + plugin->in[i];
+                        plugin->out_1[i] = plugin->model.forward(plugin->inArray2);
                         plugin->out_1[i] *= plugin->calcGain(master, master_old, n_samples, i);
                     }
                     break;
