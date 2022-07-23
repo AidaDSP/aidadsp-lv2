@@ -49,10 +49,15 @@ private:
     /* Dynamic: whatever json model but very slow performance */
     //std::unique_ptr<RTNeural::Model<float>> model;
 
+    /* LSTM 16 input_size = 2 */
+    RTNeural::ModelT<float, 2, 1,
+        RTNeural::LSTMLayerT<float, 2, 16>,
+        RTNeural::DenseT<float, 16, 1>> model;
+
     /* LSTM 12 */
-    RTNeural::ModelT<float, 1, 1,
+    /*RTNeural::ModelT<float, 1, 1,
         RTNeural::LSTMLayerT<float, 1, 12>,
-        RTNeural::DenseT<float, 12, 1>> model;
+        RTNeural::DenseT<float, 12, 1>> model;*/
 
     /* LSTM 16 */
     /*RTNeural::ModelT<float, 1, 1,

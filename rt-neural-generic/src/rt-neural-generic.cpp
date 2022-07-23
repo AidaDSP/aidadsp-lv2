@@ -52,7 +52,7 @@ void RtNeuralGeneric::loadModel(LV2_Handle instance, const char *bundle_path, co
 
         //plugin->input_size = plugin->model.layers[0]->in_size; /* @TODO: gives private access error in this context */
         //plugin->input_size = modelData["in_shape"].back().get<int>();
-        plugin->input_size = 1;
+        plugin->input_size = 2;
         //plugin->hidden_size = modelData["layers"] at (1)["shape"].back().get<int>();
 
         // If we are good: let's say so
