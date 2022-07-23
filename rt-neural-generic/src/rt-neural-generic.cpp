@@ -24,9 +24,9 @@ const LV2_Descriptor* lv2_descriptor(uint32_t index)
 
 /**********************************************************************************************************************************************************/
 
-// Apply gain setting with a ramp to avoid zypper noise
-float RtNeuralGeneric::calcGain(float gain, float gain_old, uint32_t n_samples, uint32_t index) {
-    return (gain_old + ((gain - gain_old)/n_samples) * index);
+// Apply a ramp to the value to avoid zypper noise
+float RtNeuralGeneric::rampValue(float value_new, float value_old, uint32_t n_samples, uint32_t index) {
+    return (value_old + ((value_new - value_old)/n_samples) * index);
 }
 
 /**********************************************************************************************************************************************************/
@@ -166,7 +166,7 @@ void RtNeuralGeneric::run(LV2_Handle instance, uint32_t n_samples)
                 case 1:
                     for(i=0; i<n_samples; i++) {
                         plugin->out_1[i] = plugin->model.forward(plugin->in + i);
-                        plugin->out_1[i] *= plugin->calcGain(master, master_old, n_samples, i);
+                        plugin->out_1[i] *= plugin->rampValue(master, master_old, n_samples, i);
                     }
                     break;
                 case 2:
@@ -174,7 +174,7 @@ void RtNeuralGeneric::run(LV2_Handle instance, uint32_t n_samples)
                         plugin->inArray1[0] = plugin->in[i];
                         plugin->inArray1[1] = param1;
                         plugin->out_1[i] = plugin->model.forward(plugin->inArray1);
-                        plugin->out_1[i] *= plugin->calcGain(master, master_old, n_samples, i);
+                        plugin->out_1[i] *= plugin->rampValue(master, master_old, n_samples, i);
                     }
                     break;
                 case 3:
@@ -183,7 +183,7 @@ void RtNeuralGeneric::run(LV2_Handle instance, uint32_t n_samples)
                         plugin->inArray2[1] = param1;
                         plugin->inArray2[2] = param2;
                         plugin->out_1[i] = plugin->model.forward(plugin->inArray2);
-                        plugin->out_1[i] *= plugin->calcGain(master, master_old, n_samples, i);
+                        plugin->out_1[i] *= plugin->rampValue(master, master_old, n_samples, i);
                     }
                     break;
                 default:

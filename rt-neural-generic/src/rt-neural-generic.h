@@ -73,5 +73,5 @@ private:
     float inArray1 alignas(RTNEURAL_DEFAULT_ALIGNMENT)[2] = { 0.0, 0.0 };
     float inArray2 alignas(RTNEURAL_DEFAULT_ALIGNMENT)[3] = { 0.0, 0.0, 0.0 };
 
-    static float calcGain(float gain, float gain_old, uint32_t n_samples, uint32_t index);
+    static float rampValue(float value_new, float value_old, uint32_t n_samples, uint32_t index);
 };
