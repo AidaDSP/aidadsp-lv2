@@ -45,15 +45,25 @@ void RtNeuralGeneric::loadModel(LV2_Handle instance, const char *bundle_path, co
 
     try {
         std::ifstream jsonStream(filePath, std::ifstream::binary);
-        //nlohmann::json modelData;
-        //jsonStream >> modelData;
-        //plugin->model = RTNeural::json_parser::parseJson<float>(jsonStream, true);
+        std::ifstream jsonStream2(filePath, std::ifstream::binary);
+        nlohmann::json modelData;
+        jsonStream2 >> modelData;
         plugin->model.parseJson(jsonStream, true);
 
-        //plugin->input_size = plugin->model.layers[0]->in_size; /* @TODO: gives private access error in this context */
-        //plugin->input_size = modelData["in_shape"].back().get<int>();
-        plugin->input_size = 2;
-        //plugin->hidden_size = modelData["layers"] at (1)["shape"].back().get<int>();
+        plugin->n_layers = modelData["layers"].size();
+        plugin->input_size = modelData["in_shape"].back().get<int>();
+
+        if (modelData["in_skip"].is_number()) {
+            plugin->input_skip = modelData["in_skip"].get<int>();
+            if (plugin->input_skip > 1)
+                throw std::invalid_argument("Values for in_skip > 1 are not supported");
+        }
+        else {
+            plugin->input_skip = 0;
+        }
+
+        plugin->type = modelData["layers"][plugin->n_layers-1]["type"];
+        plugin->hidden_size = modelData["layers"][plugin->n_layers-1]["shape"].back().get<int>();
 
         // If we are good: let's say so
         plugin->model_loaded = 1;
@@ -165,7 +175,7 @@ void RtNeuralGeneric::run(LV2_Handle instance, uint32_t n_samples)
             switch(plugin->input_size) {
                 case 1:
                     for(i=0; i<n_samples; i++) {
-                        plugin->out_1[i] = plugin->model.forward(plugin->in + i);
+                        plugin->out_1[i] = plugin->model.forward(plugin->in + i) + (plugin->in[i] * plugin->input_skip);
                         plugin->out_1[i] *= plugin->rampValue(master, master_old, n_samples, i);
                     }
                     break;
@@ -173,7 +183,7 @@ void RtNeuralGeneric::run(LV2_Handle instance, uint32_t n_samples)
                     for(i=0; i<n_samples; i++) {
                         plugin->inArray1[0] = plugin->in[i];
                         plugin->inArray1[1] = param1;
-                        plugin->out_1[i] = plugin->model.forward(plugin->inArray1);
+                        plugin->out_1[i] = plugin->model.forward(plugin->inArray1) + (plugin->in[i] * plugin->input_skip);
                         plugin->out_1[i] *= plugin->rampValue(master, master_old, n_samples, i);
                     }
                     break;
@@ -182,7 +192,7 @@ void RtNeuralGeneric::run(LV2_Handle instance, uint32_t n_samples)
                         plugin->inArray2[0] = plugin->in[i];
                         plugin->inArray2[1] = param1;
                         plugin->inArray2[2] = param2;
-                        plugin->out_1[i] = plugin->model.forward(plugin->inArray2);
+                        plugin->out_1[i] = plugin->model.forward(plugin->inArray2) + (plugin->in[i] * plugin->input_skip);
                         plugin->out_1[i] *= plugin->rampValue(master, master_old, n_samples, i);
                     }
                     break;
