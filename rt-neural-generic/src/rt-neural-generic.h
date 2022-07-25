@@ -39,10 +39,14 @@ public:
     int bypass_old;
 
     int model_loaded = 0;
+    // The number of layers in the nn model
+    int n_layers = 0;
     // The input vector size for the model
     // 1 is for a snap shot model otherwise is a conditioned model
     int input_size = 0;
-    int hidden_size = 0;
+    int input_skip = 0; /* Means the model has been trained with input elements skipped to the output */
+    std::string type; /* The type of the first layer of a nn composed by two hidden layers (e.g., LSTM, GRU) */
+    int hidden_size = 0; /* The hidden size of the above layer */
     static void loadModel(LV2_Handle instance, const char *bundle_path, const char *fileName);
 
 private:
