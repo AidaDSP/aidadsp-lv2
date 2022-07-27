@@ -50,5 +50,5 @@ install (DIRECTORY ../models
 )
 
 install (FILES ../models/SIMPLE-RNN/48kHz/LSTM-12/ArchetypePliniElectricSunriseRiff.json
-  DESTINATION ${LV2_INSTALL_DIR} RENAME lstm-model.json
+  DESTINATION ${LV2_INSTALL_DIR} RENAME model.json
 )
