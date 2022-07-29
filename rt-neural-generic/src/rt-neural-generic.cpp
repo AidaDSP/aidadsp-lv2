@@ -25,8 +25,8 @@ const LV2_Descriptor* lv2_descriptor(uint32_t index)
 /**********************************************************************************************************************************************************/
 
 // Apply a ramp to the value to avoid zypper noise
-float RtNeuralGeneric::rampValue(float value_new, float value_old, uint32_t n_samples, uint32_t index) {
-    return (value_old + ((value_new - value_old)/n_samples) * index);
+float RtNeuralGeneric::rampValue(float start, float end, uint32_t n_samples, uint32_t index) {
+    return (start + ((end - start)/n_samples) * index);
 }
 
 /**********************************************************************************************************************************************************/
@@ -97,6 +97,16 @@ LV2_Handle RtNeuralGeneric::instantiate(const LV2_Descriptor* descriptor, double
     for(int i=0; i<2048; i++) {
         plugin->model.forward(in + i);
     }
+
+    // Setup fixed frequency dc blocker filter (high pass)
+    plugin->dc_blocker_fp.nType        = lsp::dspu::FLT_BT_RLC_HIPASS;
+    plugin->dc_blocker_fp.fFreq        = 35.0f;
+    plugin->dc_blocker_fp.fGain        = 1;
+    plugin->dc_blocker_fp.nSlope       = 1;
+    plugin->dc_blocker_fp.fQuality     = 0.0f;
+
+    plugin->dc_blocker_f.init(NULL);   // Use own internal filter bank
+    plugin->dc_blocker_f.update(samplerate, &plugin->dc_blocker_fp); // Apply filter settings
 
     plugin->bypass_old = 0;
 
@@ -176,7 +186,7 @@ void RtNeuralGeneric::run(LV2_Handle instance, uint32_t n_samples)
                 case 1:
                     for(i=0; i<n_samples; i++) {
                         plugin->out_1[i] = plugin->model.forward(plugin->in + i) + (plugin->in[i] * plugin->input_skip);
-                        plugin->out_1[i] *= plugin->rampValue(master, master_old, n_samples, i);
+                        plugin->out_1[i] *= plugin->rampValue(master_old, master, n_samples, i);
                     }
                     break;
                 case 2:
@@ -184,7 +194,7 @@ void RtNeuralGeneric::run(LV2_Handle instance, uint32_t n_samples)
                         plugin->inArray1[0] = plugin->in[i];
                         plugin->inArray1[1] = param1;
                         plugin->out_1[i] = plugin->model.forward(plugin->inArray1) + (plugin->in[i] * plugin->input_skip);
-                        plugin->out_1[i] *= plugin->rampValue(master, master_old, n_samples, i);
+                        plugin->out_1[i] *= plugin->rampValue(master_old, master, n_samples, i);
                     }
                     break;
                 case 3:
@@ -193,15 +203,13 @@ void RtNeuralGeneric::run(LV2_Handle instance, uint32_t n_samples)
                         plugin->inArray2[1] = param1;
                         plugin->inArray2[2] = param2;
                         plugin->out_1[i] = plugin->model.forward(plugin->inArray2) + (plugin->in[i] * plugin->input_skip);
-                        plugin->out_1[i] *= plugin->rampValue(master, master_old, n_samples, i);
+                        plugin->out_1[i] *= plugin->rampValue(master_old, master, n_samples, i);
                     }
                     break;
                 default:
                     break;
             }
-            // @TODO: volume normalization may be useful when switching between models!
-            // @TODO: some offset may be present at neural network output, original code
-            // add a dc block filter in this position
+            plugin->dc_blocker_f.process(plugin->out_1, plugin->in, n_samples);
         }
     }
     else

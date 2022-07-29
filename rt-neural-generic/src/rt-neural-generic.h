@@ -9,6 +9,10 @@
 #include <iostream>
 #include <RTNeural/RTNeural.h>
 
+#include <lsp-plug.in/dsp/dsp.h>
+#include <lsp-plug.in/dsp-units/units.h>
+#include <lsp-plug.in/dsp-units/filters/Filter.h>
+
 /**********************************************************************************************************************************************************/
 
 #define PLUGIN_URI "http://aidadsp.cc/plugins/aidadsp-bundle/rt-neural-generic"
@@ -38,6 +42,9 @@ public:
     int *bypass;
     int bypass_old;
 
+    static void loadModel(LV2_Handle instance, const char *bundle_path, const char *fileName);
+
+private:
     int model_loaded = 0;
     // The number of layers in the nn model
     int n_layers = 0;
@@ -47,9 +54,10 @@ public:
     int input_skip = 0; /* Means the model has been trained with input elements skipped to the output */
     std::string type; /* The type of the first layer of a nn composed by two hidden layers (e.g., LSTM, GRU) */
     int hidden_size = 0; /* The hidden size of the above layer */
-    static void loadModel(LV2_Handle instance, const char *bundle_path, const char *fileName);
 
-private:
+    lsp::dspu::Filter dc_blocker_f;
+    lsp::dspu::filter_params_t dc_blocker_fp;
+
     /* Dynamic: whatever json model but very slow performance */
     //std::unique_ptr<RTNeural::Model<float>> model;
 
@@ -77,5 +85,5 @@ private:
     float inArray1 alignas(RTNEURAL_DEFAULT_ALIGNMENT)[2] = { 0.0, 0.0 };
     float inArray2 alignas(RTNEURAL_DEFAULT_ALIGNMENT)[3] = { 0.0, 0.0, 0.0 };
 
-    static float rampValue(float value_new, float value_old, uint32_t n_samples, uint32_t index);
+    static float rampValue(float start, float end, uint32_t n_samples, uint32_t index);
 };
