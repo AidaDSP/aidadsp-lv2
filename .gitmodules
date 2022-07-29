@@ -1,3 +1,6 @@
 [submodule "modules/RTNeural"]
 	path = modules/RTNeural
 	url = https://github.com/jatinchowdhury18/RTNeural
+[submodule "modules/lsp-dsp-units"]
+	path = modules/lsp-dsp-units
+	url = https://github.com/MaxPayne86/lsp-dsp-units.git
