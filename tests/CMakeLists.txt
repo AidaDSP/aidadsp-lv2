@@ -18,7 +18,7 @@ message("RTNEURAL_XSIMD in ${CMAKE_PROJECT_NAME} = ${RTNEURAL_XSIMD}")
 # add external libraries
 add_subdirectory(../modules/RTNeural ${CMAKE_CURRENT_BINARY_DIR}/RTNeural)
 
-# config executable
+# configure executable
 add_executable(test-rtneural
   src/test_rtneural.cpp
 )
@@ -46,7 +46,7 @@ ExternalProject_Add(lsp-dsp-units-build
 add_library(lsp-dsp-units STATIC IMPORTED)
 set_target_properties(lsp-dsp-units PROPERTIES IMPORTED_LOCATION ${CMAKE_CURRENT_BINARY_DIR}/lsp-dsp-units/usr/local/lib/liblsp-dsp-units-1.0.3.a)
 
-# config executable
+# configure executable
 add_executable(test-lsp
   src/test_lsp.cpp
 )
