@@ -81,7 +81,7 @@ private:
         RTNeural::LSTMLayerT<float, 2, 16>,
         RTNeural::DenseT<float, 16, 1>> model;
 
-    // Pre-Allowcate arrays for feeding the models
+    // Pre-allocate arrays for feeding the models
     float inArray1 alignas(RTNEURAL_DEFAULT_ALIGNMENT)[2] = { 0.0, 0.0 };
     float inArray2 alignas(RTNEURAL_DEFAULT_ALIGNMENT)[3] = { 0.0, 0.0, 0.0 };
 
