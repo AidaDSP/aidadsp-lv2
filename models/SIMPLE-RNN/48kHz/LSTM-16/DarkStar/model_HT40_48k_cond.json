@@ -4,6 +4,7 @@
         null,
         2
     ],
+    "in_skip": 1,
     "layers": [
         {
             "type": "lstm",
