@@ -17,7 +17,7 @@
 
 #define PLUGIN_URI "http://aidadsp.cc/plugins/aidadsp-bundle/rt-neural-generic"
 #define JSON_MODEL_FILE_NAME "model.json"
-enum {IN, OUT_1, PARAM1, PARAM2, MASTER, BYPASS, PLUGIN_PORT_COUNT};
+typedef enum ports_t {IN, OUT_1, PARAM1, PARAM2, MASTER, BYPASS, PLUGIN_PORT_COUNT} ports;
 
 /**********************************************************************************************************************************************************/
 
