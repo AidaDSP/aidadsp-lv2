@@ -221,9 +221,9 @@ void RtNeuralGeneric::run(LV2_Handle instance, uint32_t n_samples)
                     break;
             }
 
-            lsp::dsp::start(&plugin->ctx);
+            lsp::dsp::start(&ctx);
             plugin->dc_blocker_f.process(plugin->out_1, plugin->out_1, n_samples);
-            lsp::dsp::finish(&plugin->ctx);
+            lsp::dsp::finish(&ctx);
             applyGainRamp(plugin->out_1, master_old, master, n_samples); // Master volume
         }
     }
