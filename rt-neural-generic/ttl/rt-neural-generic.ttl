@@ -83,6 +83,5 @@ lv2:port
     lv2:default 0;
     lv2:minimum 0;
     lv2:maximum 1;
-    lv2:portProperty lv2:integer;
     lv2:portProperty lv2:toggled;
 ].

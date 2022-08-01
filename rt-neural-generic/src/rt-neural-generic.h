@@ -39,8 +39,8 @@ public:
     float *param2;
     float *master;
     float master_old;
-    int *bypass;
-    int bypass_old;
+    float *bypass;
+    float bypass_old;
 
     static void loadModel(LV2_Handle instance, const char *bundle_path, const char *fileName);
 

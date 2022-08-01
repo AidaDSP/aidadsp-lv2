@@ -164,7 +164,7 @@ void RtNeuralGeneric::connect_port(LV2_Handle instance, uint32_t port, void *dat
             plugin->master = (float*) data;
             break;
         case BYPASS:
-            plugin->bypass = (int*) data;
+            plugin->bypass = (float*) data;
             break;
     }
 }
@@ -180,7 +180,7 @@ void RtNeuralGeneric::run(LV2_Handle instance, uint32_t n_samples)
 
     float param1 = *plugin->param1;
     float param2 = *plugin->param2;
-    int bypass = *plugin->bypass; // NOTE: since float 1.0 is sent instead of (int 32bit) 1, then we have 1065353216 as 1
+    float bypass = *plugin->bypass;
     float master, master_old, tmp;
     uint32_t i;
 
