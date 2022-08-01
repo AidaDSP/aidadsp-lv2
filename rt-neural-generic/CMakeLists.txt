@@ -95,6 +95,6 @@ install (DIRECTORY ../models
   DESTINATION ${LV2_INSTALL_DIR}
 )
 
-install (FILES ../models/SIMPLE-RNN/48kHz/LSTM-12/ArchetypePliniElectricSunriseRiff.json
+install (FILES ../models/SIMPLE-RNN/48kHz/LSTM-12/NeuralDSP_Archetype-Plini/ElectricSunriseRiff.json
   DESTINATION ${LV2_INSTALL_DIR} RENAME model.json
 )
