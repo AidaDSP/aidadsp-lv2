@@ -72,18 +72,19 @@ private:
         RTNeural::DenseT<float, 24, 1>> model;*/
 
     /* LSTM 12 */
-    RTNeural::ModelT<float, 1, 1,
+    /*RTNeural::ModelT<float, 1, 1,
         RTNeural::LSTMLayerT<float, 1, 12>,
-        RTNeural::DenseT<float, 12, 1>> model;
+        RTNeural::DenseT<float, 12, 1>> model;*/
 
     /* LSTM 16 */
-    /*RTNeural::ModelT<float, 1, 1,
-        RTNeural::LSTMLayerT<float, 1, 16>,
-        RTNeural::DenseT<float, 16, 1>> model;*/
+    RTNeural::ModelT<float, 2, 1,
+        RTNeural::LSTMLayerT<float, 2, 16>,
+        RTNeural::DenseT<float, 16, 1>> model;
 
     // Pre-Allowcate arrays for feeding the models
     float inArray1 alignas(RTNEURAL_DEFAULT_ALIGNMENT)[2] = { 0.0, 0.0 };
     float inArray2 alignas(RTNEURAL_DEFAULT_ALIGNMENT)[3] = { 0.0, 0.0, 0.0 };
 
     static float rampValue(float start, float end, uint32_t n_samples, uint32_t index);
+    static void applyGainRamp(float *buffer, float start, float end, uint32_t n_samples);
 };

@@ -31,6 +31,16 @@ float RtNeuralGeneric::rampValue(float start, float end, uint32_t n_samples, uin
 
 /**********************************************************************************************************************************************************/
 
+// Apply a gain ramp to a buffer
+void RtNeuralGeneric::applyGainRamp(float *buffer, float start, float end, uint32_t n_samples) {
+    static uint32_t i;
+    for(i=0; i<n_samples; i++) {
+        buffer[i] *= rampValue(start, end, n_samples, i);
+    }
+}
+
+/**********************************************************************************************************************************************************/
+
 void RtNeuralGeneric::loadModel(LV2_Handle instance, const char *bundle_path, const char *fileName)
 {
     RtNeuralGeneric *plugin;
@@ -106,7 +116,9 @@ LV2_Handle RtNeuralGeneric::instantiate(const LV2_Descriptor* descriptor, double
     plugin->dc_blocker_fp.fQuality     = 0.0f;
 
     plugin->dc_blocker_f.init(NULL);   // Use own internal filter bank
-    plugin->dc_blocker_f.update(samplerate, &plugin->dc_blocker_fp); // Apply filter settings
+    plugin->dc_blocker_f.update(samplerate, &(plugin->dc_blocker_fp)); // Apply filter settings
+
+    lsp::dsp::init();
 
     plugin->bypass_old = 0;
 
@@ -164,6 +176,8 @@ void RtNeuralGeneric::run(LV2_Handle instance, uint32_t n_samples)
     RtNeuralGeneric *plugin;
     plugin = (RtNeuralGeneric *) instance;
 
+    lsp::dsp::context_t ctx;
+
     float param1 = *plugin->param1;
     float param2 = *plugin->param2;
     int bypass = *plugin->bypass; // NOTE: since float 1.0 is sent instead of (int 32bit) 1, then we have 1065353216 as 1
@@ -186,7 +200,6 @@ void RtNeuralGeneric::run(LV2_Handle instance, uint32_t n_samples)
                 case 1:
                     for(i=0; i<n_samples; i++) {
                         plugin->out_1[i] = plugin->model.forward(plugin->in + i) + (plugin->in[i] * plugin->input_skip);
-                        plugin->out_1[i] *= plugin->rampValue(master_old, master, n_samples, i);
                     }
                     break;
                 case 2:
@@ -194,7 +207,6 @@ void RtNeuralGeneric::run(LV2_Handle instance, uint32_t n_samples)
                         plugin->inArray1[0] = plugin->in[i];
                         plugin->inArray1[1] = param1;
                         plugin->out_1[i] = plugin->model.forward(plugin->inArray1) + (plugin->in[i] * plugin->input_skip);
-                        plugin->out_1[i] *= plugin->rampValue(master_old, master, n_samples, i);
                     }
                     break;
                 case 3:
@@ -203,13 +215,16 @@ void RtNeuralGeneric::run(LV2_Handle instance, uint32_t n_samples)
                         plugin->inArray2[1] = param1;
                         plugin->inArray2[2] = param2;
                         plugin->out_1[i] = plugin->model.forward(plugin->inArray2) + (plugin->in[i] * plugin->input_skip);
-                        plugin->out_1[i] *= plugin->rampValue(master_old, master, n_samples, i);
                     }
                     break;
                 default:
                     break;
             }
-            plugin->dc_blocker_f.process(plugin->out_1, plugin->in, n_samples);
+
+            lsp::dsp::start(&plugin->ctx);
+            plugin->dc_blocker_f.process(plugin->out_1, plugin->out_1, n_samples);
+            lsp::dsp::finish(&plugin->ctx);
+            applyGainRamp(plugin->out_1, master_old, master, n_samples); // Master volume
         }
     }
     else
