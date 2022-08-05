@@ -8,7 +8,15 @@
 <http://aidadsp.cc/plugins/aidadsp-bundle/rt-neural-generic>
 a lv2:Plugin, lv2:UtilityPlugin;
 
-doap:name "rt-neural-generic";
+<http://aidadsp.cc/plugins/aidadsp-bundle/rt-neural-generic#json>
+    a lv2:Parameter ;
+    mod:fileTypes "neuralmodel" ;
+    rdfs:label "Neural Model" ;
+    rdfs:range atom:Path .
+
+<http://aidadsp.cc/plugins/aidadsp-bundle/rt-neural-generic>
+    a lv2:Plugin, lv2:SimulatorPlugin;
+    doap:name "rt-neural-generic";
 
 doap:developer [
     foaf:name "Aida DSP";
@@ -26,7 +34,7 @@ mod:label "rt-neural-generic";
 doap:license "GPL";
 
 rdfs:comment """
-Simple player for lstm models using RTNeural inference engine
+Simple loader for neural models using RTNeural inference engine
 """;
 
 lv2:port
@@ -84,4 +92,26 @@ lv2:port
     lv2:minimum 0;
     lv2:maximum 1;
     lv2:portProperty lv2:toggled;
+],
+[
+    a lv2:InputPort, atom:AtomPort;
+    lv2:index 6;
+    atom:bufferType atom:Sequence;
+    atom:supports patch:Message;
+    lv2:designation lv2:control;
+    lv2:symbol "control";
+    lv2:name "Control";
+],
+[
+    a lv2:OutputPort, atom:AtomPort;
+    lv2:index 7;
+    atom:bufferType atom:Sequence;
+    atom:supports patch:Message;
+    lv2:designation lv2:control;
+    lv2:symbol "notify";
+    lv2:name "Notify";
+];
+
+state:state [
+    <http://aidadsp.cc/plugins/aidadsp-bundle/rt-neural-generic#json> <MoonJazz.json>
 ].
