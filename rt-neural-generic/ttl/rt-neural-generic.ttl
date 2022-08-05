@@ -1,12 +1,16 @@
-@prefix doap:  <http://usefulinc.com/ns/doap#>.
-@prefix foaf:  <http://xmlns.com/foaf/0.1/>.
-@prefix lv2:   <http://lv2plug.in/ns/lv2core#>.
-@prefix mod:   <http://moddevices.com/ns/mod#>.
-@prefix rdfs:  <http://www.w3.org/2000/01/rdf-schema#>.
+@prefix atom:  <http://lv2plug.in/ns/ext/atom#> .
+@prefix doap:  <http://usefulinc.com/ns/doap#> .
+@prefix lv2:   <http://lv2plug.in/ns/lv2core#> .
+@prefix patch: <http://lv2plug.in/ns/ext/patch#> .
+@prefix rdfs:  <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix state: <http://lv2plug.in/ns/ext/state#> .
+@prefix urid:  <http://lv2plug.in/ns/ext/urid#> .
+@prefix work:  <http://lv2plug.in/ns/ext/worker#> .
+@prefix param: <http://lv2plug.in/ns/ext/parameters#> .
+@prefix foaf: <http://xmlns.com/foaf/0.1/>.
+@prefix mod: <http://moddevices.com/ns/mod#>.
+@prefix bsize:  <http://lv2plug.in/ns/ext/buf-size#>.
 @prefix units: <http://lv2plug.in/ns/extensions/units#> .
-
-<http://aidadsp.cc/plugins/aidadsp-bundle/rt-neural-generic>
-a lv2:Plugin, lv2:UtilityPlugin;
 
 <http://aidadsp.cc/plugins/aidadsp-bundle/rt-neural-generic#json>
     a lv2:Parameter ;
@@ -15,8 +19,15 @@ a lv2:Plugin, lv2:UtilityPlugin;
     rdfs:range atom:Path .
 
 <http://aidadsp.cc/plugins/aidadsp-bundle/rt-neural-generic>
-    a lv2:Plugin, lv2:SimulatorPlugin;
-    doap:name "rt-neural-generic";
+    a lv2:Plugin, lv2:SimulatorPlugin ;
+    doap:name "rt-neural-generic" ;
+    lv2:optionalFeature lv2:hardRTCapable ;
+
+doap:license "GPL";
+
+rdfs:comment """
+Simple loader for neural models using RTNeural inference engine
+""";
 
 doap:developer [
     foaf:name "Aida DSP";
@@ -28,15 +39,21 @@ doap:maintainer [
     foaf:homepage <http://aidadsp.cc>;
 ];
 
-mod:brand "Aida DSP";
-mod:label "rt-neural-generic";
+lv2:minorVersion 1;
+lv2:microVersion 0;
 
-doap:license "GPL";
+#mod:brand "Aida DSP";
+#mod:label "rt-neural-generic";
 
-rdfs:comment """
-Simple loader for neural models using RTNeural inference engine
-""";
-
+doap:license <http://opensource.org/licenses/isc> ;
+lv2:project <http://lv2plug.in/ns/lv2>;
+lv2:requiredFeature urid:map ,
+    work:schedule ;
+lv2:optionalFeature lv2:hardRTCapable ,
+    state:loadDefaultState ;
+lv2:extensionData state:interface ,
+    work:interface ;
+patch:writable <http://aidadsp.cc/plugins/aidadsp-bundle/rt-neural-generic#json>;
 lv2:port
 [
     a lv2:AudioPort, lv2:InputPort;
