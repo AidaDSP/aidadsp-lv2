@@ -155,6 +155,7 @@ void RtNeuralGeneric::run(LV2_Handle instance, uint32_t n_samples)
     master_old = self->master_old;
     self->master_old = master;
 
+#ifdef PROCESS_ATOM_MESSAGES
     /*++++++++ READ ATOM MESSAGES ++++++++*/
     // Set up forge to write directly to notify output port.
     const uint32_t notify_capacity = self->notify_port->atom.size;
@@ -203,6 +204,7 @@ void RtNeuralGeneric::run(LV2_Handle instance, uint32_t n_samples)
         }
     }
     /*++++++++ END READ ATOM MESSAGES ++++++++*/
+#endif
 
     /*++++++++ AUDIO DSP ++++++++*/
     if (bypass != self->bypass_old) {
@@ -295,14 +297,14 @@ LV2_State_Status RtNeuralGeneric::restore(LV2_Handle instance,
         const char* path = (const char*)value;
         self->loadModel(instance, path); // Load model json file
         if (!self->model_loaded) {
-            std::cout << "Error! " << __func__ << " " << __LINE__ << std::endl;
+            std::cout << "Error loading model: " << path << std::endl;
             return LV2_STATE_ERR_UNKNOWN;
         } else {
             self->model_loading = 0; // Unlock model usage in dsp
         }
     }
 
-    std::cout << "Success! " << __func__ << " " << __LINE__ << std::endl;
+    std::cout << "Successfully loaded model: " << path << std::endl;
     return LV2_STATE_SUCCESS;
 }
 

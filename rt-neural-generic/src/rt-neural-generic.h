@@ -28,7 +28,7 @@
 
 /**********************************************************************************************************************************************************/
 
-#define JSON_MODEL_FILE_NAME "model.json"
+#define PROCESS_ATOM_MESSAGES
 typedef enum ports_t {IN, OUT_1, PARAM1, PARAM2, MASTER, BYPASS, PLUGIN_CONTROL, PLUGIN_NOTIFY, PLUGIN_PORT_COUNT} ports;
 
 typedef struct {
