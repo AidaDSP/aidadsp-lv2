@@ -78,7 +78,7 @@ LV2_Handle RtNeuralGeneric::instantiate(const LV2_Descriptor* descriptor, double
     self->dc_blocker_fp.nSlope       = 1;
     self->dc_blocker_fp.fQuality     = 0.0f;
 
-    self->dc_blocker_f.init(NULL);   // Use own internal filter bank
+    self->dc_blocker_f.init(NULL); // Use own internal filter bank
     self->dc_blocker_f.update(samplerate, &(self->dc_blocker_fp)); // Apply filter settings
 
     lsp::dsp::init();
@@ -89,7 +89,6 @@ LV2_Handle RtNeuralGeneric::instantiate(const LV2_Descriptor* descriptor, double
     /* No pending notifications */
     self->model_new = 0;
 
-    /* Signal no model in use yet */
     self->path_len = 0;
 
     return (LV2_Handle)self;
