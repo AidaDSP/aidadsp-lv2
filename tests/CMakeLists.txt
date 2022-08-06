@@ -2,7 +2,7 @@
 
 cmake_minimum_required(VERSION 3.15)
 
-project (tests)
+project(tests)
 
 option(RTNEURAL_ENABLE_AARCH64 "Use specific cxxflags and ldflags for aarch64" OFF)
 if(RTNEURAL_ENABLE_AARCH64)
@@ -24,8 +24,8 @@ add_executable(test-rtneural
 )
 
 # include and link directories
-include_directories (test-rtneural ./src ../modules/RTNeural ../modules/RTNeural/modules/json)
-link_directories (test-rtneural ./src ../modules/RTNeural ../modules/RTNeural/modules/json)
+include_directories(test-rtneural ./src ../modules/RTNeural ../modules/RTNeural/modules/json)
+link_directories(test-rtneural ./src ../modules/RTNeural ../modules/RTNeural/modules/json)
 
 # configure target
 target_link_libraries(test-rtneural RTNeural)
@@ -55,7 +55,7 @@ add_executable(test-lsp
 add_dependencies(test-lsp lsp-dsp-units-build)
 
 # include and link directories
-include_directories (test-lsp
+include_directories(test-lsp
     ./src
     ../modules/lsp-dsp-units/include
     ../modules/lsp-dsp-units/modules/lsp-dsp-lib/include
@@ -64,7 +64,7 @@ include_directories (test-lsp
     ../modules/lsp-dsp-units/modules/lsp-runtime-lib/include
     ../modules/lsp-dsp-units/modules/lsp-lltl-lib/include)
 
-link_directories (test-lsp ./src ${CMAKE_CURRENT_BINARY_DIR}/lsp-dsp-units/usr/local/lib)
+link_directories(test-lsp ./src ${CMAKE_CURRENT_BINARY_DIR}/lsp-dsp-units/usr/local/lib)
 
 find_library(LIBSNDFILE_LIBRARY
     NAMES sndfile libsndfile-1
