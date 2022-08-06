@@ -24,7 +24,7 @@ const LV2_Descriptor* lv2_descriptor(uint32_t index)
 
 /**********************************************************************************************************************************************************/
 
-// Apply a ramp to the value to avoid zypper noise
+// Ramp calculation
 float RtNeuralGeneric::rampValue(float start, float end, uint32_t n_samples, uint32_t index) {
     return (start + ((end - start)/n_samples) * index);
 }
