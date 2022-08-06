@@ -57,7 +57,6 @@ public:
     float *master;
     float master_old;
     float *bypass;
-    float bypass_old;
 
     static LV2_State_Status restore(LV2_Handle instance,
                                        LV2_State_Retrieve_Function retrieve,

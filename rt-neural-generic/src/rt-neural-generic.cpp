@@ -83,8 +83,6 @@ LV2_Handle RtNeuralGeneric::instantiate(const LV2_Descriptor* descriptor, double
 
     lsp::dsp::init();
 
-    self->bypass_old = 0;
-
     /* Prevent audio thread to use the model */
     self->model_loaded = 0;
 
@@ -232,11 +230,6 @@ void RtNeuralGeneric::run(LV2_Handle instance, uint32_t n_samples)
 #endif
 
     /*++++++++ AUDIO DSP ++++++++*/
-    if (bypass != self->bypass_old) {
-        std::cout << "Bypass status changed to: " << bypass << std::endl;
-        self->bypass_old = bypass;
-    }
-
     if (bypass == 0 && self->model_loaded == 1) {
         // Process model based on input_size (snapshot model or conditioned model)
         switch(self->input_size) {
