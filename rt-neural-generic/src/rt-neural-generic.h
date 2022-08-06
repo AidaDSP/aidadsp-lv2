@@ -89,7 +89,7 @@ public:
     LV2_Log_Logger logger;
 
     // Model json file path
-    char* path; // Path of file
+    const char* path; // Path of file
     uint32_t path_len; // Length of path
 
     // Ports
@@ -111,7 +111,6 @@ private:
     double samplerate;
 
     int model_loaded; // Used for prevent audio thread to use model if not ready
-    int model_new; // This flag is used to respond to get request
 
     // The number of layers in the nn model
     int n_layers;

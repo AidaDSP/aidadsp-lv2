@@ -87,7 +87,9 @@ LV2_Handle RtNeuralGeneric::instantiate(const LV2_Descriptor* descriptor, double
 
     /* Prevent audio thread to use the model */
     self->model_loaded = 0;
-    self->model_new = 0;
+
+    /* Signal no model in use yet */
+    self->path_len = 0;
 
     return (LV2_Handle)self;
 }
@@ -185,11 +187,11 @@ void RtNeuralGeneric::run(LV2_Handle instance, uint32_t n_samples)
                         uris->patch_value,    &value,
                         0);
                 if (!property) {
-                    lv2_log_error(&self->logger,
+                    lv2_log_trace(&self->logger,
                         "patch:Set message with no property\n");
                     continue;
                 } else if (property->type != uris->atom_URID) {
-                    lv2_log_error(&self->logger,
+                    lv2_log_trace(&self->logger,
                         "patch:Set property is not a URID\n");
                     continue;
                 }
@@ -198,7 +200,7 @@ void RtNeuralGeneric::run(LV2_Handle instance, uint32_t n_samples)
                 if (key == uris->json) {
                     // Json model file change, send it to the worker.
                     lv2_log_trace(&self->logger, "Queueing set message\n");
-                    self->model_loaded = 0; // This is stopping access to model in dsp code below
+                    self->model_loaded = 0; // Stop model access in dsp code below
                     self->schedule->schedule_work(self->schedule->handle,
                                                     lv2_atom_total_size(&ev->body),
                                                     &ev->body);
@@ -211,16 +213,6 @@ void RtNeuralGeneric::run(LV2_Handle instance, uint32_t n_samples)
             lv2_log_trace(&self->logger,
                 "Unknown event type %d\n", ev->body.type);
         }
-    }
-
-    if(self->model_new)
-    {
-        lv2_log_trace(&self->logger, "Responding to get request\n");
-        lv2_atom_forge_frame_time(&self->forge, self->frame_offset);
-        write_set_file(&self->forge, &self->uris,
-                                self->path,
-                                self->path_len);
-        self->model_new = 0;
     }
     /*++++++++ END READ ATOM MESSAGES ++++++++*/
 #endif
@@ -293,6 +285,10 @@ const void* RtNeuralGeneric::extension_data(const char* uri)
 
 /**********************************************************************************************************************************************************/
 
+/**
+    This function is invoked during startup, after RtNeuralGeneric::instantiate
+    or whenever a state is restored
+*/
 LV2_State_Status RtNeuralGeneric::restore(LV2_Handle instance,
     LV2_State_Retrieve_Function retrieve,
     LV2_State_Handle            handle,
@@ -314,7 +310,7 @@ LV2_State_Status RtNeuralGeneric::restore(LV2_Handle instance,
     if (value) {
         const char* path = (const char*)value;
         lv2_log_note(&self->logger, "Restoring file %s\n", path);
-        res = self->loadModel(instance, path); // Load model json file
+        res = self->loadModel(instance, path);
         if (res) {
             lv2_log_error(&self->logger, "File %s couldn't be loaded\n", path);
             return LV2_STATE_ERR_UNKNOWN;
@@ -336,7 +332,7 @@ LV2_State_Status RtNeuralGeneric::save(LV2_Handle instance,
 {
     RtNeuralGeneric *self = (RtNeuralGeneric*) instance;
 
-    if (self->path != NULL) {
+    if (!self->model_loaded) {
         return LV2_STATE_SUCCESS;
     }
 
@@ -381,26 +377,20 @@ LV2_Worker_Status RtNeuralGeneric::work(LV2_Handle instance,
     int res;
 
     const LV2_Atom* atom = (const LV2_Atom*)data;
-    if (atom->type == self->uris.freeJson) {
-        const PluginResponseMessage* msg = (const PluginResponseMessage*)data;
-        lv2_log_note(&self->logger, "Freeing: %s\n", msg->path);
-        free(msg->path);
-    } else {
-        // Handle set message (load ir).
-        const LV2_Atom_Object* obj = (const LV2_Atom_Object*)data;
 
-        // Get file path from message
-        const LV2_Atom* file_path = read_set_file(&self->uris, obj);
-        if (!file_path) {
-            return LV2_WORKER_ERR_UNKNOWN;
-        }
+    // Handle set message (load json).
+    const LV2_Atom_Object* obj = (const LV2_Atom_Object*)data;
 
-        // Load model
-        res = self->loadModel(instance, (const char*)(LV2_ATOM_BODY_CONST(file_path))); // Load model json file
-        if (!res) {
-            // Loaded model, send it to run() to be applied.
-            respond(handle, file_path->size, LV2_ATOM_BODY_CONST(file_path));
-        }
+    // Get file path from message
+    const LV2_Atom* file_path = read_set_file(&self->uris, obj);
+    if (!file_path) {
+        return LV2_WORKER_ERR_UNKNOWN;
+    }
+
+    res = self->loadModel(instance, (const char*)(LV2_ATOM_BODY_CONST(file_path)));
+    if (!res) {
+        // Model is ready, send response to run() to enable dsp.
+        respond(handle, file_path->size, LV2_ATOM_BODY_CONST(file_path));
     }
 
     return LV2_WORKER_SUCCESS;
@@ -419,27 +409,21 @@ LV2_Worker_Status RtNeuralGeneric::work_response(LV2_Handle instance, uint32_t s
 {
     RtNeuralGeneric *self = (RtNeuralGeneric*) instance;
 
-    PluginResponseMessage msg = { { sizeof(self->path), self->uris.freeJson }, self->path };
-
-    // Send a message to the worker to free the current json model
-    self->schedule->schedule_work(self->schedule->handle, sizeof(msg), &msg);
-
-    // Install the new model
-    lv2_log_trace(&self->logger, "Installing: %s\n", (char*)data);
-    self->path = (char*)data;
-
-    self->model_loaded = 1; // Unlock model usage in dsp
-    self->model_new = 1; // Notify audio thread to send response to get request
+    self->model_loaded = 1; // Enable dsp in next run() iteration
 
     return LV2_WORKER_SUCCESS;
 }
 
 /**********************************************************************************************************************************************************/
 
+/**
+    This function loads a pre-trained neural model from a json file
+*/
 int RtNeuralGeneric::loadModel(LV2_Handle instance, const char *path)
 {
     RtNeuralGeneric *self = (RtNeuralGeneric*) instance;
 
+    self->path = path;
     self->path_len = strlen(path);
 
     std::string filePath;

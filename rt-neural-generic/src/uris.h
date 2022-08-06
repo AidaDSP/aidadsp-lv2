@@ -26,7 +26,6 @@
 #define PLUGIN_URI "http://aidadsp.cc/plugins/aidadsp-bundle/rt-neural-generic"
 #define PLUGIN__json PLUGIN_URI "#json"
 #define PLUGIN__applyJson PLUGIN_URI "#applyJson"
-#define PLUGIN__freeJson  PLUGIN_URI "#freeJson"
 
 typedef struct {
     LV2_URID atom_Float;
@@ -37,7 +36,6 @@ typedef struct {
     LV2_URID atom_eventTransfer;
     LV2_URID applyJson;
     LV2_URID json;
-    LV2_URID freeJson;
     LV2_URID midi_Event;
     LV2_URID param_gain;
     LV2_URID patch_Get;
@@ -56,7 +54,6 @@ map_plugin_uris(LV2_URID_Map* map, PluginURIs* uris)
     uris->atom_URID                = map->map(map->handle, LV2_ATOM__URID);
     uris->atom_eventTransfer       = map->map(map->handle, LV2_ATOM__eventTransfer);
     uris->applyJson                = map->map(map->handle, PLUGIN__applyJson);
-    uris->freeJson                 = map->map(map->handle, PLUGIN__freeJson);
     uris->json                     = map->map(map->handle, PLUGIN__json);
     uris->midi_Event               = map->map(map->handle, LV2_MIDI__MidiEvent);
     uris->param_gain               = map->map(map->handle, LV2_PARAMETERS__gain);
