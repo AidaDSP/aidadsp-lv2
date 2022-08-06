@@ -88,6 +88,9 @@ LV2_Handle RtNeuralGeneric::instantiate(const LV2_Descriptor* descriptor, double
     /* Prevent audio thread to use the model */
     self->model_loaded = 0;
 
+    /* No pending notifications */
+    self->model_new = 0;
+
     /* Signal no model in use yet */
     self->path_len = 0;
 
@@ -213,6 +216,17 @@ void RtNeuralGeneric::run(LV2_Handle instance, uint32_t n_samples)
             lv2_log_trace(&self->logger,
                 "Unknown event type %d\n", ev->body.type);
         }
+    }
+
+    if(self->model_new)
+    {
+        /* We send a notification we're using a new model */
+        lv2_log_trace(&self->logger, "New model in use\n");
+        lv2_atom_forge_frame_time(&self->forge, self->frame_offset);
+        write_set_file(&self->forge, &self->uris,
+                                        self->path,
+                                        self->path_len);
+        self->model_new = 0;
     }
     /*++++++++ END READ ATOM MESSAGES ++++++++*/
 #endif
@@ -410,6 +424,7 @@ LV2_Worker_Status RtNeuralGeneric::work_response(LV2_Handle instance, uint32_t s
     RtNeuralGeneric *self = (RtNeuralGeneric*) instance;
 
     self->model_loaded = 1; // Enable dsp in next run() iteration
+    self->model_new = 1; // Pending notification
 
     return LV2_WORKER_SUCCESS;
 }

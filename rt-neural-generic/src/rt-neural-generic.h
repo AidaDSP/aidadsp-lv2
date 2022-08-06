@@ -111,6 +111,7 @@ private:
     double samplerate;
 
     int model_loaded; // Used for prevent audio thread to use model if not ready
+    int model_new; // Used to send a small notification when model is changed
 
     // The number of layers in the nn model
     int n_layers;
