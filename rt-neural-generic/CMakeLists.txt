@@ -2,7 +2,7 @@
 
 cmake_minimum_required(VERSION 3.15)
 
-project (rt-neural-generic)
+project(rt-neural-generic)
 
 option(RTNEURAL_ENABLE_AARCH64 "Use specific cxxflags and ldflags for aarch64" OFF)
 if(RTNEURAL_ENABLE_AARCH64)
@@ -55,7 +55,7 @@ add_library(rt-neural-generic SHARED
 add_dependencies(rt-neural-generic lsp-dsp-units-build)
 
 # include and link directories
-include_directories (rt-neural-generic
+include_directories(rt-neural-generic
     ./src
     ${LV2_INCLUDE_DIRS}
     ../modules/RTNeural/modules/json
@@ -67,7 +67,7 @@ include_directories (rt-neural-generic
     ../modules/lsp-dsp-units/modules/lsp-runtime-lib/include
     ../modules/lsp-dsp-units/modules/lsp-lltl-lib/include)
 
-link_directories (rt-neural-generic
+link_directories(rt-neural-generic
     ./src
     ${LV2_LIBRARY_DIRS}
     ../modules/RTNeural
@@ -88,11 +88,11 @@ install(TARGETS rt-neural-generic
   DESTINATION ${LV2_INSTALL_DIR}
 )
 
-install (DIRECTORY ttl/
+install(DIRECTORY ttl/
   DESTINATION ${LV2_INSTALL_DIR}
 )
 
-install (DIRECTORY ../models
+install(DIRECTORY ../models
   DESTINATION ${LV2_INSTALL_DIR}
 )
 
