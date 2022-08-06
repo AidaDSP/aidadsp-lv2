@@ -77,6 +77,7 @@ link_directories (rt-neural-generic
 # configure target
 target_compile_definitions(rt-neural-generic PUBLIC)
 target_link_libraries(rt-neural-generic ${LV2_LIBRARIES} RTNeural lsp-dsp-units ${CMAKE_DL_LIBS} Threads::Threads ${LIBSNDFILE_LIBRARY})
+set_target_properties(rt-neural-generic PROPERTIES PREFIX "")
 
 # setup install dir
 set(LV2_INSTALL_DIR ${DESTDIR}${PREFIX}/rt-neural-generic.lv2)
