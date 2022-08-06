@@ -75,7 +75,7 @@ public:
                                        uint32_t                    size,
                                        const void*                 data);
     static LV2_Worker_Status work_response(LV2_Handle instance, uint32_t size, const void* data);
-    static void loadModel(LV2_Handle instance, const char *path);
+    static int loadModel(LV2_Handle instance, const char *path);
 
     // Features
     LV2_URID_Map*        map;
@@ -89,7 +89,8 @@ public:
     LV2_Log_Logger logger;
 
     // Model json file path
-    char* path;
+    char* path; // Path of file
+    uint32_t path_len; // Length of path
 
     // Ports
     const LV2_Atom_Sequence* control_port;
@@ -109,17 +110,17 @@ public:
 private:
     double samplerate;
 
-    int model_loading = 1; // This is used as a signal between run and work threads
-    int model_loaded = 0; // This returns the status of json model file load
+    int model_loaded; // Used for prevent audio thread to use model if not ready
+    int model_new; // This flag is used to respond to get request
 
     // The number of layers in the nn model
-    int n_layers = 0;
+    int n_layers;
     // The input vector size for the model
     // 1 is for a snap shot model otherwise is a conditioned model
-    int input_size = 0;
-    int input_skip = 0; /* Means the model has been trained with input elements skipped to the output */
+    int input_size;
+    int input_skip; /* Means the model has been trained with first input element skipped to the output */
     std::string type; /* The type of the first layer of a nn composed by two hidden layers (e.g., LSTM, GRU) */
-    int hidden_size = 0; /* The hidden size of the above layer */
+    int hidden_size; /* The hidden size of the above layer */
 
     lsp::dspu::Filter dc_blocker_f;
     lsp::dspu::filter_params_t dc_blocker_fp;
