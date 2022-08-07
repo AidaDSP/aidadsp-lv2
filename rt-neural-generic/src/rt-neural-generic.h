@@ -20,9 +20,7 @@
 #include <iostream>
 #include <RTNeural/RTNeural.h>
 
-#include <lsp-plug.in/dsp/dsp.h>
-#include <lsp-plug.in/dsp-units/units.h>
-#include <lsp-plug.in/dsp-units/filters/Filter.h>
+#include <Biquad.h>
 
 #include "uris.h"
 
@@ -121,8 +119,7 @@ private:
     std::string type; /* The type of the first layer of a nn composed by two hidden layers (e.g., LSTM, GRU) */
     int hidden_size; /* The hidden size of the above layer */
 
-    lsp::dspu::Filter dc_blocker_f;
-    lsp::dspu::filter_params_t dc_blocker_fp;
+    Biquad *dc_blocker;
 
     /* Dynamic: whatever json model but very slow performance */
     //std::unique_ptr<RTNeural::Model<float>> model;
@@ -153,4 +150,5 @@ private:
 
     static float rampValue(float start, float end, uint32_t n_samples, uint32_t index);
     static void applyGainRamp(float *buffer, float start, float end, uint32_t n_samples);
+    static void applyBiquadFilter(float *buffer, Biquad *filter, uint32_t n_samples);
 };

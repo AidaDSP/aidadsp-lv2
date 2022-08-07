@@ -41,6 +41,15 @@ void RtNeuralGeneric::applyGainRamp(float *buffer, float start, float end, uint3
 
 /**********************************************************************************************************************************************************/
 
+void RtNeuralGeneric::applyBiquadFilter(float *buffer, Biquad *filter, uint32_t n_samples) {
+    static uint32_t i;
+    for(i=0; i<n_samples; i++) {
+        buffer[i] = filter->process(buffer[i]);
+    }
+}
+
+/**********************************************************************************************************************************************************/
+
 LV2_Handle RtNeuralGeneric::instantiate(const LV2_Descriptor* descriptor, double samplerate, const char* bundle_path, const LV2_Feature* const* features)
 {
     RtNeuralGeneric *self = new RtNeuralGeneric();
@@ -72,16 +81,7 @@ LV2_Handle RtNeuralGeneric::instantiate(const LV2_Descriptor* descriptor, double
     lv2_log_logger_init(&self->logger, self->map, self->log);
 
     // Setup fixed frequency dc blocker filter (high pass)
-    self->dc_blocker_fp.nType        = lsp::dspu::FLT_BT_RLC_HIPASS;
-    self->dc_blocker_fp.fFreq        = 35.0f;
-    self->dc_blocker_fp.fGain        = 1;
-    self->dc_blocker_fp.nSlope       = 1;
-    self->dc_blocker_fp.fQuality     = 0.0f;
-
-    self->dc_blocker_f.init(NULL); // Use own internal filter bank
-    self->dc_blocker_f.update(samplerate, &(self->dc_blocker_fp)); // Apply filter settings
-
-    lsp::dsp::init();
+    self->dc_blocker = new Biquad(bq_type_highpass, 35.0f / samplerate, 0.707, 0.0);
 
     /* Prevent audio thread to use the model */
     self->model_loaded = 0;
@@ -149,8 +149,6 @@ void RtNeuralGeneric::run(LV2_Handle instance, uint32_t n_samples)
 {
     RtNeuralGeneric *self = (RtNeuralGeneric*) instance;
     PluginURIs* uris   = &self->uris;
-
-    lsp::dsp::context_t ctx;
 
     float param1 = *self->param1;
     float param2 = *self->param2;
@@ -255,10 +253,7 @@ void RtNeuralGeneric::run(LV2_Handle instance, uint32_t n_samples)
             default:
                 break;
         }
-
-        lsp::dsp::start(&ctx);
-        self->dc_blocker_f.process(self->out_1, self->out_1, n_samples);
-        lsp::dsp::finish(&ctx);
+        applyBiquadFilter(self->out_1, self->dc_blocker, n_samples);
         applyGainRamp(self->out_1, master_old, master, n_samples); // Master volume
     }
     else
