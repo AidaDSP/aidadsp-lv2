@@ -1,11 +1,11 @@
 /*
   This file taken from the LV2 ImpulseResponser Example Plugin
   Copyright 2011-2012 David Robillard <d@drobilla.net>
-  
+
   Permission to use, copy, modify, and/or distribute this software for any
   purpose with or without fee is hereby granted, provided that the above
   copyright notice and this permission notice appear in all copies.
-  
+
   THIS SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
   WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
   MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
@@ -13,10 +13,10 @@
   WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
   ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
   OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
-*/
 
-#ifndef PLUGIN_URIS_H
-#define PLUGIN_URIS_H
+  Modified August 2022 by Massimo Pennazio maxipenna@libero.it
+*/
+#pragma once
 
 #include "lv2/lv2plug.in/ns/ext/log/log.h"
 #include "lv2/lv2plug.in/ns/ext/midi/midi.h"
@@ -79,14 +79,14 @@ write_set_file(LV2_Atom_Forge*    forge,
     LV2_Atom_Forge_Frame frame;
     LV2_Atom* set = (LV2_Atom*)lv2_atom_forge_object(
                 forge, &frame, 0, uris->patch_Set);
-    
+
     lv2_atom_forge_key(forge, uris->patch_property);
     lv2_atom_forge_urid(forge, uris->json);
     lv2_atom_forge_key(forge, uris->patch_value);
     lv2_atom_forge_path(forge, filename, filename_len + 1);
-    
+
     lv2_atom_forge_pop(forge, &frame);
-    
+
     return set;
 }
 
@@ -98,7 +98,7 @@ read_set_file(const PluginURIs*     uris,
         fprintf(stderr, "Ignoring unknown message type %d\n", obj->body.otype);
         return NULL;
     }
-    
+
     /* Get property URI. */
     const LV2_Atom* property = NULL;
     lv2_atom_object_get(obj, uris->patch_property, &property, 0);
@@ -112,7 +112,7 @@ read_set_file(const PluginURIs*     uris,
         fprintf(stderr, "Set message for unknown property.\n");
         return NULL;
     }
-    
+
     /* Get value. */
     const LV2_Atom* file_path = NULL;
     lv2_atom_object_get(obj, uris->patch_value, &file_path, 0);
@@ -123,8 +123,6 @@ read_set_file(const PluginURIs*     uris,
         fprintf(stderr, "Set message value is not a Path.\n");
         return NULL;
     }
-    
+
     return file_path;
 }
-
-#endif  /* PLUGIN_URIS_H */
