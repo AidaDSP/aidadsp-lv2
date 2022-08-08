@@ -32,19 +32,63 @@ float RtNeuralGeneric::rampValue(float start, float end, uint32_t n_samples, uin
 /**********************************************************************************************************************************************************/
 
 // Apply a gain ramp to a buffer
-void RtNeuralGeneric::applyGainRamp(float *buffer, float start, float end, uint32_t n_samples) {
+void RtNeuralGeneric::applyGainRamp(float *out, const float *in, float start, float end, uint32_t n_samples) {
     static uint32_t i;
     for(i=0; i<n_samples; i++) {
-        buffer[i] *= rampValue(start, end, n_samples, i);
+        out[i] = in[i] * rampValue(start, end, n_samples, i);
     }
 }
 
 /**********************************************************************************************************************************************************/
 
-void RtNeuralGeneric::applyBiquadFilter(float *buffer, Biquad *filter, uint32_t n_samples) {
+void RtNeuralGeneric::applyBiquadFilter(float *out, const float *in, Biquad *filter, uint32_t n_samples) {
     static uint32_t i;
     for(i=0; i<n_samples; i++) {
-        buffer[i] = filter->process(buffer[i]);
+        out[i] = filter->process(in[i]);
+    }
+}
+
+/**********************************************************************************************************************************************************/
+
+/**
+ * This function carries model calculations for snapshot models
+ */
+void RtNeuralGeneric::applyModel(float *out, const float *in, LV2_Handle instance, uint32_t n_samples)
+{
+    RtNeuralGeneric *self = (RtNeuralGeneric*) instance;
+    for(uint32_t i=0; i<n_samples; i++) {
+        out[i] = self->model.forward(in + i) + (in[i] * self->input_skip);
+    }
+}
+
+/**********************************************************************************************************************************************************/
+
+/**
+ * This function carries model calculations for conditioned models with single param
+ */
+void RtNeuralGeneric::applyModel(float *out, const float *in, float param1, LV2_Handle instance, uint32_t n_samples)
+{
+    RtNeuralGeneric *self = (RtNeuralGeneric*) instance;
+    for(uint32_t i=0; i<n_samples; i++) {
+        self->inArray1[0] = in[i];
+        self->inArray1[1] = param1;
+        out[i] = self->model.forward(self->inArray1) + (in[i] * self->input_skip);
+    }
+}
+
+/**********************************************************************************************************************************************************/
+
+/**
+ * This function carries model calculations for conditioned models with two params
+ */
+void RtNeuralGeneric::applyModel(float *out, const float *in, float param1, float param2, LV2_Handle instance, uint32_t n_samples)
+{
+    RtNeuralGeneric *self = (RtNeuralGeneric*) instance;
+    for(uint32_t i=0; i<n_samples; i++) {
+        self->inArray2[0] = in[i];
+        self->inArray2[1] = param1;
+        self->inArray2[2] = param2;
+        out[i] = self->model.forward(self->inArray2) + (in[i] * self->input_skip);
     }
 }
 
@@ -122,6 +166,9 @@ void RtNeuralGeneric::connect_port(LV2_Handle instance, uint32_t port, void *dat
         case OUT_1:
             self->out_1 = (float*) data;
             break;
+        case IN_VOL:
+            self->in_vol_db = (float*) data;
+            break;
         case PARAM1:
             self->param1 = (float*) data;
             break;
@@ -129,7 +176,7 @@ void RtNeuralGeneric::connect_port(LV2_Handle instance, uint32_t port, void *dat
             self->param2 = (float*) data;
             break;
         case MASTER:
-            self->master = (float*) data;
+            self->master_db = (float*) data;
             break;
         case BYPASS:
             self->bypass = (float*) data;
@@ -150,13 +197,17 @@ void RtNeuralGeneric::run(LV2_Handle instance, uint32_t n_samples)
     RtNeuralGeneric *self = (RtNeuralGeneric*) instance;
     PluginURIs* uris   = &self->uris;
 
+    float in_vol, in_vol_old;
     float param1 = *self->param1;
     float param2 = *self->param2;
+    float master, master_old;
     float bypass = *self->bypass;
-    float master, master_old, tmp;
-    uint32_t i;
 
-    master = *self->master;
+    in_vol = DB_CO(*self->in_vol_db);
+    in_vol_old = self->in_vol_old;
+    self->in_vol_old = in_vol;
+
+    master = DB_CO(*self->master_db);
     master_old = self->master_old;
     self->master_old = master;
 
@@ -228,33 +279,23 @@ void RtNeuralGeneric::run(LV2_Handle instance, uint32_t n_samples)
 
     /*++++++++ AUDIO DSP ++++++++*/
     if (bypass == 0 && self->model_loaded == 1) {
+        applyGainRamp(self->out_1, self->in, in_vol_old, in_vol, n_samples); // Input volume
         // Process model based on input_size (snapshot model or conditioned model)
         switch(self->input_size) {
             case 1:
-                for(i=0; i<n_samples; i++) {
-                    self->out_1[i] = self->model.forward(self->in + i) + (self->in[i] * self->input_skip);
-                }
+                applyModel(self->out_1, self->out_1, instance, n_samples);
                 break;
             case 2:
-                for(i=0; i<n_samples; i++) {
-                    self->inArray1[0] = self->in[i];
-                    self->inArray1[1] = param1;
-                    self->out_1[i] = self->model.forward(self->inArray1) + (self->in[i] * self->input_skip);
-                }
+                applyModel(self->out_1, self->out_1, param1, instance, n_samples);
                 break;
             case 3:
-                for(i=0; i<n_samples; i++) {
-                    self->inArray2[0] = self->in[i];
-                    self->inArray2[1] = param1;
-                    self->inArray2[2] = param2;
-                    self->out_1[i] = self->model.forward(self->inArray2) + (self->in[i] * self->input_skip);
-                }
+                applyModel(self->out_1, self->out_1, param1, param2, instance, n_samples);
                 break;
             default:
                 break;
         }
-        applyBiquadFilter(self->out_1, self->dc_blocker, n_samples);
-        applyGainRamp(self->out_1, master_old, master, n_samples); // Master volume
+        applyBiquadFilter(self->out_1, self->out_1, self->dc_blocker, n_samples); // Dc blocker filter (highpass)
+        applyGainRamp(self->out_1, self->out_1, master_old, master, n_samples); // Master volume
     }
     else
     {
@@ -287,9 +328,9 @@ const void* RtNeuralGeneric::extension_data(const char* uri)
 /**********************************************************************************************************************************************************/
 
 /**
-    This function is invoked during startup, after RtNeuralGeneric::instantiate
-    or whenever a state is restored
-*/
+ * This function is invoked during startup, after RtNeuralGeneric::instantiate
+ * or whenever a state is restored
+ */
 LV2_State_Status RtNeuralGeneric::restore(LV2_Handle instance,
     LV2_State_Retrieve_Function retrieve,
     LV2_State_Handle            handle,
@@ -362,12 +403,11 @@ LV2_State_Status RtNeuralGeneric::save(LV2_Handle instance,
 /**********************************************************************************************************************************************************/
 
 /**
-    Do work in a non-realtime thread.
-
-    This is called for every piece of work scheduled in the audio thread using
-    self->schedule->schedule_work(). A reply can be sent back to the audio
-    thread using the provided respond function.
-*/
+ * Do work in a non-realtime thread.
+ * This is called for every piece of work scheduled in the audio thread using
+ * self->schedule->schedule_work(). A reply can be sent back to the audio
+ * thread using the provided respond function. 
+ */
 LV2_Worker_Status RtNeuralGeneric::work(LV2_Handle instance,
     LV2_Worker_Respond_Function respond,
     LV2_Worker_Respond_Handle   handle,
@@ -400,11 +440,11 @@ LV2_Worker_Status RtNeuralGeneric::work(LV2_Handle instance,
 /**********************************************************************************************************************************************************/
 
 /**
-    Handle a response from work() in the audio thread.
-
-    When running normally, this will be called by the host after run().  When
-    freewheeling, this will be called immediately at the point the work was
-    scheduled.
+ * Handle a response from work() in the audio thread.
+ *
+ * When running normally, this will be called by the host after run().  When
+ * freewheeling, this will be called immediately at the point the work was
+ * scheduled.
 */
 LV2_Worker_Status RtNeuralGeneric::work_response(LV2_Handle instance, uint32_t size, const void* data)
 {
@@ -419,7 +459,7 @@ LV2_Worker_Status RtNeuralGeneric::work_response(LV2_Handle instance, uint32_t s
 /**********************************************************************************************************************************************************/
 
 /**
-    This function loads a pre-trained neural model from a json file
+ * This function loads a pre-trained neural model from a json file
 */
 int RtNeuralGeneric::loadModel(LV2_Handle instance, const char *path)
 {

@@ -16,7 +16,6 @@
 #include <lv2/lv2plug.in/ns/ext/worker/worker.h>
 #include <lv2/lv2plug.in/ns/lv2core/lv2.h>
 
-
 #include <iostream>
 #include <RTNeural/RTNeural.h>
 
@@ -26,13 +25,16 @@
 
 /**********************************************************************************************************************************************************/
 
-#define PROCESS_ATOM_MESSAGES
-typedef enum ports_t {IN, OUT_1, PARAM1, PARAM2, MASTER, BYPASS, PLUGIN_CONTROL, PLUGIN_NOTIFY, PLUGIN_PORT_COUNT} ports;
+typedef enum ports_t {IN, OUT_1, IN_VOL, PARAM1, PARAM2, MASTER, BYPASS, PLUGIN_CONTROL, PLUGIN_NOTIFY, PLUGIN_PORT_COUNT} ports;
 
+#define PROCESS_ATOM_MESSAGES
 typedef struct {
     LV2_Atom atom;
     char*  path;
 } PluginResponseMessage;
+
+/* Define a macro for converting a gain in dB to a coefficient */
+#define DB_CO(g) ((g) > -90.0f ? powf(10.0f, (g) * 0.05f) : 0.0f)
 
 /**********************************************************************************************************************************************************/
 
@@ -50,9 +52,11 @@ public:
     static const void* extension_data(const char* uri);
     float *in;
     float *out_1;
+    float *in_vol_db;
+    float in_vol_old;
     float *param1;
     float *param2;
-    float *master;
+    float *master_db;
     float master_old;
     float *bypass;
 
@@ -149,6 +153,9 @@ private:
     float inArray2 alignas(RTNEURAL_DEFAULT_ALIGNMENT)[3] = { 0.0, 0.0, 0.0 };
 
     static float rampValue(float start, float end, uint32_t n_samples, uint32_t index);
-    static void applyGainRamp(float *buffer, float start, float end, uint32_t n_samples);
-    static void applyBiquadFilter(float *buffer, Biquad *filter, uint32_t n_samples);
+    static void applyGainRamp(float *out, const float *in, float start, float end, uint32_t n_samples);
+    static void applyBiquadFilter(float *out, const float *in, Biquad *filter, uint32_t n_samples);
+    static void applyModel(float *out, const float *in, LV2_Handle instance, uint32_t n_samples);
+    static void applyModel(float *out, const float *in, float param1, LV2_Handle instance, uint32_t n_samples);
+    static void applyModel(float *out, const float *in, float param1, float param2, LV2_Handle instance, uint32_t n_samples);
 };
