@@ -12,24 +12,16 @@
 
 #### rt-neural-lv2 ####
 
-It's a simple headless lv2 plugin inspired by
+It's a simple headless lv2 plugin that leverages [RTNeural](https://github.com/jatinchowdhury18/RTNeural.git) to model
+pedals or amps.
 
-- [NeuralPi](https://github.com/GuitarML/NeuralPi)
-- [RTNeural](https://github.com/jatinchowdhury18/RTNeural.git)
-
-This lv2 plugin is a simple wrapper to inference classes used in NeuralPi project. All
-the credits go to the original authors.
-
-I've decided to implement this plugin to be able to compile original NeuralPi plugin without JUCE
-and also to eliminate every additional effect that has been added during time.
-
-__*WIP: currently this plugin is under work since CPU consumption is not acceptable, come back later!*__
+- This plugin supports json model files loading via specific atom messages
 
 ##### Generate json models #####
 
 This implies neural network training. Please follow __*Automated_GuitarAmpModelling.ipynb*__ script available on
 
-- [my Automated-GuitarAmpModelling fork](https://github.com/MaxPayne86/Automated-GuitarAmpModelling/tree/aidadsp_devel)
+- [Automated-GuitarAmpModelling](https://github.com/MaxPayne86/Automated-GuitarAmpModelling/tree/aidadsp_devel)
 
 ##### Dataset #####
 
