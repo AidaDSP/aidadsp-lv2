@@ -42,8 +42,8 @@ doap:maintainer [
 lv2:minorVersion 1;
 lv2:microVersion 0;
 
-#mod:brand "Aida DSP";
-#mod:label "rt-neural-generic";
+mod:brand "Aida DSP";
+mod:label "rt-neural-generic";
 
 doap:license <http://opensource.org/licenses/isc> ;
 lv2:project <http://lv2plug.in/ns/lv2>;
