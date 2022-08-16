@@ -34,6 +34,7 @@ Since I was not satisfied with dataset proposed by orignal authors I've put toge
 Below a guide on how to cross compile this bundle with [aidadsp sdk](https://drive.google.com/drive/folders/1-AAfAP-FAddCw0LJuvzsW8m_1lWHKXaV?usp=sharing).
 You can extract cmake commands to fit your build system.
 
+- RTNEURAL_ENABLE_AARCH64 specific option for aarch64 builds
 - RTNEURAL_XSIMD=ON or RTNEURAL_EIGEN=ON to select an available backend for RTNeural library
 
 for other options see [RTNeural](https://github.com/jatinchowdhury18/RTNeural.git) project.
@@ -43,7 +44,7 @@ for other options see [RTNeural](https://github.com/jatinchowdhury18/RTNeural.gi
 3. source environment-setup-aarch64-poky-linux
 4. git clone https://github.com/AidaDSP/aidadsp-lv2.git && cd aidadsp-lv2
 5. mkdir build && cd build
-6. cmake -DCMAKE_BUILD_TYPE=Release -DRTNEURAL_XSIMD=ON -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON ../
+6. cmake -DCMAKE_BUILD_TYPE=Release -DRTNEURAL_ENABLE_AARCH64=ON -DRTNEURAL_XSIMD=ON -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON ../
 7. cmake --build .
 8. make install DESTDIR="/tmp/"
 
