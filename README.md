@@ -49,3 +49,5 @@ for other options see [RTNeural](https://github.com/jatinchowdhury18/RTNeural.gi
 
 bundle will be placed in /tmp/ ready to be copied on your device
 ```
+
+[![paypal](https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif)](https://www.paypal.com/donate/?hosted_button_id=UZWHH6HKJTHFJ)
