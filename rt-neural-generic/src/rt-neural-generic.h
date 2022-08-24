@@ -125,28 +125,21 @@ private:
 
     Biquad *dc_blocker;
 
-    /* Dynamic: whatever json model but very slow performance */
-    //std::unique_ptr<RTNeural::Model<float>> model;
-
-    /* GRU 8 */
-    /*RTNeural::ModelT<float, 1, 1,
-        RTNeural::GRULayerT<float, 1, 8>,
-        RTNeural::DenseT<float, 8, 1>> model;*/
-
-    /* GRU 24 */
-    /*RTNeural::ModelT<float, 1, 1,
-        RTNeural::GRULayerT<float, 1, 24>,
-        RTNeural::DenseT<float, 24, 1>> model;*/
-
-    /* LSTM 12 */
+    /* Static: only json files containing models below will be loaded */
+    RTNeural::ModelT<float, 1, 1,
+        RTNeural::LSTMLayerT<float, 1, 16>,
+        RTNeural::DenseT<float, 16, 1>> lstm_16;
     RTNeural::ModelT<float, 1, 1,
         RTNeural::LSTMLayerT<float, 1, 12>,
-        RTNeural::DenseT<float, 12, 1>> model;
+        RTNeural::DenseT<float, 12, 1>> lstm_12;
+    RTNeural::ModelT<float, 1, 1,
+        RTNeural::GRULayerT<float, 1, 8>,
+        RTNeural::DenseT<float, 8, 1>> gru_8;
 
-    /* LSTM 16 */
-    /*RTNeural::ModelT<float, 2, 1,
-        RTNeural::LSTMLayerT<float, 2, 16>,
-        RTNeural::DenseT<float, 16, 1>> model;*/
+    /* Dynamic: whatever json model will be loaded but poor performance */
+    //std::unique_ptr<RTNeural::Model<float>> model;
+
+    int model_index; /* Used to store model type */
 
     // Pre-allocate arrays for feeding the models
     float inArray1 alignas(RTNEURAL_DEFAULT_ALIGNMENT)[2] = { 0.0, 0.0 };

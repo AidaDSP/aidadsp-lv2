@@ -56,8 +56,25 @@ void RtNeuralGeneric::applyBiquadFilter(float *out, const float *in, Biquad *fil
 void RtNeuralGeneric::applyModel(float *out, const float *in, LV2_Handle instance, uint32_t n_samples)
 {
     RtNeuralGeneric *self = (RtNeuralGeneric*) instance;
-    for(uint32_t i=0; i<n_samples; i++) {
-        out[i] = self->model.forward(in + i) + (in[i] * self->input_skip);
+    uint32_t i;
+    int skip = self->input_skip;
+    switch(self->model_index)
+    {
+        case 0:
+            for(i=0; i<n_samples; i++) {
+                out[i] = self->lstm_16.forward(in + i) + (in[i] * skip);
+            }
+            break;
+        case 1:
+            for(i=0; i<n_samples; i++) {
+                out[i] = self->lstm_12.forward(in + i) + (in[i] * skip);
+            }
+            break;
+        case 2:
+            for(i=0; i<n_samples; i++) {
+                out[i] = self->gru_8.forward(in + i) + (in[i] * skip);
+            }
+            break;
     }
 }
 
@@ -69,10 +86,29 @@ void RtNeuralGeneric::applyModel(float *out, const float *in, LV2_Handle instanc
 void RtNeuralGeneric::applyModel(float *out, const float *in, float param1, LV2_Handle instance, uint32_t n_samples)
 {
     RtNeuralGeneric *self = (RtNeuralGeneric*) instance;
-    for(uint32_t i=0; i<n_samples; i++) {
-        self->inArray1[0] = in[i];
-        self->inArray1[1] = param1;
-        out[i] = self->model.forward(self->inArray1) + (in[i] * self->input_skip);
+    uint32_t i;
+    int skip = self->input_skip;
+    self->inArray1[1] = param1;
+    switch(self->model_index)
+    {
+        case 0:
+            for(i=0; i<n_samples; i++) {
+                self->inArray1[0] = in[i];
+                out[i] = self->lstm_16.forward(self->inArray1) + (in[i] * skip);
+            }
+            break;
+        case 1:
+            for(i=0; i<n_samples; i++) {
+                self->inArray1[0] = in[i];
+                out[i] = self->lstm_12.forward(self->inArray1) + (in[i] * skip);
+            }
+            break;
+        case 2:
+            for(i=0; i<n_samples; i++) {
+                self->inArray1[0] = in[i];
+                out[i] = self->gru_8.forward(self->inArray1) + (in[i] * skip);
+            }
+            break;
     }
 }
 
@@ -84,11 +120,30 @@ void RtNeuralGeneric::applyModel(float *out, const float *in, float param1, LV2_
 void RtNeuralGeneric::applyModel(float *out, const float *in, float param1, float param2, LV2_Handle instance, uint32_t n_samples)
 {
     RtNeuralGeneric *self = (RtNeuralGeneric*) instance;
-    for(uint32_t i=0; i<n_samples; i++) {
-        self->inArray2[0] = in[i];
-        self->inArray2[1] = param1;
-        self->inArray2[2] = param2;
-        out[i] = self->model.forward(self->inArray2) + (in[i] * self->input_skip);
+    uint32_t i;
+    int skip = self->input_skip;
+    self->inArray2[1] = param1;
+    self->inArray2[2] = param2;
+    switch(self->model_index)
+    {
+        case 0:
+            for(i=0; i<n_samples; i++) {
+                self->inArray2[0] = in[i];
+                out[i] = self->lstm_16.forward(self->inArray2) + (in[i] * skip);
+            }
+            break;
+        case 1:
+            for(i=0; i<n_samples; i++) {
+                self->inArray2[0] = in[i];
+                out[i] = self->lstm_12.forward(self->inArray2) + (in[i] * skip);
+            }
+            break;
+        case 2:
+            for(i=0; i<n_samples; i++) {
+                self->inArray2[0] = in[i];
+                out[i] = self->gru_8.forward(self->inArray2) + (in[i] * skip);
+            }
+            break;
     }
 }
 
@@ -98,6 +153,7 @@ LV2_Handle RtNeuralGeneric::instantiate(const LV2_Descriptor* descriptor, double
 {
     RtNeuralGeneric *self = new RtNeuralGeneric();
 
+    self->model_index = 0;
     self->samplerate = samplerate;
     // Get host features
     for (int i = 0; features[i]; ++i) {
@@ -479,8 +535,8 @@ int RtNeuralGeneric::loadModel(LV2_Handle instance, const char *path)
         std::ifstream jsonStream2(filePath, std::ifstream::binary);
         nlohmann::json modelData;
         jsonStream2 >> modelData;
-        self->model.parseJson(jsonStream, true);
 
+        /* Understand which model type to load */
         self->n_layers = modelData["layers"].size();
         self->input_size = modelData["in_shape"].back().get<int>();
 
@@ -493,26 +549,79 @@ int RtNeuralGeneric::loadModel(LV2_Handle instance, const char *path)
             self->input_skip = 0;
         }
 
-        self->type = modelData["layers"][self->n_layers-1]["type"];
-        self->hidden_size = modelData["layers"][self->n_layers-1]["shape"].back().get<int>();
+        self->type = modelData["layers"][self->n_layers-1-1]["type"];
+        self->hidden_size = modelData["layers"][self->n_layers-1-1]["shape"].back().get<int>();
 
-        // Before running inference, it is recommended to "reset" the state
-        // of your model (if the model has state).
-        self->model.reset();
-
-        // Pre-buffer to avoid "clicks" during initialization
-        float in[2048] = { };
-        for(int i=0; i<2048; i++) {
-            self->model.forward(in + i);
+        if(self->type == std::string("lstm"))
+        {
+            if(self->hidden_size == 16)
+            {
+                self->model_index = 0;
+            }
+            else if(self->hidden_size == 12)
+            {
+                self->model_index = 1;
+            }
+        }
+        else if(self->type == std::string("gru"))
+        {
+            if(self->hidden_size == 8)
+            {
+                self->model_index = 2;
+            }
         }
 
-        // If we are good: let's say so
+        switch(self->model_index)
+        {
+            case 0:
+                self->lstm_16.parseJson(jsonStream, true);
+                break;
+            case 1:
+                self->lstm_12.parseJson(jsonStream, true);
+                break;
+            case 2:
+                self->gru_8.parseJson(jsonStream, true);
+                break;
+        }
+
         lv2_log_note(&self->logger, "Successfully loaded json file: %s\n", path);
-        return 0;
     }
     catch (const std::exception& e) {
-        // If we are not good: let's say no
         lv2_log_error(&self->logger, "Unable to load json file: %s\nError: %s\n", path, e.what());
         return 1;
     }
+
+    // Before running inference, it is recommended to "reset" the state
+    // of your model (if the model has state).
+    switch(self->model_index)
+    {
+        case 0:
+            self->lstm_16.reset();
+            break;
+        case 1:
+            self->lstm_12.reset();
+            break;
+        case 2:
+            self->gru_8.reset();
+            break;
+    }
+
+    // Pre-buffer to avoid "clicks" during initialization
+    float in[2048] = { };
+    float out[2048] = { };
+    switch(self->input_size) {
+        case 1:
+            applyModel(out, in, self, 2048);
+            break;
+        case 2:
+            applyModel(out, in, 0, self, 2048);
+            break;
+        case 3:
+            applyModel(out, in, 0, 0, self, 2048);
+            break;
+        default:
+            break;
+    }
+
+    return 0;
 }
