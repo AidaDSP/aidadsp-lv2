@@ -164,5 +164,5 @@ lv2:port
 ];
 
 state:state [
-    <http://aidadsp.cc/plugins/aidadsp-bundle/rt-neural-generic#json> <models/SIMPLE-RNN/48kHz/LSTM-12/Moon/MoonJazz.json>
+    <http://aidadsp.cc/plugins/aidadsp-bundle/rt-neural-generic#json> <models/Moon/MoonJazz.json>
 ].
