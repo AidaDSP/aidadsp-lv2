@@ -379,8 +379,7 @@ void RtNeuralGeneric::run(LV2_Handle instance, uint32_t n_samples)
         applyBiquadFilter(self->out_1, self->out_1, self->dc_blocker, n_samples); // Dc blocker filter (highpass)
         applyGainRamp(self->out_1, self->out_1, master_old, master, n_samples); // Master volume
     }
-    else
-    {
+    else {
         std::copy(self->in, self->in + n_samples, self->out_1); // Passthrough
     }
     /*++++++++ END AUDIO DSP ++++++++*/
@@ -580,19 +579,15 @@ int RtNeuralGeneric::loadModel(LV2_Handle instance, const char *path)
 
         if(self->type == std::string("lstm"))
         {
-            if(self->hidden_size == 16)
-            {
+            if(self->hidden_size == 16) {
                 self->model_index = 0;
             }
-            else if(self->hidden_size == 12)
-            {
+            else if(self->hidden_size == 12) {
                 self->model_index = 1;
             }
         }
-        else if(self->type == std::string("gru"))
-        {
-            if(self->hidden_size == 8)
-            {
+        else if(self->type == std::string("gru")) {
+            if(self->hidden_size == 8) {
                 self->model_index = 2;
             }
         }
