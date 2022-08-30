@@ -7,9 +7,10 @@ since they're an important part of the preset's sound.
 ### Moon
 
 - MoonAcoustic.json Neural DSP Archetype Plini High Life Acoustic Preset
-- MoonCrunch.json Neural DSP Archetype Plini Electric Sunrise Crunch Preset
+- MoonSunriseCrunch.json Neural DSP Archetype Plini Electric Sunrise Crunch Preset
 - MoonJazz.json Neural DSP Archetype Plini Sunhead JazzClean Preset
-- MoonRiff.json Neural DSP Archetype Plini Electric Sunrise Riff Preset
+- MoonSunriseRiff.json Neural DSP Archetype Plini Electric Sunrise Riff Preset
+- MoonSeleniumIntro Neural DSP Archetype Plini Selenium Forest Intro Lead Preset
 
 ### Vintage
 
