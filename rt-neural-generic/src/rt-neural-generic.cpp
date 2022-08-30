@@ -556,10 +556,9 @@ int RtNeuralGeneric::loadModel(LV2_Handle instance, const char *path)
     lv2_log_note(&self->logger, "Loading json file: %s\n", path);
 
     try {
-        std::ifstream jsonStream(filePath, std::ifstream::binary);
-        std::ifstream jsonStream2(filePath, std::ifstream::binary);
+        std::ifstream jsonStream1(filePath, std::ifstream::binary);
         nlohmann::json modelData;
-        jsonStream2 >> modelData;
+        jsonStream1 >> modelData;
 
         /* Understand which model type to load */
         self->n_layers = modelData["layers"].size();
@@ -592,16 +591,17 @@ int RtNeuralGeneric::loadModel(LV2_Handle instance, const char *path)
             }
         }
 
+        std::ifstream jsonStream2(filePath, std::ifstream::binary);
         switch(self->model_index)
         {
             case 0:
-                self->lstm_16.parseJson(jsonStream, true);
+                self->lstm_16.parseJson(jsonStream2, true);
                 break;
             case 1:
-                self->lstm_12.parseJson(jsonStream, true);
+                self->lstm_12.parseJson(jsonStream2, true);
                 break;
             case 2:
-                self->gru_8.parseJson(jsonStream, true);
+                self->gru_8.parseJson(jsonStream2, true);
                 break;
         }
 
