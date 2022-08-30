@@ -154,10 +154,10 @@ lv2:port
 [
     a lv2:ControlPort, lv2:InputPort;
     lv2:index 10;
-    lv2:symbol "InLpf Byp";
-    lv2:name "InLpf Byp";
-    lv2:shortname "LPF BYP";
-    lv2:default 0;
+    lv2:symbol "InLpfByp";
+    lv2:name "InLpfByp";
+    lv2:shortname "LPFBYP";
+    lv2:default 1;
     lv2:minimum 0;
     lv2:maximum 1;
     lv2:portProperty lv2:toggled;

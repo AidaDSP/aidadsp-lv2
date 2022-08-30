@@ -282,7 +282,7 @@ void RtNeuralGeneric::run(LV2_Handle instance, uint32_t n_samples)
     in_lpf_f = *self->in_lpf_f * 1000.0f;
     in_lpf_f_old = self->in_lpf_f_old;
     self->in_lpf_f_old = in_lpf_f;
-    if ((in_lpf_f != in_lpf_f_old) && in_lpf_bypass != 0) /* Update filter coeffs */
+    if ((in_lpf_f != in_lpf_f_old) && in_lpf_bypass != 1.0f) /* Update filter coeffs */
     {
         self->in_lpf->setBiquad(bq_type_lowpass, in_lpf_f / self->samplerate, 0.707, 0.0);
     }
@@ -354,8 +354,8 @@ void RtNeuralGeneric::run(LV2_Handle instance, uint32_t n_samples)
 #endif
 
     /*++++++++ AUDIO DSP ++++++++*/
-    if (bypass == 0 && self->model_loaded == 1) {
-        if (in_lpf_bypass == 0) {
+    if (bypass == 0.0f && self->model_loaded == 1) {
+        if (in_lpf_bypass == 1.0f) {
             applyGainRamp(self->out_1, self->in, in_vol_old, in_vol, n_samples); // Input volume
         }
         else { // Apply lpf filter before input volume
