@@ -183,6 +183,10 @@ LV2_Handle RtNeuralGeneric::instantiate(const LV2_Descriptor* descriptor, double
     // Setup fixed frequency dc blocker filter (high pass)
     self->dc_blocker = new Biquad(bq_type_highpass, 35.0f / samplerate, 0.707, 0.0);
 
+    // Setup variable high frequencies roll-off filter (low pass)
+    self->in_lpf_f_old = 12000.0f;
+    self->in_lpf = new Biquad(bq_type_lowpass, self->in_lpf_f_old / samplerate, 0.707, 0.0);
+
     /* Prevent audio thread to use the model */
     self->model_loaded = 0;
 
@@ -243,6 +247,12 @@ void RtNeuralGeneric::connect_port(LV2_Handle instance, uint32_t port, void *dat
         case PLUGIN_NOTIFY:
             self->notify_port = (LV2_Atom_Sequence*)data;
             break;
+        case IN_LPF:
+            self->in_lpf_f = (float*) data;
+            break;
+        case IN_LPF_BYP:
+            self->in_lpf_bypass = (float*) data;
+            break;
     }
 }
 
@@ -258,6 +268,8 @@ void RtNeuralGeneric::run(LV2_Handle instance, uint32_t n_samples)
     float param2 = *self->param2;
     float master, master_old;
     float bypass = *self->bypass;
+    float in_lpf_bypass = *self->in_lpf_bypass;
+    float in_lpf_f, in_lpf_f_old;
 
     in_vol = DB_CO(*self->in_vol_db);
     in_vol_old = self->in_vol_old;
@@ -266,6 +278,14 @@ void RtNeuralGeneric::run(LV2_Handle instance, uint32_t n_samples)
     master = DB_CO(*self->master_db);
     master_old = self->master_old;
     self->master_old = master;
+
+    in_lpf_f = *self->in_lpf_f * 1000.0f;
+    in_lpf_f_old = self->in_lpf_f_old;
+    self->in_lpf_f_old = in_lpf_f;
+    if ((in_lpf_f != in_lpf_f_old) && in_lpf_bypass != 0) /* Update filter coeffs */
+    {
+        self->in_lpf->setBiquad(bq_type_lowpass, in_lpf_f / self->samplerate, 0.707, 0.0);
+    }
 
 #ifdef PROCESS_ATOM_MESSAGES
     /*++++++++ READ ATOM MESSAGES ++++++++*/
@@ -335,7 +355,13 @@ void RtNeuralGeneric::run(LV2_Handle instance, uint32_t n_samples)
 
     /*++++++++ AUDIO DSP ++++++++*/
     if (bypass == 0 && self->model_loaded == 1) {
-        applyGainRamp(self->out_1, self->in, in_vol_old, in_vol, n_samples); // Input volume
+        if (in_lpf_bypass == 0) {
+            applyGainRamp(self->out_1, self->in, in_vol_old, in_vol, n_samples); // Input volume
+        }
+        else { // Apply lpf filter before input volume
+            applyBiquadFilter(self->out_1, self->in, self->in_lpf, n_samples); // High frequencies roll-off (lowpass)
+            applyGainRamp(self->out_1, self->out_1, in_vol_old, in_vol, n_samples); // Input volume
+        }
         // Process model based on input_size (snapshot model or conditioned model)
         switch(self->input_size) {
             case 1:

@@ -25,7 +25,7 @@
 
 /**********************************************************************************************************************************************************/
 
-typedef enum ports_t {IN, OUT_1, IN_VOL, PARAM1, PARAM2, MASTER, BYPASS, PLUGIN_CONTROL, PLUGIN_NOTIFY, PLUGIN_PORT_COUNT} ports;
+typedef enum ports_t {IN, OUT_1, IN_VOL, PARAM1, PARAM2, MASTER, BYPASS, PLUGIN_CONTROL, PLUGIN_NOTIFY, IN_LPF, IN_LPF_BYP, PLUGIN_PORT_COUNT} ports;
 
 #define PROCESS_ATOM_MESSAGES
 typedef struct {
@@ -59,6 +59,9 @@ public:
     float *master_db;
     float master_old;
     float *bypass;
+    float *in_lpf_f;
+    float in_lpf_f_old;
+    float *in_lpf_bypass;
 
     static LV2_State_Status restore(LV2_Handle instance,
                                        LV2_State_Retrieve_Function retrieve,
@@ -124,6 +127,7 @@ private:
     int hidden_size; /* The hidden size of the above layer */
 
     Biquad *dc_blocker;
+    Biquad *in_lpf;
 
     /* Static: only json files containing models below will be loaded */
     RTNeural::ModelT<float, 1, 1,
