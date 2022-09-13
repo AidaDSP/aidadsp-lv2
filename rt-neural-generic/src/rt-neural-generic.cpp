@@ -60,17 +60,22 @@ void RtNeuralGeneric::applyModel(float *out, const float *in, LV2_Handle instanc
     int skip = self->input_skip;
     switch(self->model_index)
     {
-        case 0:
+        case LSTM_16:
             for(i=0; i<n_samples; i++) {
                 out[i] = self->lstm_16.forward(in + i) + (in[i] * skip);
             }
             break;
-        case 1:
+        case LSTM_12:
             for(i=0; i<n_samples; i++) {
                 out[i] = self->lstm_12.forward(in + i) + (in[i] * skip);
             }
             break;
-        case 2:
+        case GRU_12:
+            for(i=0; i<n_samples; i++) {
+                out[i] = self->gru_12.forward(in + i) + (in[i] * skip);
+            }
+            break;
+        case GRU_8:
             for(i=0; i<n_samples; i++) {
                 out[i] = self->gru_8.forward(in + i) + (in[i] * skip);
             }
@@ -91,19 +96,25 @@ void RtNeuralGeneric::applyModel(float *out, const float *in, float param1, LV2_
     self->inArray1[1] = param1;
     switch(self->model_index)
     {
-        case 0:
+        case LSTM_16:
             for(i=0; i<n_samples; i++) {
                 self->inArray1[0] = in[i];
                 out[i] = self->lstm_16.forward(self->inArray1) + (in[i] * skip);
             }
             break;
-        case 1:
+        case LSTM_12:
             for(i=0; i<n_samples; i++) {
                 self->inArray1[0] = in[i];
                 out[i] = self->lstm_12.forward(self->inArray1) + (in[i] * skip);
             }
             break;
-        case 2:
+        case GRU_12:
+            for(i=0; i<n_samples; i++) {
+                self->inArray1[0] = in[i];
+                out[i] = self->gru_12.forward(self->inArray1) + (in[i] * skip);
+            }
+            break;
+        case GRU_8:
             for(i=0; i<n_samples; i++) {
                 self->inArray1[0] = in[i];
                 out[i] = self->gru_8.forward(self->inArray1) + (in[i] * skip);
@@ -126,19 +137,25 @@ void RtNeuralGeneric::applyModel(float *out, const float *in, float param1, floa
     self->inArray2[2] = param2;
     switch(self->model_index)
     {
-        case 0:
+        case LSTM_16:
             for(i=0; i<n_samples; i++) {
                 self->inArray2[0] = in[i];
                 out[i] = self->lstm_16.forward(self->inArray2) + (in[i] * skip);
             }
             break;
-        case 1:
+        case LSTM_12:
             for(i=0; i<n_samples; i++) {
                 self->inArray2[0] = in[i];
                 out[i] = self->lstm_12.forward(self->inArray2) + (in[i] * skip);
             }
             break;
-        case 2:
+        case GRU_12:
+            for(i=0; i<n_samples; i++) {
+                self->inArray2[0] = in[i];
+                out[i] = self->gru_12.forward(self->inArray2) + (in[i] * skip);
+            }
+            break;
+        case GRU_8:
             for(i=0; i<n_samples; i++) {
                 self->inArray2[0] = in[i];
                 out[i] = self->gru_8.forward(self->inArray2) + (in[i] * skip);
@@ -576,31 +593,36 @@ int RtNeuralGeneric::loadModel(LV2_Handle instance, const char *path)
         self->type = modelData["layers"][self->n_layers-1-1]["type"];
         self->hidden_size = modelData["layers"][self->n_layers-1-1]["shape"].back().get<int>();
 
-        if(self->type == std::string("lstm"))
-        {
+        if(self->type == std::string("lstm")) {
             if(self->hidden_size == 16) {
-                self->model_index = 0;
+                self->model_index = LSTM_16;
             }
             else if(self->hidden_size == 12) {
-                self->model_index = 1;
+                self->model_index = LSTM_12;
             }
         }
         else if(self->type == std::string("gru")) {
-            if(self->hidden_size == 8) {
-                self->model_index = 2;
+            if(self->hidden_size == 12) {
+                self->model_index = GRU_12;
+            }
+            else if(self->hidden_size == 8) {
+                self->model_index = GRU_8;
             }
         }
 
         std::ifstream jsonStream2(filePath, std::ifstream::binary);
         switch(self->model_index)
         {
-            case 0:
+            case LSTM_16:
                 self->lstm_16.parseJson(jsonStream2, true);
                 break;
-            case 1:
+            case LSTM_12:
                 self->lstm_12.parseJson(jsonStream2, true);
                 break;
-            case 2:
+            case GRU_12:
+                self->gru_12.parseJson(jsonStream2, true);
+                break;
+            case GRU_8:
                 self->gru_8.parseJson(jsonStream2, true);
                 break;
         }
@@ -616,13 +638,16 @@ int RtNeuralGeneric::loadModel(LV2_Handle instance, const char *path)
     // of your model (if the model has state).
     switch(self->model_index)
     {
-        case 0:
+        case LSTM_16:
             self->lstm_16.reset();
             break;
-        case 1:
+        case LSTM_12:
             self->lstm_12.reset();
             break;
-        case 2:
+        case GRU_12:
+            self->gru_12.reset();
+            break;
+        case GRU_8:
             self->gru_8.reset();
             break;
     }

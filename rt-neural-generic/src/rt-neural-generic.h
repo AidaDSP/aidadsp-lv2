@@ -26,6 +26,7 @@
 /**********************************************************************************************************************************************************/
 
 typedef enum ports_t {IN, OUT_1, IN_VOL, PARAM1, PARAM2, MASTER, BYPASS, PLUGIN_CONTROL, PLUGIN_NOTIFY, IN_LPF, IN_LPF_BYP, PLUGIN_PORT_COUNT} ports;
+typedef enum rnn_types_t {LSTM_16, LSTM_12, GRU_12, GRU_8} rnn_types;
 
 #define PROCESS_ATOM_MESSAGES
 typedef struct {
@@ -136,6 +137,9 @@ private:
     RTNeural::ModelT<float, 1, 1,
         RTNeural::LSTMLayerT<float, 1, 12>,
         RTNeural::DenseT<float, 12, 1>> lstm_12;
+    RTNeural::ModelT<float, 1, 1,
+        RTNeural::GRULayerT<float, 1, 12>,
+        RTNeural::DenseT<float, 12, 1>> gru_12;
     RTNeural::ModelT<float, 1, 1,
         RTNeural::GRULayerT<float, 1, 8>,
         RTNeural::DenseT<float, 8, 1>> gru_8;
