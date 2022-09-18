@@ -201,7 +201,7 @@ LV2_Handle RtNeuralGeneric::instantiate(const LV2_Descriptor* descriptor, double
     self->dc_blocker = new Biquad(bq_type_highpass, 35.0f / samplerate, 0.707, 0.0);
 
     // Setup variable high frequencies roll-off filter (low pass)
-    self->in_lpf_f_old = 11000.0f;
+    self->in_lpf_f_old = 12000.0f;
     self->in_lpf = new Biquad(bq_type_lowpass, self->in_lpf_f_old / samplerate, 0.707, 0.0);
 
     /* Prevent audio thread to use the model */
