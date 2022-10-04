@@ -63,44 +63,43 @@ void RtNeuralGeneric::applyToneControls(float *out, const float *in, LV2_Handle 
     float tight_sw = *self->tight_sw;
     float bright_sw = *self->bright_sw;
     float midcut_sw = *self->midcut_sw;
+    float tone_ctrls_bypass_sw = *self->tone_ctrls_bypass_sw;
 
     self->bas_boost_db_old = bas;
     self->mid_boost_db_old = mid;
     self->tre_boost_db_old = tre;
 
-    if(vintagemodern_sw == 1.0f) {
-        self->applyBiquadFilter(out, in, self->modern, n_samples);
-    }
-    else {
-        self->applyBiquadFilter(out, in, self->vintage, n_samples);
-    }
-
+    /* Tone Stack */
     if (bas != bas_old) {
         self->bas->setBiquad(bq_type_peak, BAS_FREQ / self->samplerate, 0.707, bas);
     }
-
     if (mid != mid_old) {
         self->mid->setBiquad(bq_type_peak, MID_FREQ / self->samplerate, 0.707, mid);
     }
-
     if (tre != tre_old) {
         self->tre->setBiquad(bq_type_peak, TRE_FREQ / self->samplerate, 0.707, tre);
     }
-
-    self->applyBiquadFilter(out, out, self->bas, n_samples);
+    self->applyBiquadFilter(out, in, self->bas, n_samples);
     self->applyBiquadFilter(out, out, self->mid, n_samples);
     self->applyBiquadFilter(out, out, self->tre, n_samples);
 
-    if(tight_sw == 1.0f) {
-        self->applyBiquadFilter(out, out, self->tight, n_samples);
-    }
-
-    if(bright_sw == 1.0f) {
-        self->applyBiquadFilter(out, out, self->bright, n_samples);
-    }
-
-    if(midcut_sw == 1.0f) {
-        self->applyBiquadFilter(out, out, self->midcut, n_samples);
+    /* Tone control switches */
+    if(tone_ctrls_bypass_sw == 0.0f) {
+        if(vintagemodern_sw == 1.0f) {
+            self->applyBiquadFilter(out, out, self->modern, n_samples);
+        }
+        else {
+            self->applyBiquadFilter(out, in, self->vintage, n_samples);
+        }
+        if(tight_sw == 1.0f) {
+            self->applyBiquadFilter(out, out, self->tight, n_samples);
+        }
+        if(bright_sw == 1.0f) {
+            self->applyBiquadFilter(out, out, self->bright, n_samples);
+        }
+        if(midcut_sw == 1.0f) {
+            self->applyBiquadFilter(out, out, self->midcut, n_samples);
+        }
     }
 }
 
@@ -387,7 +386,6 @@ void RtNeuralGeneric::run(LV2_Handle instance, uint32_t n_samples)
     float in_lpf_f = *self->in_lpf_f * 1000.0f;
     float in_lpf_f_old = self->in_lpf_f_old;
     float prepost_sw = *self->prepost_sw;
-    float tone_ctrls_bypass_sw = *self->tone_ctrls_bypass_sw;
     float param1 = *self->param1;
     float param2 = *self->param2;
 
@@ -470,7 +468,7 @@ void RtNeuralGeneric::run(LV2_Handle instance, uint32_t n_samples)
     if (bypass_sw == 0.0f && self->model_loaded) {
         applyBiquadFilter(self->out_1, self->in, self->in_lpf, n_samples); // High frequencies roll-off (lowpass)
         applyGainRamp(self->out_1, self->out_1, in_vol_old, in_vol, n_samples); // Input volume
-        if(tone_ctrls_bypass_sw == 0.0f && prepost_sw == 1.0f) {
+        if(prepost_sw == 1.0f) {
             applyToneControls(self->out_1, self->out_1, instance, n_samples); // Tone controls
         }
         switch(self->input_size) { // Process model based on input_size (snapshot model or conditioned model)
@@ -487,7 +485,7 @@ void RtNeuralGeneric::run(LV2_Handle instance, uint32_t n_samples)
                 break;
         }
         applyBiquadFilter(self->out_1, self->out_1, self->dc_blocker, n_samples); // Dc blocker filter (highpass)
-        if(tone_ctrls_bypass_sw == 0.0f && prepost_sw == 0.0f) {
+        if(prepost_sw == 0.0f) {
             applyToneControls(self->out_1, self->out_1, instance, n_samples); // Tone controls
         }
         applyGainRamp(self->out_1, self->out_1, master_old, master, n_samples); // Master volume
