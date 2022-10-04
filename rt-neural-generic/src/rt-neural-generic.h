@@ -25,7 +25,12 @@
 
 /**********************************************************************************************************************************************************/
 
-typedef enum ports_t {IN, OUT_1, IN_VOL, PARAM1, PARAM2, MASTER, BYPASS, PLUGIN_CONTROL, PLUGIN_NOTIFY, IN_LPF, IN_LPF_BYP, PLUGIN_PORT_COUNT} ports;
+typedef enum ports_t {
+    IN, OUT_1, IN_VOL, PARAM1, PARAM2, MASTER, BYPASS, PLUGIN_CONTROL, PLUGIN_NOTIFY, IN_LPF,
+    PREPOST, VM, TD, BRIGHT, MIDCUT,
+    BAS, MID, TRE,
+    TONEBYP,
+    PLUGIN_PORT_COUNT} ports;
 typedef enum rnn_types_t {LSTM_16, LSTM_12, GRU_12, GRU_8} rnn_types;
 
 #define PROCESS_ATOM_MESSAGES
@@ -36,6 +41,21 @@ typedef struct {
 
 /* Define a macro for converting a gain in dB to a coefficient */
 #define DB_CO(g) ((g) > -90.0f ? powf(10.0f, (g) * 0.05f) : 0.0f)
+
+/* Defines for tone controls */
+#define BAS_FREQ 250.0f
+#define MID_FREQ 1000.0f
+#define TRE_FREQ 4000.0f
+#define VINTAGE_FREQ 120.0f
+#define VINTAGE_BOOST_DB 5.0f
+#define MODERN_FREQ 3600.0f
+#define MODERN_BOOST_DB 4.0f
+#define TIGHT_FREQ 180.0f
+#define TIGHT_BOOST_DB -6.0f
+#define BRIGHT_FREQ 4000.0f
+#define BRIGHT_BOOST_DB 8.0f
+#define MIDCUT_FREQ 400.0f
+#define MIDCUT_BOOST_DB -6.0f
 
 /**********************************************************************************************************************************************************/
 
@@ -59,10 +79,21 @@ public:
     float *param2;
     float *master_db;
     float master_old;
-    float *bypass;
+    float *bypass_sw;
     float *in_lpf_f;
     float in_lpf_f_old;
-    float *in_lpf_bypass;
+    float *prepost_sw;
+    float *vintagemodern_sw;
+    float *tight_sw;
+    float *bright_sw;
+    float *midcut_sw;
+    float *bas_boost_db;
+    float bas_boost_db_old;
+    float *mid_boost_db;
+    float mid_boost_db_old;
+    float *tre_boost_db;
+    float tre_boost_db_old;
+    float *tone_ctrls_bypass_sw;
 
     static LV2_State_Status restore(LV2_Handle instance,
                                        LV2_State_Retrieve_Function retrieve,
@@ -129,6 +160,14 @@ private:
 
     Biquad *dc_blocker;
     Biquad *in_lpf;
+    Biquad *vintage;
+    Biquad *modern;
+    Biquad *tight;
+    Biquad *bright;
+    Biquad *midcut;
+    Biquad *bas;
+    Biquad *mid;
+    Biquad *tre;
 
     /* Static: only json files containing models below will be loaded */
     RTNeural::ModelT<float, 1, 1,
@@ -159,4 +198,5 @@ private:
     static void applyModel(float *out, const float *in, LV2_Handle instance, uint32_t n_samples);
     static void applyModel(float *out, const float *in, float param1, LV2_Handle instance, uint32_t n_samples);
     static void applyModel(float *out, const float *in, float param1, float param2, LV2_Handle instance, uint32_t n_samples);
+    static void applyToneControls(float *out, const float *in, LV2_Handle instance, uint32_t n_samples);
 };

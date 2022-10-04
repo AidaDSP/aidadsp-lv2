@@ -154,9 +154,97 @@ lv2:port
 [
     a lv2:ControlPort, lv2:InputPort;
     lv2:index 10;
-    lv2:symbol "InLpfByp";
-    lv2:name "InLpfByp";
-    lv2:shortname "LPFBYP";
+    lv2:symbol "PrePost";
+    lv2:name "PrePost";
+    lv2:shortname "PREPOST";
+    lv2:default 0;
+    lv2:minimum 0;
+    lv2:maximum 1;
+    lv2:portProperty lv2:toggled;
+],
+[
+    a lv2:ControlPort, lv2:InputPort;
+    lv2:index 11;
+    lv2:symbol "VintageNormalModern";
+    lv2:name "VintageNormalModern";
+    lv2:shortname "VM";
+    lv2:default 0;
+    lv2:minimum 0;
+    lv2:maximum 1;
+    lv2:portProperty lv2:toggled;
+],
+[
+    a lv2:ControlPort, lv2:InputPort;
+    lv2:index 12;
+    lv2:symbol "TightDeep";
+    lv2:name "TightDeep";
+    lv2:shortname "TD";
+    lv2:default 0;
+    lv2:minimum 0;
+    lv2:maximum 1;
+    lv2:portProperty lv2:toggled;
+],
+[
+    a lv2:ControlPort, lv2:InputPort;
+    lv2:index 13;
+    lv2:symbol "BrightNormal";
+    lv2:name "BrightNormal";
+    lv2:shortname "BRIGHT";
+    lv2:default 0;
+    lv2:minimum 0;
+    lv2:maximum 1;
+    lv2:portProperty lv2:toggled;
+],
+[
+    a lv2:ControlPort, lv2:InputPort;
+    lv2:index 14;
+    lv2:symbol "MidCutNormal";
+    lv2:name "MidCutNormal";
+    lv2:shortname "MIDCUT";
+    lv2:default 0;
+    lv2:minimum 0;
+    lv2:maximum 1;
+    lv2:portProperty lv2:toggled;
+],
+[
+    a lv2:ControlPort, lv2:InputPort;
+    lv2:index 15;
+    lv2:symbol "Bas";
+    lv2:name "Bas";
+    lv2:shortname "BAS";
+    lv2:default 0;
+    lv2:minimum -8.0;
+    lv2:maximum 8;
+    units:unit units:db;
+],
+[
+    a lv2:ControlPort, lv2:InputPort;
+    lv2:index 16;
+    lv2:symbol "Mid";
+    lv2:name "Mid";
+    lv2:shortname "MID";
+    lv2:default 0;
+    lv2:minimum -8.0;
+    lv2:maximum 8;
+    units:unit units:db;
+],
+[
+    a lv2:ControlPort, lv2:InputPort;
+    lv2:index 17;
+    lv2:symbol "Tre";
+    lv2:name "Tre";
+    lv2:shortname "TRE";
+    lv2:default 0;
+    lv2:minimum -8.0;
+    lv2:maximum 8;
+    units:unit units:db;
+],
+[
+    a lv2:ControlPort, lv2:InputPort;
+    lv2:index 18;
+    lv2:symbol "ToneCtrlsBypass";
+    lv2:name "ToneCtrlsBypass";
+    lv2:shortname "TONEBYP";
     lv2:default 1;
     lv2:minimum 0;
     lv2:maximum 1;
