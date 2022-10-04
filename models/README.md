@@ -15,8 +15,11 @@ since they're an important part of the preset's sound.
 ### Vintage
 
 - VintageEdgeOfBreakup.json Neural DSP Tone King Imperial MKII Pete Thorn Preset
-- VintagePedalPlatform.json Neural DSP Tone King Imperial MKII Pete Thorn Preset
 - VintageRockRythm.json Neural DSP Tone King Imperial MKII Pete Thorn Preset
-- VintageRockSolo.json Neural DSP Tone King Imperial MKII Pete Thorn Preset
 - VintageUnderWater.json Neural DSP Tone King Imperial MKII Pete Thorn Preset
+
+### Helix
+
+- Helix_US_Double.json Line6 Helix Native US Double Preset
+- Helix_PV_Panama.json Line6 Helix Native PV Panama Preset
 
