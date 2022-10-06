@@ -110,7 +110,7 @@ void RtNeuralGeneric::applyModel(float *out, const float *in, LV2_Handle instanc
     RtNeuralGeneric *self = (RtNeuralGeneric*) instance;
     uint32_t i;
     int skip = self->input_skip;
-    switch(self->model_index)
+    switch((rnn_t)self->model_index)
     {
         case LSTM_16:
             for(i=0; i<n_samples; i++) {
@@ -146,7 +146,7 @@ void RtNeuralGeneric::applyModel(float *out, const float *in, float param1, LV2_
     uint32_t i;
     int skip = self->input_skip;
     self->inArray1[1] = param1;
-    switch(self->model_index)
+    switch((rnn_t)self->model_index)
     {
         case LSTM_16:
             for(i=0; i<n_samples; i++) {
@@ -187,7 +187,7 @@ void RtNeuralGeneric::applyModel(float *out, const float *in, float param1, floa
     int skip = self->input_skip;
     self->inArray2[1] = param1;
     self->inArray2[2] = param2;
-    switch(self->model_index)
+    switch((rnn_t)self->model_index)
     {
         case LSTM_16:
             for(i=0; i<n_samples; i++) {
@@ -310,7 +310,7 @@ void RtNeuralGeneric::connect_port(LV2_Handle instance, uint32_t port, void *dat
 {
     RtNeuralGeneric *self = (RtNeuralGeneric*) instance;
 
-    switch (port)
+    switch((ports_t)port)
     {
         case IN:
             self->in = (float*) data;
@@ -709,7 +709,7 @@ int RtNeuralGeneric::loadModel(LV2_Handle instance, const char *path)
         }
 
         std::ifstream jsonStream2(filePath, std::ifstream::binary);
-        switch(self->model_index)
+        switch((rnn_t)self->model_index)
         {
             case LSTM_16:
                 self->lstm_16.parseJson(jsonStream2, true);

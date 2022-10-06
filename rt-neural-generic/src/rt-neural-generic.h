@@ -25,13 +25,13 @@
 
 /**********************************************************************************************************************************************************/
 
-typedef enum ports_t {
+typedef enum {
     IN, OUT_1, IN_VOL, PARAM1, PARAM2, MASTER, BYPASS, PLUGIN_CONTROL, PLUGIN_NOTIFY, IN_LPF,
     PREPOST, VM, TIGHT, BRIGHT, MIDCUT,
     BAS, MID, TRE,
     TONEBYP,
-    PLUGIN_PORT_COUNT} ports;
-typedef enum rnn_types_t {LSTM_16, LSTM_12, GRU_12, GRU_8} rnn_types;
+    PLUGIN_PORT_COUNT} ports_t;
+typedef enum {LSTM_16, LSTM_12, GRU_12, GRU_8} rnn_t;
 
 #define PROCESS_ATOM_MESSAGES
 typedef struct {
