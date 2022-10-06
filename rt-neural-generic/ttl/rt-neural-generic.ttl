@@ -154,64 +154,23 @@ lv2:port
 [
     a lv2:ControlPort, lv2:InputPort;
     lv2:index 10;
-    lv2:symbol "Pre";
-    lv2:name "Pre";
-    lv2:shortname "PREPOST";
+    lv2:symbol "EqPos";
+    lv2:name "EqPos";
+    lv2:shortname "POS";
     lv2:default 0;
     lv2:minimum 0;
     lv2:maximum 1;
-    lv2:portProperty lv2:toggled;
-],
-[
-    a lv2:ControlPort, lv2:InputPort;
-    lv2:index 11;
-    lv2:symbol "VintageModern";
-    lv2:name "VintageModern";
-    lv2:shortname "VM";
-    lv2:default 0;
-    lv2:minimum 0;
-    lv2:maximum 1;
-    lv2:portProperty lv2:toggled;
-],
-[
-    a lv2:ControlPort, lv2:InputPort;
-    lv2:index 12;
-    lv2:symbol "Tight";
-    lv2:name "Tight";
-    lv2:shortname "TIGHT";
-    lv2:default 0;
-    lv2:minimum 0;
-    lv2:maximum 1;
-    lv2:portProperty lv2:toggled;
-],
-[
-    a lv2:ControlPort, lv2:InputPort;
-    lv2:index 13;
-    lv2:symbol "Bright";
-    lv2:name "Bright";
-    lv2:shortname "BRIGHT";
-    lv2:default 0;
-    lv2:minimum 0;
-    lv2:maximum 1;
-    lv2:portProperty lv2:toggled;
-],
-[
-    a lv2:ControlPort, lv2:InputPort;
-    lv2:index 14;
-    lv2:symbol "MidCut";
-    lv2:name "MidCut";
-    lv2:shortname "MIDCUT";
-    lv2:default 0;
-    lv2:minimum 0;
-    lv2:maximum 1;
-    lv2:portProperty lv2:toggled;
+    lv2:portProperty lv2:integer;
+    lv2:portProperty lv2:enumeration ;
+    lv2:scalePoint [rdfs:label "POST"; rdf:value 0];
+    lv2:scalePoint [rdfs:label "PRE"; rdf:value 1];
 ],
 [
     a lv2:ControlPort, lv2:InputPort;
     lv2:index 15;
-    lv2:symbol "Bas";
-    lv2:name "Bas";
-    lv2:shortname "BAS";
+    lv2:symbol "BASS";
+    lv2:name "BASS";
+    lv2:shortname "BASS";
     lv2:default 0;
     lv2:minimum -8.0;
     lv2:maximum 8;
@@ -220,8 +179,19 @@ lv2:port
 [
     a lv2:ControlPort, lv2:InputPort;
     lv2:index 16;
-    lv2:symbol "Mid";
-    lv2:name "Mid";
+    lv2:symbol "BFREQ";
+    lv2:name "BFREQ";
+    lv2:shortname "BFREQ";
+    lv2:default 250.0;
+    lv2:minimum 25.0;
+    lv2:maximum 1000.0;
+    units:unit units:hz;
+],
+[
+    a lv2:ControlPort, lv2:InputPort;
+    lv2:index 17;
+    lv2:symbol "MID";
+    lv2:name "MID";
     lv2:shortname "MID";
     lv2:default 0;
     lv2:minimum -8.0;
@@ -230,10 +200,46 @@ lv2:port
 ],
 [
     a lv2:ControlPort, lv2:InputPort;
-    lv2:index 17;
-    lv2:symbol "Tre";
-    lv2:name "Tre";
-    lv2:shortname "TRE";
+    lv2:index 18;
+    lv2:symbol "MFREQ";
+    lv2:name "MFREQ";
+    lv2:shortname "MFREQ";
+    lv2:default 600.0;
+    lv2:minimum 25.0;
+    lv2:maximum 10000.0;
+    units:unit units:hz;
+],
+[
+    a lv2:ControlPort, lv2:InputPort;
+    lv2:index 19;
+    lv2:symbol "MIDQ";
+    lv2:name "MIDQ";
+    lv2:shortname "MIDQ";
+    lv2:default 0.707;
+    lv2:minimum 0.35;
+    lv2:maximum 5.0;
+    lv2:portProperty lv2:toggled;
+],
+[
+    a lv2:ControlPort, lv2:InputPort;
+    lv2:index 20;
+    lv2:symbol "MTYPE";
+    lv2:name "MTYPE";
+    lv2:shortname "MTYPE";
+    lv2:default 0;
+    lv2:minimum 0;
+    lv2:maximum 1;
+    lv2:portProperty lv2:integer;
+    lv2:portProperty lv2:enumeration ;
+    lv2:scalePoint [rdfs:label "PEAK"; rdf:value 0];
+    lv2:scalePoint [rdfs:label "BANDPASS"; rdf:value 1];
+],
+[
+    a lv2:ControlPort, lv2:InputPort;
+    lv2:index 21;
+    lv2:symbol "TREBLE";
+    lv2:name "TREBLE";
+    lv2:shortname "TREBLE";
     lv2:default 0;
     lv2:minimum -8.0;
     lv2:maximum 8;
@@ -241,10 +247,21 @@ lv2:port
 ],
 [
     a lv2:ControlPort, lv2:InputPort;
-    lv2:index 18;
-    lv2:symbol "ToneCtrlsBypass";
-    lv2:name "ToneCtrlsBypass";
-    lv2:shortname "TONEBYP";
+    lv2:index 22;
+    lv2:symbol "TFREQ";
+    lv2:name "TFREQ";
+    lv2:shortname "TFREQ";
+    lv2:default 600.0;
+    lv2:minimum 25.0;
+    lv2:maximum 10000.0;
+    units:unit units:hz;
+],
+[
+    a lv2:ControlPort, lv2:InputPort;
+    lv2:index 23;
+    lv2:symbol "EQBYPASS";
+    lv2:name "EQBYPASS";
+    lv2:shortname "EQBYP";
     lv2:default 1;
     lv2:minimum 0;
     lv2:maximum 1;
