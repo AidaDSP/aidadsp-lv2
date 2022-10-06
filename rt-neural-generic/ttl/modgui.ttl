@@ -14,19 +14,19 @@
         modgui:panel "0550" ;
         modgui:port [
             lv2:index 0 ;
-            lv2:symbol "InVol" ;
-            lv2:name "InVol" ;
+            lv2:symbol "INVOL" ;
+            lv2:name "INVOL" ;
         ] , [
             lv2:index 1 ;
-            lv2:symbol "Bas" ;
-            lv2:name "Bas" ;
+            lv2:symbol "BASS" ;
+            lv2:name "BASS" ;
         ] , [
             lv2:index 2 ;
-            lv2:symbol "Tre" ;
-            lv2:name "Tre" ;
+            lv2:symbol "TREBLE" ;
+            lv2:name "TREBLE" ;
         ] , [
             lv2:index 3 ;
-            lv2:symbol "Master" ;
-            lv2:name "Master" ;
+            lv2:symbol "MASTER" ;
+            lv2:name "MASTER" ;
         ] ;
     ] .
