@@ -72,8 +72,8 @@ lv2:port
 [
     a lv2:ControlPort, lv2:InputPort;
     lv2:index 2;
-    lv2:symbol "INVOL";
-    lv2:name "INVOL";
+    lv2:symbol "VOLUME";
+    lv2:name "VOLUME";
     lv2:shortname "VOL";
     lv2:default -6.0;
     lv2:minimum -12.0;
@@ -120,7 +120,10 @@ lv2:port
     lv2:default 0;
     lv2:minimum 0;
     lv2:maximum 1;
-    lv2:portProperty lv2:toggled;
+    lv2:portProperty lv2:integer;
+    lv2:portProperty lv2:enumeration;
+    lv2:scalePoint [rdfs:label "OFF"; rdf:value 0];
+    lv2:scalePoint [rdfs:label "ON"; rdf:value 1];
 ],
 [
     a lv2:InputPort, atom:AtomPort;
@@ -161,7 +164,7 @@ lv2:port
     lv2:minimum 0;
     lv2:maximum 1;
     lv2:portProperty lv2:integer;
-    lv2:portProperty lv2:enumeration ;
+    lv2:portProperty lv2:enumeration;
     lv2:scalePoint [rdfs:label "POST"; rdf:value 0];
     lv2:scalePoint [rdfs:label "PRE"; rdf:value 1];
 ],
@@ -230,7 +233,7 @@ lv2:port
     lv2:minimum 0;
     lv2:maximum 1;
     lv2:portProperty lv2:integer;
-    lv2:portProperty lv2:enumeration ;
+    lv2:portProperty lv2:enumeration;
     lv2:scalePoint [rdfs:label "PEAK"; rdf:value 0];
     lv2:scalePoint [rdfs:label "BANDPASS"; rdf:value 1];
 ],
@@ -265,7 +268,10 @@ lv2:port
     lv2:default 1;
     lv2:minimum 0;
     lv2:maximum 1;
-    lv2:portProperty lv2:toggled;
+    lv2:portProperty lv2:integer;
+    lv2:portProperty lv2:enumeration;
+    lv2:scalePoint [rdfs:label "OFF"; rdf:value 0];
+    lv2:scalePoint [rdfs:label "ON"; rdf:value 1];
 ];
 
 state:state [
