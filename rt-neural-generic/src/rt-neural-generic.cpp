@@ -53,50 +53,78 @@ void RtNeuralGeneric::applyBiquadFilter(float *out, const float *in, Biquad *fil
 void RtNeuralGeneric::applyToneControls(float *out, const float *in, LV2_Handle instance, uint32_t n_samples)
 {
     RtNeuralGeneric *self = (RtNeuralGeneric*) instance;
-    float bas = *self->bas_boost_db;
-    float mid = *self->mid_boost_db;
-    float tre = *self->tre_boost_db;
-    float vintagemodern_sw = *self->vintagemodern_sw;
-    float tight_sw = *self->tight_sw;
-    float bright_sw = *self->bright_sw;
-    float midcut_sw = *self->midcut_sw;
-    float tone_ctrls_bypass_sw = *self->tone_ctrls_bypass_sw;
+    float bass_boost_db = *self->bass_boost_db;
+    float bass_freq = *self->bass_freq;
+    uint8_t bass_has_changed = 0;
+    float mid_boost_db = *self->mid_boost_db;
+    float mid_freq = *self->mid_freq;
+    float mid_q = *self->mid_q;
+    float mid_type = *self->mid_type;
+    uint8_t mid_has_changed = 0;
+    float treble_boost_db = *self->treble_boost_db;
+    float treble_freq = *self->treble_freq;
+    uint8_t treble_has_changed = 0;
 
-    /* Tone Stack */
-    if (bas != self->bas_boost_db_old) {
-        self->bas->setBiquad(bq_type_peak, BAS_FREQ / self->samplerate, 0.707f, bas);
-        self->bas_boost_db_old = bas;
+    /* Bass */
+    if (bass_boost_db != self->bass_boost_db_old) {
+        self->bass_boost_db_old = bass_boost_db;
+        bass_has_changed++;
     }
-    if (mid != self->mid_boost_db_old) {
-        self->mid->setBiquad(bq_type_peak, MID_FREQ / self->samplerate, 0.707f, mid);
-        self->mid_boost_db_old = mid;
+    if (bass_freq != self->bass_freq_old) {
+        self->bass_freq_old = bass_freq;
+        bass_has_changed++;
     }
-    if (tre != self->tre_boost_db_old) {
-        self->tre->setBiquad(bq_type_highshelf, TRE_FREQ / self->samplerate, 0.707f, tre);
-        self->tre_boost_db_old = tre;
+    if (bass_has_changed) {
+        self->mid->setBiquad(bq_type_lowshelf, bass_freq / self->samplerate, 0.707f, bass_boost_db);
     }
 
-    applyBiquadFilter(out, in, self->bas, n_samples);
-    applyBiquadFilter(out, out, self->mid, n_samples);
-    applyBiquadFilter(out, out, self->tre, n_samples);
-
-    /* Tone control switches */
-    if(tone_ctrls_bypass_sw == 0.0f) {
-        if(vintagemodern_sw == 1.0f) {
-            applyBiquadFilter(out, out, self->modern, n_samples);
+    /* Mid */
+    if (mid_boost_db != self->mid_boost_db_old) {
+        self->mid_boost_db_old = mid_boost_db;
+        mid_has_changed++;
+    }
+    if (mid_freq != self->mid_freq_old) {
+        self->mid_freq_old = mid_freq;
+        mid_has_changed++;
+    }
+    if (mid_q != self->mid_q_old) {
+        self->mid_q_old = mid_q;
+        mid_has_changed++;
+    }
+    if (mid_type !=self->mid_type_old) {
+        self->mid_type_old = mid_type;
+        mid_has_changed++;
+    }
+    if (mid_has_changed) {
+        if(mid_type == BANDPASS) {
+            self->mid->setBiquad(bq_type_bandpass, mid_freq / self->samplerate, mid_q, mid_boost_db);
         }
         else {
-            applyBiquadFilter(out, in, self->vintage, n_samples);
+            self->mid->setBiquad(bq_type_lowshelf, mid_freq / self->samplerate, mid_q, mid_boost_db);
         }
-        if(tight_sw == 1.0f) {
-            applyBiquadFilter(out, out, self->tight, n_samples);
-        }
-        if(bright_sw == 1.0f) {
-            applyBiquadFilter(out, out, self->bright, n_samples);
-        }
-        if(midcut_sw == 1.0f) {
-            applyBiquadFilter(out, out, self->midcut, n_samples);
-        }
+    }
+
+    /* Treble */
+    if (treble_boost_db != self->treble_boost_db_old) {
+        self->treble_boost_db_old = treble_boost_db;
+        treble_has_changed++;
+    }
+    if (treble_freq != self->treble_freq_old) {
+        self->treble_freq_old = treble_freq;
+        treble_has_changed++;
+    }
+    if (treble_has_changed) {
+        self->treble->setBiquad(bq_type_highshelf, treble_freq / self->samplerate, 0.707f, treble_boost_db);
+    }
+
+    /* Run biquad cascade filters */
+    if(mid_type == BANDPASS) {
+        applyBiquadFilter(out, in, self->mid, n_samples);
+    }
+    else {
+        applyBiquadFilter(out, in, self->bass, n_samples);
+        applyBiquadFilter(out, out, self->mid, n_samples);
+        applyBiquadFilter(out, out, self->treble, n_samples);
     }
 }
 
@@ -250,10 +278,8 @@ LV2_Handle RtNeuralGeneric::instantiate(const LV2_Descriptor* descriptor, double
     lv2_atom_forge_init(&self->forge, self->map);
     lv2_log_logger_init(&self->logger, self->map, self->log);
 
-    std::cout << "## " << __func__ << " " << __LINE__ << std::endl;
-
     // Setup initial values
-    self->in_vol_old = 1.0f;
+    self->volume_old = 1.0f;
     self->master_old = 1.0f;
 
     // Setup fixed frequency dc blocker filter (high pass)
@@ -263,19 +289,18 @@ LV2_Handle RtNeuralGeneric::instantiate(const LV2_Descriptor* descriptor, double
     self->in_lpf_f_old = samplerate / 4.0f;
     self->in_lpf = new Biquad(bq_type_lowpass, self->in_lpf_f_old / samplerate, 0.707f, 0.0f);
 
-    // Setup tone controls section
-    self->vintage = new Biquad(bq_type_peak, VINTAGE_FREQ / samplerate, 0.707f, VINTAGE_BOOST_DB);
-    self->modern = new Biquad(bq_type_peak, MODERN_FREQ / samplerate, 0.707f, MODERN_BOOST_DB);
-    self->tight = new Biquad(bq_type_peak, TIGHT_FREQ / samplerate, 0.707f, TIGHT_BOOST_DB);
-    self->bright = new Biquad(bq_type_highshelf, BRIGHT_FREQ / samplerate, 0.707f, BRIGHT_BOOST_DB);
-    self->midcut = new Biquad(bq_type_peak, MIDCUT_FREQ / samplerate, 0.707f, MIDCUT_BOOST_DB);
-
-    self->bas_boost_db_old = 0.0f;
-    self->bas = new Biquad(bq_type_peak, BAS_FREQ / samplerate, 0.707f, self->bas_boost_db_old);
+    // Setup equalizer section
+    self->bass_boost_db_old = 0.0f;
+    self->bass_freq_old = 250.0f;
+    self->bass = new Biquad(bq_type_lowshelf, self->bass_freq_old / samplerate, 0.707f, self->bass_boost_db_old);
     self->mid_boost_db_old = 0.0f;
-    self->mid = new Biquad(bq_type_peak, MID_FREQ / samplerate, 0.707f, self->mid_boost_db_old);
-    self->tre_boost_db_old = 0.0f;
-    self->tre = new Biquad(bq_type_highshelf, TRE_FREQ / samplerate, 0.707f, self->tre_boost_db_old);
+    self->mid_freq_old = 600.0f;
+    self->mid_q_old = 0.707f;
+    self->mid_type_old = 0.0f;
+    self->mid = new Biquad(bq_type_peak, self->mid_freq_old / samplerate, self->mid_q_old, self->mid_boost_db_old);
+    self->treble_boost_db_old = 0.0f;
+    self->treble_freq_old = 1500.0f;
+    self->treble = new Biquad(bq_type_highshelf, self->treble_freq_old / samplerate, 0.707f, self->treble_boost_db_old);
 
     /* Prevent audio thread to use the model */
     self->model_loaded = 0;
@@ -293,7 +318,6 @@ LV2_Handle RtNeuralGeneric::instantiate(const LV2_Descriptor* descriptor, double
 void RtNeuralGeneric::activate(LV2_Handle instance)
 {
     // TODO: include the activate function code here
-    std::cout << "## " << __func__ << " " << __LINE__ << std::endl;
 }
 
 /**********************************************************************************************************************************************************/
@@ -301,7 +325,6 @@ void RtNeuralGeneric::activate(LV2_Handle instance)
 void RtNeuralGeneric::deactivate(LV2_Handle instance)
 {
     // TODO: include the deactivate function code here
-    std::cout << "## " << __func__ << " " << __LINE__ << std::endl;
 }
 
 /**********************************************************************************************************************************************************/
@@ -318,8 +341,8 @@ void RtNeuralGeneric::connect_port(LV2_Handle instance, uint32_t port, void *dat
         case OUT_1:
             self->out_1 = (float*) data;
             break;
-        case IN_VOL:
-            self->in_vol_db = (float*) data;
+        case VOLUME:
+            self->volume_db = (float*) data;
             break;
         case PARAM1:
             self->param1 = (float*) data;
@@ -330,8 +353,8 @@ void RtNeuralGeneric::connect_port(LV2_Handle instance, uint32_t port, void *dat
         case MASTER:
             self->master_db = (float*) data;
             break;
-        case BYPASS:
-            self->bypass_sw = (float*) data;
+        case NET_BYPASS:
+            self->net_bypass = (float*) data;
             break;
         case PLUGIN_CONTROL:
             self->control_port = (const LV2_Atom_Sequence*)data;
@@ -342,36 +365,37 @@ void RtNeuralGeneric::connect_port(LV2_Handle instance, uint32_t port, void *dat
         case IN_LPF:
             self->in_lpf_f = (float*) data;
             break;
-        case PREPOST:
-            self->prepost_sw = (float*) data;
+        case EQ_POS:
+            self->eq_position = (float*) data;
             break;
-        case VM:
-            self->vintagemodern_sw = (float*) data;
+        case BASS:
+            self->bass_boost_db = (float*) data;
             break;
-        case TIGHT:
-            self->tight_sw = (float*) data;
-            break;
-        case BRIGHT:
-            self->bright_sw = (float*) data;
-            break;
-        case MIDCUT:
-            self->midcut_sw = (float*) data;
-            break;
-        case BAS:
-            self->bas_boost_db = (float*) data;
+        case BFREQ:
+            self->bass_freq = (float*) data;
             break;
         case MID:
             self->mid_boost_db = (float*) data;
             break;
-        case TRE:
-            self->tre_boost_db = (float*) data;
+        case MFREQ:
+            self->mid_freq = (float*) data;
             break;
-        case TONEBYP:
-            self->tone_ctrls_bypass_sw = (float*) data;
+        case MIDQ:
+            self->mid_q = (float*) data;
+            break;
+        case MTYPE:
+            self->mid_type = (float*) data;
+            break;
+        case TREBLE:
+            self->treble_boost_db = (float*) data;
+            break;
+        case TFREQ:
+            self->treble_freq = (float*) data;
+            break;
+        case EQ_BYPASS:
+            self->eq_bypass = (float*) data;
             break;
     }
-
-    std::cout << "## " << __func__ << " " << __LINE__ << std::endl;
 }
 
 /**********************************************************************************************************************************************************/
@@ -381,16 +405,17 @@ void RtNeuralGeneric::run(LV2_Handle instance, uint32_t n_samples)
     RtNeuralGeneric *self = (RtNeuralGeneric*) instance;
     PluginURIs* uris   = &self->uris;
 
-    float in_vol = DB_CO(*self->in_vol_db);
+    float volume = DB_CO(*self->volume_db);
     float master = DB_CO(*self->master_db);
-    float bypass_sw = *self->bypass_sw;
+    float net_bypass = *self->net_bypass;
     float in_lpf_f = *self->in_lpf_f * 1000.0f;
-    float prepost_sw = *self->prepost_sw;
+    float eq_position = *self->eq_position;
+    float eq_bypass = *self->eq_bypass;
     float param1 = *self->param1;
     float param2 = *self->param2;
 
-    if(in_vol != self->in_vol_old) {
-        self->in_vol_old = in_vol;
+    if(volume != self->volume_old) {
+        self->volume_old = volume;
     }
 
     if (in_lpf_f != self->in_lpf_f_old) { /* Update filter coeffs */
@@ -469,12 +494,12 @@ void RtNeuralGeneric::run(LV2_Handle instance, uint32_t n_samples)
 #endif
 
     /*++++++++ AUDIO DSP ++++++++*/
-    if (bypass_sw == 0.0f && self->model_loaded) {
-        applyBiquadFilter(self->out_1, self->in, self->in_lpf, n_samples); // High frequencies roll-off (lowpass)
-        applyGainRamp(self->out_1, self->out_1, self->in_vol_old, in_vol, n_samples); // Input volume
-        if(prepost_sw == 1.0f) {
-            applyToneControls(self->out_1, self->out_1, instance, n_samples); // Tone controls
-        }
+    applyBiquadFilter(self->out_1, self->in, self->in_lpf, n_samples); // High frequencies roll-off (lowpass)
+    applyGainRamp(self->out_1, self->out_1, self->volume_old, volume, n_samples); // Input volume
+    if(eq_position == 1.0f && eq_bypass == 0.0f) {
+        applyToneControls(self->out_1, self->out_1, instance, n_samples); // Equalizer section
+    }
+    if (net_bypass == 0.0f && self->model_loaded) {
         switch(self->input_size) { // Process model based on input_size (snapshot model or conditioned model)
             case 1:
                 applyModel(self->out_1, self->out_1, instance, n_samples);
@@ -488,15 +513,12 @@ void RtNeuralGeneric::run(LV2_Handle instance, uint32_t n_samples)
             default:
                 break;
         }
-        applyBiquadFilter(self->out_1, self->out_1, self->dc_blocker, n_samples); // Dc blocker filter (highpass)
-        if(prepost_sw == 0.0f) {
-            applyToneControls(self->out_1, self->out_1, instance, n_samples); // Tone controls
-        }
-        applyGainRamp(self->out_1, self->out_1, self->master_old, master, n_samples); // Master volume
     }
-    else {
-        std::copy(self->in, self->in + n_samples, self->out_1); // Passthrough
+    applyBiquadFilter(self->out_1, self->out_1, self->dc_blocker, n_samples); // Dc blocker filter (highpass)
+    if(eq_position == 0.0f && eq_bypass == 0.0f) {
+        applyToneControls(self->out_1, self->out_1, instance, n_samples); // Equalizer section
     }
+    applyGainRamp(self->out_1, self->out_1, self->master_old, master, n_samples); // Master volume
     /*++++++++ END AUDIO DSP ++++++++*/
 }
 
@@ -602,7 +624,7 @@ LV2_State_Status RtNeuralGeneric::save(LV2_Handle instance,
  * Do work in a non-realtime thread.
  * This is called for every piece of work scheduled in the audio thread using
  * self->schedule->schedule_work(). A reply can be sent back to the audio
- * thread using the provided respond function. 
+ * thread using the provided respond function.
  */
 LV2_Worker_Status RtNeuralGeneric::work(LV2_Handle instance,
     LV2_Worker_Respond_Function respond,

@@ -26,11 +26,12 @@
 /**********************************************************************************************************************************************************/
 
 typedef enum {
-    IN, OUT_1, IN_VOL, PARAM1, PARAM2, MASTER, BYPASS, PLUGIN_CONTROL, PLUGIN_NOTIFY, IN_LPF,
-    PREPOST, VM, TIGHT, BRIGHT, MIDCUT,
-    BAS, MID, TRE,
-    TONEBYP,
+    IN, OUT_1, VOLUME, PARAM1, PARAM2, MASTER, NET_BYPASS, PLUGIN_CONTROL, PLUGIN_NOTIFY, IN_LPF,
+    EQ_POS,
+    BASS, BFREQ, MID, MFREQ, MIDQ, MTYPE, TREBLE, TFREQ,
+    EQ_BYPASS,
     PLUGIN_PORT_COUNT} ports_t;
+
 typedef enum {LSTM_16, LSTM_12, GRU_12, GRU_8} rnn_t;
 
 #define PROCESS_ATOM_MESSAGES
@@ -43,19 +44,8 @@ typedef struct {
 #define DB_CO(g) ((g) > -90.0f ? powf(10.0f, (g) * 0.05f) : 0.0f)
 
 /* Defines for tone controls */
-#define BAS_FREQ 250.0f
-#define MID_FREQ 1000.0f
-#define TRE_FREQ 4000.0f
-#define VINTAGE_FREQ 120.0f
-#define VINTAGE_BOOST_DB 5.0f
-#define MODERN_FREQ 3600.0f
-#define MODERN_BOOST_DB 4.0f
-#define TIGHT_FREQ 180.0f
-#define TIGHT_BOOST_DB -6.0f
-#define BRIGHT_FREQ 4000.0f
-#define BRIGHT_BOOST_DB 8.0f
-#define MIDCUT_FREQ 400.0f
-#define MIDCUT_BOOST_DB -6.0f
+#define PEAK 0.0f
+#define BANDPASS 1.0f
 
 /**********************************************************************************************************************************************************/
 
@@ -73,27 +63,34 @@ public:
     static const void* extension_data(const char* uri);
     float *in;
     float *out_1;
-    float *in_vol_db;
-    float in_vol_old;
+    float *volume_db;
+    float volume_old;
     float *param1;
     float *param2;
     float *master_db;
     float master_old;
-    float *bypass_sw;
+    float *net_bypass;
     float *in_lpf_f;
     float in_lpf_f_old;
-    float *prepost_sw;
-    float *vintagemodern_sw;
-    float *tight_sw;
-    float *bright_sw;
-    float *midcut_sw;
-    float *bas_boost_db;
-    float bas_boost_db_old;
+    /* Eq section */
+    float *eq_position;
+    float *bass_boost_db;
+    float bass_boost_db_old;
+    float *bass_freq;
+    float bass_freq_old;
     float *mid_boost_db;
     float mid_boost_db_old;
-    float *tre_boost_db;
-    float tre_boost_db_old;
-    float *tone_ctrls_bypass_sw;
+    float *mid_freq;
+    float mid_freq_old;
+    float *mid_q;
+    float mid_q_old;
+    float *mid_type;
+    float mid_type_old;
+    float *treble_boost_db;
+    float treble_boost_db_old;
+    float *treble_freq;
+    float treble_freq_old;
+    float *eq_bypass;
 
     static LV2_State_Status restore(LV2_Handle instance,
                                        LV2_State_Retrieve_Function retrieve,
@@ -160,14 +157,9 @@ private:
 
     Biquad *dc_blocker;
     Biquad *in_lpf;
-    Biquad *vintage;
-    Biquad *modern;
-    Biquad *tight;
-    Biquad *bright;
-    Biquad *midcut;
-    Biquad *bas;
+    Biquad *bass;
     Biquad *mid;
-    Biquad *tre;
+    Biquad *treble;
 
     /* Static: only json files containing models below will be loaded */
     RTNeural::ModelT<float, 1, 1,
