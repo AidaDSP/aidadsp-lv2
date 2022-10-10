@@ -1,22 +1,23 @@
-<div class="rt-neural">
+<div class="rt-neural{{{cns}}}">
   <div mod-role="drag-handle" class="mod-drag-handle"></div>
   <div class="grid">
     <div class="head-border"></div>
     <div class="background_head">
-      <div class="mod-plugin-brand model">MoonCrunchA</div>
+      <div class="brand"><img src="/resources/img/aida.png{{{ns}}}" /></div>
       <div class="plate">
         <div class="block_name">
-          <h1>Neural <strong>Modeler</strong></h1>
+          <h1>Neural <span class="stronger">Modeler</span></h1>
+          <!-- <img src="/resources/img/aida4.png{{{ns}}}" /> -->
         </div>
       </div>
-      <div class="brand"><img src="/resources/img/aida4.png{{{ns}}}" /></div>
+      <div class="model">MoonCrunchA</div>
     </div>
 
     <div class="mod-control-group controls">
       <div class="switch-grid">
         <div class="lbl-knob">ON</div>
         <div class="flipsw" mod-role="bypass" mod-widget="switch">
-          <label>Toggle</label>
+          <div class="toggle-sw">Toggle</div>
         </div>
         <div class="lbl-knob">Off</div>
       </div>
@@ -38,9 +39,9 @@
           class="flipsw"
           mod-role="input-control-port"
           mod-widget="switch"
-          mod-port-symbol="prepost"
+          mod-port-symbol="Pre"
         >
-          <label>Toggle</label>
+          <div class="toggle-sw">Toggle</div>
         </div>
         <div class="lbl-knob">Post</div>
       </div>
@@ -81,10 +82,15 @@
       <div class="seperator-grid"></div>
       <div class="switch-grid">
         <div class="lbl-knob">ON</div>
-        <div class="flipsw" mod-role="bypass" mod-widget="switch">
-          <label>Toggle</label>
+        <div
+          class="flipsw"
+          mod-role="input-control-port"
+          mod-port-symbol="Pre"
+          mod-widget="switch"
+        >
+          <div class="toggle-sw">Toggle</div>
         </div>
-        <div class="lbl-knob">bandpass</div>
+        <div class="lbl-knob">Bandpass</div>
       </div>
       <div class="knob-grid">
         <div class="knob-scale">
