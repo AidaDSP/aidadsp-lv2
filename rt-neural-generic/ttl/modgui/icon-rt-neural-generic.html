@@ -1,69 +1,168 @@
-<div class="mod-pedal mod-combo-model-001{{{cns}}} mod-combo-model-001-0550{{{cns}}}">
-    <div mod-role="drag-handle" class="mod-drag-handle"></div>
-    <div class="mod-plugin-brand"><h1>{{brand}}</h1></div>
-    <div class="mod-plugin-name"><h1>{{label}}</h1></div>
-    <div class="mod-control-group clearfix">
-        <div class="mod-switch" mod-role="bypass">
-            <div class="mod-switch-image" mod-role="bypass-light"></div>
+<div class="rt-neural">
+  <div mod-role="drag-handle" class="mod-drag-handle"></div>
+  <div class="grid">
+    <div class="head-border"></div>
+    <div class="background_head">
+      <div class="mod-plugin-brand model">MoonCrunchA</div>
+      <div class="plate">
+        <div class="block_name">
+          <h1>Neural <strong>Modeler</strong></h1>
         </div>
-        <div class="mod-separator"></div>
-        {{#controls.0}}
-        <div class="mod-chicken-head" title="{{comment}}">
-            <div class="mod-chicken-head-image" mod-role="input-control-port" mod-port-symbol="{{symbol}}"></div>
-            <span class="mod-chicken-head-title">{{name}}</span>
-        </div>
-        {{/controls.0}}
-        {{#controls.1}}
-        <div class="mod-chicken-head" title="{{comment}}">
-            <div class="mod-chicken-head-image" mod-role="input-control-port" mod-port-symbol="{{symbol}}"></div>
-            <span class="mod-chicken-head-title">{{name}}</span>
-        </div>
-        {{/controls.1}}
-        {{#controls.2}}
-        <div class="mod-chicken-head" title="{{comment}}">
-            <div class="mod-chicken-head-image" mod-role="input-control-port" mod-port-symbol="{{symbol}}"></div>
-            <span class="mod-chicken-head-title">{{name}}</span>
-        </div>
-        {{/controls.2}}
-        {{#controls.3}}
-        <div class="mod-chicken-head" title="{{comment}}">
-            <div class="mod-chicken-head-image" mod-role="input-control-port" mod-port-symbol="{{symbol}}"></div>
-            <span class="mod-chicken-head-title">{{name}}</span>
-        </div>
-        {{/controls.3}}
+      </div>
+      <div class="brand"><img src="/resources/img/aida4.png{{{ns}}}" /></div>
     </div>
-    <div class="mod-pedal-input">
-        {{#effect.ports.audio.input}}
-        <div class="mod-input mod-input-disconnected" title="{{name}}" mod-role="input-audio-port" mod-port-symbol="{{symbol}}">
-            <div class="mod-pedal-input-image"></div>
+
+    <div class="mod-control-group controls">
+      <div class="switch-grid">
+        <div class="vintage text-switch">ON</div>
+        <div class="flipsw">
+          <input type="checkbox" id="switchMasterOn" /><label
+            for="switchMasterOn"
+            >Toggle</label
+          >
         </div>
-        {{/effect.ports.audio.input}}
-        {{#effect.ports.midi.input}}
-        <div class="mod-input mod-input-disconnected" title="{{name}}" mod-role="input-midi-port" mod-port-symbol="{{symbol}}">
-            <div class="mod-pedal-input-image"></div>
+        <div class="vintage text-switch">Off</div>
+      </div>
+      <div class="knob-grid">
+        <div class="knob-scale">
+          <div
+            class="knob-bg"
+            mod-role="input-control-port"
+            mod-widget-rotation="270"
+            mod-port-symbol="InVol"
+          ></div>
         </div>
-        {{/effect.ports.midi.input}}
-        {{#effect.ports.cv.input}}
-        <div class="mod-input mod-input-disconnected" title="{{name}}" mod-role="input-cv-port" mod-port-symbol="{{symbol}}">
-            <div class="mod-pedal-input-image"></div>
+        <div class="label">gain</div>
+      </div>
+      <div class="seperator-grid"></div>
+      <div class="switch-grid">
+        <div class="vintage text-switch">pre</div>
+        <div class="flipsw">
+          <input type="checkbox" id="switchMasterEq" /><label
+            for="switchMasterEq"
+            >Toggle</label
+          >
         </div>
-        {{/effect.ports.cv.input}}
+        <div class="modern text-switch">post</div>
+      </div>
+
+      <div class="knob-grid">
+        <div class="knob-scale">
+          <div
+            class="knob-bg"
+            mod-role="input-control-port"
+            mod-widget-rotation="270"
+            mod-port-symbol="Bas"
+          ></div>
+        </div>
+        <div class="label">bas</div>
+      </div>
+      <div class="knob-grid">
+        <div class="knob-scale">
+          <div
+            class="knob-bg"
+            mod-role="input-control-port"
+            mod-widget-rotation="270"
+            mod-port-symbol="Mid"
+          ></div>
+        </div>
+        <div class="label">MID</div>
+      </div>
+      <div class="knob-grid">
+        <div class="knob-scale">
+          <div
+            class="knob-bg"
+            mod-role="input-control-port"
+            mod-widget-rotation="270"
+            mod-port-symbol="Tre"
+          ></div>
+        </div>
+        <div class="label">TRE</div>
+      </div>
+      <div class="seperator-grid"></div>
+      <div class="switch-grid">
+        
+        <div class="flipsw">
+          <input type="checkbox" id="switchMastertight" /><label
+            for="switchMastertight"
+            >Toggle</label
+          >
+        </div>
+        <div class="modern text-switch">bandpass</div>
+      </div>      
+      <div class="knob-grid">
+        <div class="knob-scale">
+          <div
+            class="knob-bg"
+            mod-role="input-control-port"
+            mod-widget-rotation="270"
+            mod-port-symbol="Master"
+          ></div>
+        </div>
+        <div class="label">MASTER</div>
+      </div>
     </div>
-    <div class="mod-pedal-output">
-        {{#effect.ports.audio.output}}
-        <div class="mod-output mod-output-disconnected" title="{{name}}" mod-role="output-audio-port" mod-port-symbol="{{symbol}}">
-            <div class="mod-pedal-output-image"></div>
-        </div>
-        {{/effect.ports.audio.output}}
-        {{#effect.ports.midi.output}}
-        <div class="mod-output mod-output-disconnected" title="{{name}}" mod-role="output-midi-port" mod-port-symbol="{{symbol}}">
-            <div class="mod-pedal-output-image"></div>
-        </div>
-        {{/effect.ports.midi.output}}
-        {{#effect.ports.cv.output}}
-        <div class="mod-output mod-output-disconnected" title="{{name}}" mod-role="output-cv-port" mod-port-symbol="{{symbol}}">
-            <div class="mod-pedal-output-image"></div>
-        </div>
-        {{/effect.ports.cv.output}}
-    </div>
+    <!-- <div class="head-border"></div> -->
+  </div>
+</div>
+<!-- inputs/outputs -->
+<div class="mod-pedal-input">
+  {{#effect.ports.audio.input}}
+  <div
+    class="mod-input mod-input-disconnected"
+    title="{{name}}"
+    mod-role="input-audio-port"
+    mod-port-symbol="{{symbol}}"
+  >
+    <div class="mod-pedal-input-image"></div>
+  </div>
+  {{/effect.ports.audio.input}} {{#effect.ports.midi.input}}
+  <div
+    class="mod-input mod-input-disconnected"
+    title="{{name}}"
+    mod-role="input-midi-port"
+    mod-port-symbol="{{symbol}}"
+  >
+    <div class="mod-pedal-input-image"></div>
+  </div>
+  {{/effect.ports.midi.input}} {{#effect.ports.cv.input}}
+  <div
+    class="mod-input mod-input-disconnected"
+    title="{{name}}"
+    mod-role="input-cv-port"
+    mod-port-symbol="{{symbol}}"
+  >
+    <div class="mod-pedal-input-image"></div>
+  </div>
+  {{/effect.ports.cv.input}}
+</div>
+<div class="mod-pedal-output">
+  {{#effect.ports.audio.output}}
+  <div
+    class="mod-output mod-output-disconnected"
+    title="{{name}}"
+    mod-role="output-audio-port"
+    mod-port-symbol="{{symbol}}"
+  >
+    <div class="mod-pedal-output-image"></div>
+  </div>
+  {{/effect.ports.audio.output}} {{#effect.ports.midi.output}}
+  <div
+    class="mod-output mod-output-disconnected"
+    title="{{name}}"
+    mod-role="output-midi-port"
+    mod-port-symbol="{{symbol}}"
+  >
+    <div class="mod-pedal-output-image"></div>
+  </div>
+  {{/effect.ports.midi.output}} {{#effect.ports.cv.output}}
+  <div
+    class="mod-output mod-output-disconnected"
+    title="{{name}}"
+    mod-role="output-cv-port"
+    mod-port-symbol="{{symbol}}"
+  >
+    <div class="mod-pedal-output-image"></div>
+  </div>
+  {{/effect.ports.cv.output}}
 </div>
