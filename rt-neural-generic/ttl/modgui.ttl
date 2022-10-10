@@ -28,5 +28,9 @@
             lv2:index 3 ;
             lv2:symbol "Master" ;
             lv2:name "Master" ;
-        ] ;
+        ],  [
+            lv2:index 10;
+            lv2:symbol "Pre";
+            lv2:name "Pre";
+            lv2:shortname "PREPOST";]
     ] .
