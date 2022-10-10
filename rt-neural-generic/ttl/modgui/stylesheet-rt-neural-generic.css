@@ -31,6 +31,11 @@ h1 {
   font-weight: bold;
 }
 
+.lbl-knob
+{
+  font-size: 1rem;
+}
+
 /* AMPHAED */
 
 .rt-neural {
@@ -190,7 +195,7 @@ h1 {
   text-align: center;
   text-transform: uppercase;
   padding: 5px;
-  margin: 0 10px;
+  margin: 0 auto;
   border-radius: 8px;
   border: 4spx solid #000;
   grid-column: 1 / span 3;
@@ -206,6 +211,7 @@ h1 {
   border-left: 2px solid var(--brand-color);
   height: 120px;
 }
+
 /* KNOBS */
 .knob-grid {
   display: grid;
@@ -241,7 +247,7 @@ h1 {
 }
 
 .knob-scale {
-  align-self: center;
+  align-self: end;
   width: 80px;
   height: 80px;
   background: center/cover url("/resources/knobs/scale.png{{{ns}}}");
@@ -253,47 +259,17 @@ h1 {
 .knob-grid .vintage {
   align-self: flex-end;
 }
-/* switch */
+
+/* SWITCH */
+
 .switch {
   align-self: center;
-}
-
-.switch img {
-  height: 100px;
-  width: 100px;
-}
-
-.i {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  padding: 0 10px;
-  grid-column: 1 / span 5;
-  /* display: grid; */
-  height: min-content;
-  /* grid-template-columns: subgrid; */
-}
-
-.labels {
-  display: grid;
-  grid-row: 4;
-  grid-template-columns: repeat(8, 1fr);
-  grid-column: 1 / span 12;
-  border-radius: 5px;
-  margin: 5px;
-  padding: 0 10px;
-  background: rgba(231, 231, 231);
-  background: linear-gradient(
-    140deg,
-    rgba(231, 231, 231, 0.5) 0%,
-    rgba(215, 215, 215, 0.6) 52%,
-    rgba(213, 213, 213, 0.8) 100%
-  );
-  grid-template-columns: subgrid;
 }
 
 .switch-grid {
   display: grid;
   align-self: center;
+  font-size: ;
 }
 
 .switch-grid .flipsw {
@@ -304,24 +280,7 @@ h1 {
   font-size: 0.5rem;
 }
 
-input[type="checkbox"] {
-  height: 0;
-  width: 0;
-  visibility: hidden;
-}
-
-label {
-  cursor: pointer;
-  text-indent: -9999px;
-  width: 25px;
-  height: 50px;
-  background: rgb(84, 84, 84);
-  display: inline-block;
-  border-radius: 100px;
-  position: relative;
-}
-
-label .on {
+.off label {
   cursor: pointer;
   text-indent: -9999px;
   width: 25px;
@@ -332,7 +291,35 @@ label .on {
   position: relative;
 }
 
-label:after {
+.off label:after {
+  content: "";
+  position: absolute;
+  top: 5px;
+  left: 3px;
+  width: 20px;
+  height: 20px;
+  background: rgb(14, 60, 4);
+  border-radius: 90px;
+  transition: 0.3s;
+}
+
+.off label:after {
+  top: calc(-80% + 25px);
+  transform: translateY(100%);
+}
+
+.on label {
+  cursor: pointer;
+  text-indent: -9999px;
+  width: 25px;
+  height: 50px;
+  background: rgb(84, 84, 84);
+  display: inline-block;
+  border-radius: 100px;
+  position: relative;
+}
+
+.on label:after {
   content: "";
   position: absolute;
   top: 5px;
@@ -344,12 +331,7 @@ label:after {
   transition: 0.3s;
 }
 
-input:checked + label {
-  /* background: var(--brand-color); */
-  background: #777777;
-}
-
-input:checked + label:after {
+.on label:after {
   top: calc(100% - 5px);
   transform: translateY(-100%);
 }
