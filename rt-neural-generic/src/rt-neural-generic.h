@@ -26,10 +26,11 @@
 /**********************************************************************************************************************************************************/
 
 typedef enum {
-    IN, OUT_1, VOLUME, PARAM1, PARAM2, MASTER, NET_BYPASS, PLUGIN_CONTROL, PLUGIN_NOTIFY, IN_LPF,
-    EQ_POS,
-    BASS, BFREQ, MID, MFREQ, MIDQ, MTYPE, TREBLE, TFREQ,
-    EQ_BYPASS,
+    IN, OUT_1, PLUGIN_CONTROL, PLUGIN_NOTIFY,
+    IN_LPF, VOLUME,
+    NET_BYPASS, PARAM1, PARAM2,
+    EQ_BYPASS, EQ_POS, BASS, BFREQ, MID, MFREQ, MIDQ, MTYPE, TREBLE, TFREQ,
+    MASTER,
     PLUGIN_PORT_COUNT} ports_t;
 
 typedef enum {LSTM_16, LSTM_12, GRU_12, GRU_8} rnn_t;

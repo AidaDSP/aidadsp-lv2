@@ -71,45 +71,43 @@ lv2:port
     lv2:shortname "OUT";
 ],
 [
-    a lv2:ControlPort, lv2:InputPort;
+    a lv2:InputPort, atom:AtomPort;
     lv2:index 2;
+    atom:bufferType atom:Sequence;
+    atom:supports patch:Message;
+    lv2:designation lv2:control;
+    lv2:symbol "control";
+    lv2:name "Control";
+],
+[
+    a lv2:OutputPort, atom:AtomPort;
+    lv2:index 3;
+    atom:bufferType atom:Sequence;
+    atom:supports patch:Message;
+    lv2:designation lv2:control;
+    lv2:symbol "notify";
+    lv2:name "Notify";
+],
+[
+    a lv2:ControlPort, lv2:InputPort;
+    lv2:index 4;
+    lv2:symbol "INLPF";
+    lv2:name "INLPF";
+    lv2:shortname "LPF";
+    lv2:default 12.0;
+    lv2:minimum 6.0;
+    lv2:maximum 12.0;
+    units:unit units:khz;
+],
+[
+    a lv2:ControlPort, lv2:InputPort;
+    lv2:index 5;
     lv2:symbol "VOLUME";
     lv2:name "VOLUME";
     lv2:shortname "VOL";
     lv2:default -6.0;
     lv2:minimum -12.0;
     lv2:maximum 0.0;
-    units:unit units:db;
-],
-[
-    a lv2:ControlPort, lv2:InputPort;
-    lv2:index 3;
-    lv2:symbol "PARAM1";
-    lv2:name "PARAM1";
-    lv2:shortname "P1";
-    lv2:default 0;
-    lv2:minimum 0;
-    lv2:maximum 1.0;
-],
-[
-    a lv2:ControlPort, lv2:InputPort;
-    lv2:index 4;
-    lv2:symbol "PARAM2";
-    lv2:name "PARAM2";
-    lv2:shortname "P2";
-    lv2:default 0;
-    lv2:minimum 0;
-    lv2:maximum 1.0;
-],
-[
-    a lv2:ControlPort, lv2:InputPort;
-    lv2:index 5;
-    lv2:symbol "MASTER";
-    lv2:name "MASTER";
-    lv2:shortname "MST";
-    lv2:default 0;
-    lv2:minimum -15.0;
-    lv2:maximum 15;
     units:unit units:db;
 ],
 [
@@ -127,33 +125,38 @@ lv2:port
     lv2:scalePoint [rdfs:label "ON"; rdf:value 1];
 ],
 [
-    a lv2:InputPort, atom:AtomPort;
+    a lv2:ControlPort, lv2:InputPort;
     lv2:index 7;
-    atom:bufferType atom:Sequence;
-    atom:supports patch:Message;
-    lv2:designation lv2:control;
-    lv2:symbol "control";
-    lv2:name "Control";
+    lv2:symbol "PARAM1";
+    lv2:name "PARAM1";
+    lv2:shortname "P1";
+    lv2:default 0;
+    lv2:minimum 0;
+    lv2:maximum 1.0;
 ],
 [
-    a lv2:OutputPort, atom:AtomPort;
+    a lv2:ControlPort, lv2:InputPort;
     lv2:index 8;
-    atom:bufferType atom:Sequence;
-    atom:supports patch:Message;
-    lv2:designation lv2:control;
-    lv2:symbol "notify";
-    lv2:name "Notify";
+    lv2:symbol "PARAM2";
+    lv2:name "PARAM2";
+    lv2:shortname "P2";
+    lv2:default 0;
+    lv2:minimum 0;
+    lv2:maximum 1.0;
 ],
 [
     a lv2:ControlPort, lv2:InputPort;
     lv2:index 9;
-    lv2:symbol "INLPF";
-    lv2:name "INLPF";
-    lv2:shortname "LPF";
-    lv2:default 12.0;
-    lv2:minimum 6.0;
-    lv2:maximum 12.0;
-    units:unit units:khz;
+    lv2:symbol "EQBYPASS";
+    lv2:name "EQBYPASS";
+    lv2:shortname "EQBYP";
+    lv2:default 0;
+    lv2:minimum 0;
+    lv2:maximum 1;
+    lv2:portProperty lv2:integer;
+    lv2:portProperty lv2:enumeration;
+    lv2:scalePoint [rdfs:label "OFF"; rdf:value 0];
+    lv2:scalePoint [rdfs:label "ON"; rdf:value 1];
 ],
 [
     a lv2:ControlPort, lv2:InputPort;
@@ -262,16 +265,13 @@ lv2:port
 [
     a lv2:ControlPort, lv2:InputPort;
     lv2:index 19;
-    lv2:symbol "EQBYPASS";
-    lv2:name "EQBYPASS";
-    lv2:shortname "EQBYP";
-    lv2:default 1;
-    lv2:minimum 0;
-    lv2:maximum 1;
-    lv2:portProperty lv2:integer;
-    lv2:portProperty lv2:enumeration;
-    lv2:scalePoint [rdfs:label "OFF"; rdf:value 0];
-    lv2:scalePoint [rdfs:label "ON"; rdf:value 1];
+    lv2:symbol "MASTER";
+    lv2:name "MASTER";
+    lv2:shortname "MST";
+    lv2:default 0;
+    lv2:minimum -15.0;
+    lv2:maximum 15;
+    units:unit units:db;
 ];
 
 state:state [
