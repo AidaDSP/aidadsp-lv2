@@ -14,14 +14,11 @@
 
     <div class="mod-control-group controls">
       <div class="switch-grid">
-        <div class="vintage text-switch">ON</div>
-        <div class="flipsw">
-          <input type="checkbox" id="switchMasterOn" /><label
-            for="switchMasterOn"
-            >Toggle</label
-          >
+        <div class="lbl-knob">ON</div>
+        <div class="flipsw" mod-role="bypass" mod-widget="switch">
+          <label>Toggle</label>
         </div>
-        <div class="vintage text-switch">Off</div>
+        <div class="lbl-knob">Off</div>
       </div>
       <div class="knob-grid">
         <div class="knob-scale">
@@ -32,18 +29,20 @@
             mod-port-symbol="InVol"
           ></div>
         </div>
-        <div class="label">gain</div>
+        <div class="lbl-knob">gain</div>
       </div>
       <div class="seperator-grid"></div>
       <div class="switch-grid">
-        <div class="vintage text-switch">pre</div>
-        <div class="flipsw">
-          <input type="checkbox" id="switchMasterEq" /><label
-            for="switchMasterEq"
-            >Toggle</label
-          >
+        <div class="lbl-knob">Pre</div>
+        <div
+          class="flipsw"
+          mod-role="input-control-port"
+          mod-widget="switch"
+          mod-port-symbol="prepost"
+        >
+          <label>Toggle</label>
         </div>
-        <div class="modern text-switch">post</div>
+        <div class="lbl-knob">Post</div>
       </div>
 
       <div class="knob-grid">
@@ -55,7 +54,7 @@
             mod-port-symbol="Bas"
           ></div>
         </div>
-        <div class="label">bas</div>
+        <div class="lbl-knob">bas</div>
       </div>
       <div class="knob-grid">
         <div class="knob-scale">
@@ -66,7 +65,7 @@
             mod-port-symbol="Mid"
           ></div>
         </div>
-        <div class="label">MID</div>
+        <div class="lbl-knob">MID</div>
       </div>
       <div class="knob-grid">
         <div class="knob-scale">
@@ -77,19 +76,16 @@
             mod-port-symbol="Tre"
           ></div>
         </div>
-        <div class="label">TRE</div>
+        <div class="lbl-knob">TRE</div>
       </div>
       <div class="seperator-grid"></div>
       <div class="switch-grid">
-        
-        <div class="flipsw">
-          <input type="checkbox" id="switchMastertight" /><label
-            for="switchMastertight"
-            >Toggle</label
-          >
+        <div class="lbl-knob">ON</div>
+        <div class="flipsw" mod-role="bypass" mod-widget="switch">
+          <label>Toggle</label>
         </div>
-        <div class="modern text-switch">bandpass</div>
-      </div>      
+        <div class="lbl-knob">bandpass</div>
+      </div>
       <div class="knob-grid">
         <div class="knob-scale">
           <div
