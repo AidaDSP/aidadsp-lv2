@@ -19,7 +19,15 @@
     drop-shadow(0 16px 16px rgba(0, 0, 0, 0.05));
 }
 
-h1 {
+.rt-neural {
+  border-radius: 5px;
+  background-repeat: no-repeats;
+  color: white;
+  /* width: var(--plugin-width); */
+  /* width: 800px; */
+}
+
+.rt-neural h1 {
   font-family: "conthrax-sb", sans-serif !important;
   text-align: center;
   text-transform: uppercase;
@@ -44,13 +52,7 @@ h1 .stronger {
 
 /* AMPHAED */
 
-.rt-neural {
-  border-radius: 5px;
-  background-repeat: no-repeats;
-  color: white;
-  /* width: var(--plugin-width); */
-  /* width: 800px; */
-}
+
 
 .grid {
   display: grid;
@@ -107,6 +109,26 @@ h1 .stronger {
     rgb(26, 29, 27);
   background-size: 40px 40px;
 }
+
+/* animation 
+if you want to go bonkers bind it to a gate and animate accordingly */
+/* .background_head {
+  background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
+  background-size: 400% 400%;
+  animation: gradient 15s ease infinite;
+}
+
+@keyframes gradient {
+  0% {
+      background-position: 0% 50%;
+  }
+  50% {
+      background-position: 100% 50%;
+  }
+  100% {
+      background-position: 0% 50%;
+  }
+} */
 
 .block_name {
   padding: 15px 25px;
@@ -259,7 +281,7 @@ h1 .stronger {
   height: 20px;
   background: rgb(14, 60, 4);
   border-radius: 90px;
-  transition: 0.5s;
+  transition: 0.2s;
 }
 
 .off .toggle-sw:after {
