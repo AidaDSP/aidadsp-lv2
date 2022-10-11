@@ -1,4 +1,4 @@
-<div class="rt-neural{{{cns}}}">
+<div class="rt-neural">
   <div mod-role="drag-handle" class="mod-drag-handle"></div>
   <div class="grid">
     <div class="head-border"></div>
@@ -10,7 +10,17 @@
           <!-- <img src="/resources/img/aida4.png{{{ns}}}" /> -->
         </div>
       </div>
-      <div class="model">MoonCrunchA</div>
+      {{#controls.7}}
+      <div class="model mod-enumerated mod-enumerated-1" mod-role="input-control-port" mod-port-symbol="{{symbol}}" mod-widget="custom-select">
+        <div mod-role="input-control-value" mod-port-symbol="{{symbol}}" class="mod-enumerated-selected"></div>
+        <div class="mod-enumerated-list">
+          {{#scalePoints}}
+          <div mod-role="enumeration-option" mod-port-value="{{value}}">{{label}}</div>
+          {{/scalePoints}}
+        </div>
+      </div>
+      {{/controls.7}}
+      <!-- <div class="model">MoonCrunchA</div> -->
     </div>
 
     <div class="mod-control-group controls">
@@ -27,23 +37,23 @@
             class="knob-bg"
             mod-role="input-control-port"
             mod-widget-rotation="270"
-            mod-port-symbol="InVol"
+            mod-port-symbol="INLPF"
           ></div>
         </div>
-        <div class="lbl-knob">gain</div>
+        <div class="lbl-knob">PREGAIN</div>
       </div>
       <div class="seperator-grid"></div>
       <div class="switch-grid">
-        <div class="lbl-knob">Pre</div>
+        <div class="lbl-knob">Post</div>
         <div
           class="flipsw"
           mod-role="input-control-port"
           mod-widget="switch"
-          mod-port-symbol="Pre"
+          mod-port-symbol="EQPOS"
         >
           <div class="toggle-sw">Toggle</div>
         </div>
-        <div class="lbl-knob">Post</div>
+        <div class="lbl-knob">Pre</div>
       </div>
 
       <div class="knob-grid">
@@ -52,10 +62,10 @@
             class="knob-bg"
             mod-role="input-control-port"
             mod-widget-rotation="270"
-            mod-port-symbol="Bas"
+            mod-port-symbol="BASS"
           ></div>
         </div>
-        <div class="lbl-knob">bas</div>
+        <div class="lbl-knob">Bass</div>
       </div>
       <div class="knob-grid">
         <div class="knob-scale">
@@ -63,10 +73,10 @@
             class="knob-bg"
             mod-role="input-control-port"
             mod-widget-rotation="270"
-            mod-port-symbol="Mid"
+            mod-port-symbol="MID"
           ></div>
         </div>
-        <div class="lbl-knob">MID</div>
+        <div class="lbl-knob">Middle</div>
       </div>
       <div class="knob-grid">
         <div class="knob-scale">
@@ -74,10 +84,10 @@
             class="knob-bg"
             mod-role="input-control-port"
             mod-widget-rotation="270"
-            mod-port-symbol="Tre"
+            mod-port-symbol="TREBLE"
           ></div>
         </div>
-        <div class="lbl-knob">TRE</div>
+        <div class="lbl-knob">Treble</div>
       </div>
       <div class="seperator-grid"></div>
       <div class="switch-grid">
@@ -85,8 +95,8 @@
         <div
           class="flipsw"
           mod-role="input-control-port"
-          mod-port-symbol="Pre"
           mod-widget="switch"
+          mod-port-symbol="MTYPE"
         >
           <div class="toggle-sw">Toggle</div>
         </div>
@@ -98,7 +108,7 @@
             class="knob-bg"
             mod-role="input-control-port"
             mod-widget-rotation="270"
-            mod-port-symbol="Master"
+            mod-port-symbol="VOLUME"
           ></div>
         </div>
         <div class="label">MASTER</div>
