@@ -27,7 +27,7 @@
 
 typedef enum {
     IN, OUT_1, PLUGIN_CONTROL, PLUGIN_NOTIFY,
-    IN_LPF, VOLUME,
+    IN_LPF, PREGAIN,
     NET_BYPASS, PARAM1, PARAM2,
     EQ_BYPASS, EQ_POS, BASS, BFREQ, MID, MFREQ, MIDQ, MTYPE, TREBLE, TFREQ,
     MASTER,
@@ -64,8 +64,8 @@ public:
     static const void* extension_data(const char* uri);
     float *in;
     float *out_1;
-    float *volume_db;
-    float volume_old;
+    float *pregain_db;
+    float pregain_old;
     float *param1;
     float *param2;
     float *master_db;

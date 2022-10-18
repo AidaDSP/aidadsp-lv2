@@ -279,7 +279,7 @@ LV2_Handle RtNeuralGeneric::instantiate(const LV2_Descriptor* descriptor, double
     lv2_log_logger_init(&self->logger, self->map, self->log);
 
     // Setup initial values
-    self->volume_old = 1.0f;
+    self->pregain_old = 1.0f;
     self->master_old = 1.0f;
 
     // Setup fixed frequency dc blocker filter (high pass)
@@ -341,8 +341,8 @@ void RtNeuralGeneric::connect_port(LV2_Handle instance, uint32_t port, void *dat
         case OUT_1:
             self->out_1 = (float*) data;
             break;
-        case VOLUME:
-            self->volume_db = (float*) data;
+        case PREGAIN:
+            self->pregain_db = (float*) data;
             break;
         case PARAM1:
             self->param1 = (float*) data;
@@ -405,7 +405,7 @@ void RtNeuralGeneric::run(LV2_Handle instance, uint32_t n_samples)
     RtNeuralGeneric *self = (RtNeuralGeneric*) instance;
     PluginURIs* uris   = &self->uris;
 
-    float volume = DB_CO(*self->volume_db);
+    float pregain = DB_CO(*self->pregain_db);
     float master = DB_CO(*self->master_db);
     float net_bypass = *self->net_bypass;
     float in_lpf_f = *self->in_lpf_f * 1000.0f;
@@ -414,8 +414,8 @@ void RtNeuralGeneric::run(LV2_Handle instance, uint32_t n_samples)
     float param1 = *self->param1;
     float param2 = *self->param2;
 
-    if(volume != self->volume_old) {
-        self->volume_old = volume;
+    if(pregain != self->pregain_old) {
+        self->pregain_old = pregain;
     }
 
     if (in_lpf_f != self->in_lpf_f_old) { /* Update filter coeffs */
@@ -495,7 +495,7 @@ void RtNeuralGeneric::run(LV2_Handle instance, uint32_t n_samples)
 
     /*++++++++ AUDIO DSP ++++++++*/
     applyBiquadFilter(self->out_1, self->in, self->in_lpf, n_samples); // High frequencies roll-off (lowpass)
-    applyGainRamp(self->out_1, self->out_1, self->volume_old, volume, n_samples); // Input volume
+    applyGainRamp(self->out_1, self->out_1, self->pregain_old, pregain, n_samples); // Pre-gain
     if(eq_position == 1.0f && eq_bypass == 0.0f) {
         applyToneControls(self->out_1, self->out_1, instance, n_samples); // Equalizer section
     }
