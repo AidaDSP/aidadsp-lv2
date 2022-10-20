@@ -61,14 +61,12 @@ lv2:port
     lv2:index 0;
     lv2:symbol "IN";
     lv2:name "IN";
-    lv2:shortname "IN";
 ],
 [
     a lv2:AudioPort, lv2:OutputPort;
     lv2:index 1;
     lv2:symbol "OUT";
     lv2:name "OUT";
-    lv2:shortname "OUT";
 ],
 [
     a lv2:InputPort, atom:AtomPort;
@@ -76,8 +74,8 @@ lv2:port
     atom:bufferType atom:Sequence;
     atom:supports patch:Message;
     lv2:designation lv2:control;
-    lv2:symbol "control";
-    lv2:name "Control";
+    lv2:symbol "CONTROL";
+    lv2:name "CONTROL";
 ],
 [
     a lv2:OutputPort, atom:AtomPort;
@@ -85,15 +83,14 @@ lv2:port
     atom:bufferType atom:Sequence;
     atom:supports patch:Message;
     lv2:designation lv2:control;
-    lv2:symbol "notify";
-    lv2:name "Notify";
+    lv2:symbol "NOTIFY";
+    lv2:name "NOTIFY";
 ],
 [
     a lv2:ControlPort, lv2:InputPort;
     lv2:index 4;
     lv2:symbol "INLPF";
     lv2:name "INLPF";
-    lv2:shortname "LPF";
     lv2:default 12.0;
     lv2:minimum 6.0;
     lv2:maximum 12.0;
@@ -104,7 +101,6 @@ lv2:port
     lv2:index 5;
     lv2:symbol "PREGAIN";
     lv2:name "PREGAIN";
-    lv2:shortname "VOL";
     lv2:default -6.0;
     lv2:minimum -12.0;
     lv2:maximum 0.0;
@@ -115,7 +111,6 @@ lv2:port
     lv2:index 6;
     lv2:symbol "NETBYPASS";
     lv2:name "NETBYPASS";
-    lv2:shortname "BYP";
     lv2:default 0;
     lv2:minimum 0;
     lv2:maximum 1;
@@ -129,7 +124,6 @@ lv2:port
     lv2:index 7;
     lv2:symbol "PARAM1";
     lv2:name "PARAM1";
-    lv2:shortname "P1";
     lv2:default 0;
     lv2:minimum 0;
     lv2:maximum 1.0;
@@ -139,7 +133,6 @@ lv2:port
     lv2:index 8;
     lv2:symbol "PARAM2";
     lv2:name "PARAM2";
-    lv2:shortname "P2";
     lv2:default 0;
     lv2:minimum 0;
     lv2:maximum 1.0;
@@ -149,7 +142,6 @@ lv2:port
     lv2:index 9;
     lv2:symbol "EQBYPASS";
     lv2:name "EQBYPASS";
-    lv2:shortname "EQBYP";
     lv2:default 0;
     lv2:minimum 0;
     lv2:maximum 1;
@@ -163,7 +155,6 @@ lv2:port
     lv2:index 10;
     lv2:symbol "EQPOS";
     lv2:name "EQPOS";
-    lv2:shortname "POS";
     lv2:default 0;
     lv2:minimum 0;
     lv2:maximum 1;
@@ -177,7 +168,6 @@ lv2:port
     lv2:index 11;
     lv2:symbol "BASS";
     lv2:name "BASS";
-    lv2:shortname "BASS";
     lv2:default 0;
     lv2:minimum -8.0;
     lv2:maximum 8;
@@ -188,7 +178,6 @@ lv2:port
     lv2:index 12;
     lv2:symbol "BFREQ";
     lv2:name "BFREQ";
-    lv2:shortname "BFREQ";
     lv2:default 250.0;
     lv2:minimum 25.0;
     lv2:maximum 1000.0;
@@ -199,7 +188,6 @@ lv2:port
     lv2:index 13;
     lv2:symbol "MID";
     lv2:name "MID";
-    lv2:shortname "MID";
     lv2:default 0;
     lv2:minimum -8.0;
     lv2:maximum 8;
@@ -210,7 +198,6 @@ lv2:port
     lv2:index 14;
     lv2:symbol "MFREQ";
     lv2:name "MFREQ";
-    lv2:shortname "MFREQ";
     lv2:default 600.0;
     lv2:minimum 25.0;
     lv2:maximum 10000.0;
@@ -221,7 +208,6 @@ lv2:port
     lv2:index 15;
     lv2:symbol "MIDQ";
     lv2:name "MIDQ";
-    lv2:shortname "MIDQ";
     lv2:default 0.707;
     lv2:minimum 0.35;
     lv2:maximum 5.0;
@@ -231,7 +217,6 @@ lv2:port
     lv2:index 16;
     lv2:symbol "MTYPE";
     lv2:name "MTYPE";
-    lv2:shortname "MTYPE";
     lv2:default 0;
     lv2:minimum 0;
     lv2:maximum 1;
@@ -245,7 +230,6 @@ lv2:port
     lv2:index 17;
     lv2:symbol "TREBLE";
     lv2:name "TREBLE";
-    lv2:shortname "TREBLE";
     lv2:default 0;
     lv2:minimum -8.0;
     lv2:maximum 8;
@@ -256,7 +240,6 @@ lv2:port
     lv2:index 18;
     lv2:symbol "TFREQ";
     lv2:name "TFREQ";
-    lv2:shortname "TFREQ";
     lv2:default 600.0;
     lv2:minimum 25.0;
     lv2:maximum 10000.0;
@@ -267,7 +250,6 @@ lv2:port
     lv2:index 19;
     lv2:symbol "MASTER";
     lv2:name "MASTER";
-    lv2:shortname "MST";
     lv2:default 0;
     lv2:minimum -15.0;
     lv2:maximum 15;
