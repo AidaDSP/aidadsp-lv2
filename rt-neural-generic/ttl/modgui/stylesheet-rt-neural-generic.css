@@ -186,7 +186,7 @@ if you want to go bonkers bind it to a gate and animate accordingly */
 
 /* CONTROLS */
 
-.controls {
+.rt-neural-controls {
   display: grid;
   grid-column: 1 / span 3;
   grid-template-columns: repeat(10, 1fr);
