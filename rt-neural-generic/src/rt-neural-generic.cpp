@@ -26,7 +26,7 @@ const LV2_Descriptor* lv2_descriptor(uint32_t index)
 
 // Ramp calculation
 float RtNeuralGeneric::rampValue(float start, float end, uint32_t n_samples, uint32_t index) {
-    return (start + ((end - start)/n_samples) * index);
+    return (start + ((end - start)/n_samples) * (index+1));
 }
 
 /**********************************************************************************************************************************************************/
@@ -414,17 +414,9 @@ void RtNeuralGeneric::run(LV2_Handle instance, uint32_t n_samples)
     float param1 = *self->param1;
     float param2 = *self->param2;
 
-    if(pregain != self->pregain_old) {
-        self->pregain_old = pregain;
-    }
-
     if (in_lpf_f != self->in_lpf_f_old) { /* Update filter coeffs */
         self->in_lpf->setBiquad(bq_type_lowpass, in_lpf_f / self->samplerate, 0.707f, 0.0f);
         self->in_lpf_f_old = in_lpf_f;
-    }
-
-    if (master != self->master_old) {
-        self->master_old = master;
     }
 
 #ifdef PROCESS_ATOM_MESSAGES
@@ -519,6 +511,8 @@ void RtNeuralGeneric::run(LV2_Handle instance, uint32_t n_samples)
         applyToneControls(self->out_1, self->out_1, instance, n_samples); // Equalizer section
     }
     applyGainRamp(self->out_1, self->out_1, self->master_old, master, n_samples); // Master volume
+    self->pregain_old = pregain;
+    self->master_old = master;
     /*++++++++ END AUDIO DSP ++++++++*/
 }
 
