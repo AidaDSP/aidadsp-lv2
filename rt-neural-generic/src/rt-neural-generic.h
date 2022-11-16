@@ -33,7 +33,7 @@ typedef enum {
     MASTER,
     PLUGIN_PORT_COUNT} ports_t;
 
-typedef enum {LSTM_16, LSTM_12, GRU_12, GRU_8} rnn_t;
+typedef enum {LSTM_40, LSTM_20, LSTM_16, LSTM_12, GRU_12, GRU_8} rnn_t;
 
 #define PROCESS_ATOM_MESSAGES
 typedef struct {
@@ -163,6 +163,12 @@ private:
     Biquad *treble;
 
     /* Static: only json files containing models below will be loaded */
+    RTNeural::ModelT<float, 1, 1,
+        RTNeural::LSTMLayerT<float, 1, 40>,
+        RTNeural::DenseT<float, 40, 1>> lstm_40;
+    RTNeural::ModelT<float, 1, 1,
+        RTNeural::LSTMLayerT<float, 1, 20>,
+        RTNeural::DenseT<float, 20, 1>> lstm_20;
     RTNeural::ModelT<float, 1, 1,
         RTNeural::LSTMLayerT<float, 1, 16>,
         RTNeural::DenseT<float, 16, 1>> lstm_16;

@@ -176,6 +176,18 @@ void RtNeuralGeneric::applyModel(float *out, const float *in, float param1, LV2_
     self->inArray1[1] = param1;
     switch((rnn_t)self->model_index)
     {
+        case LSTM_40:
+            for(i=0; i<n_samples; i++) {
+                self->inArray1[0] = in[i];
+                out[i] = self->lstm_40.forward(self->inArray1) + (in[i] * skip);
+            }
+            break;
+        case LSTM_20:
+            for(i=0; i<n_samples; i++) {
+                self->inArray1[0] = in[i];
+                out[i] = self->lstm_20.forward(self->inArray1) + (in[i] * skip);
+            }
+            break;
         case LSTM_16:
             for(i=0; i<n_samples; i++) {
                 self->inArray1[0] = in[i];
@@ -217,6 +229,18 @@ void RtNeuralGeneric::applyModel(float *out, const float *in, float param1, floa
     self->inArray2[2] = param2;
     switch((rnn_t)self->model_index)
     {
+        case LSTM_40:
+            for(i=0; i<n_samples; i++) {
+                self->inArray2[0] = in[i];
+                out[i] = self->lstm_40.forward(self->inArray2) + (in[i] * skip);
+            }
+            break;
+        case LSTM_20:
+            for(i=0; i<n_samples; i++) {
+                self->inArray2[0] = in[i];
+                out[i] = self->lstm_20.forward(self->inArray2) + (in[i] * skip);
+            }
+            break;
         case LSTM_16:
             for(i=0; i<n_samples; i++) {
                 self->inArray2[0] = in[i];
@@ -709,7 +733,13 @@ int RtNeuralGeneric::loadModel(LV2_Handle instance, const char *path)
         self->hidden_size = modelData["layers"][self->n_layers-1-1]["shape"].back().get<int>();
 
         if(self->type == std::string("lstm")) {
-            if(self->hidden_size == 16) {
+            if(self->hidden_size == 40) {
+                self->model_index = LSTM_40;
+            }
+            else if(self->hidden_size == 20) {
+                self->model_index = LSTM_20;
+            }
+            else if(self->hidden_size == 16) {
                 self->model_index = LSTM_16;
             }
             else if(self->hidden_size == 12) {
@@ -728,6 +758,12 @@ int RtNeuralGeneric::loadModel(LV2_Handle instance, const char *path)
         std::ifstream jsonStream2(filePath, std::ifstream::binary);
         switch((rnn_t)self->model_index)
         {
+            case LSTM_40:
+                self->lstm_40.parseJson(jsonStream2, true);
+                break;
+            case LSTM_20:
+                self->lstm_20.parseJson(jsonStream2, true);
+                break;
             case LSTM_16:
                 self->lstm_16.parseJson(jsonStream2, true);
                 break;
@@ -753,6 +789,12 @@ int RtNeuralGeneric::loadModel(LV2_Handle instance, const char *path)
     // of your model (if the model has state).
     switch(self->model_index)
     {
+        case LSTM_40:
+            self->lstm_40.reset();
+            break;
+        case LSTM_20:
+            self->lstm_20.reset();
+            break;
         case LSTM_16:
             self->lstm_16.reset();
             break;
