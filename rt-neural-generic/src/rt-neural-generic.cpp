@@ -140,6 +140,16 @@ void RtNeuralGeneric::applyModel(float *out, const float *in, LV2_Handle instanc
     int skip = self->input_skip;
     switch((rnn_t)self->model_index)
     {
+        case LSTM_40:
+            for(i=0; i<n_samples; i++) {
+                out[i] = self->lstm_40.forward(in + i) + (in[i] * skip);
+            }
+            break;
+        case LSTM_20:
+            for(i=0; i<n_samples; i++) {
+                out[i] = self->lstm_20.forward(in + i) + (in[i] * skip);
+            }
+            break;
         case LSTM_16:
             for(i=0; i<n_samples; i++) {
                 out[i] = self->lstm_16.forward(in + i) + (in[i] * skip);
