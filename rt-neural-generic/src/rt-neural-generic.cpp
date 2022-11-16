@@ -566,7 +566,6 @@ LV2_State_Status RtNeuralGeneric::restore(LV2_Handle instance,
         lv2_log_note(&self->logger, "Restoring file %s\n", path);
         res = self->loadModel(instance, path);
         if (res) {
-            lv2_log_error(&self->logger, "File %s couldn't be loaded\n", path);
             return LV2_STATE_ERR_UNKNOWN;
         } else {
             self->model_loaded = 1; // Unlock model usage in dsp
@@ -641,7 +640,9 @@ LV2_Worker_Status RtNeuralGeneric::work(LV2_Handle instance,
     }
 
     res = self->loadModel(instance, (const char*)(LV2_ATOM_BODY_CONST(file_path)));
-    if (!res) {
+    if (res) {
+        return LV2_WORKER_ERR_UNKNOWN;
+    } else {
         // Model is ready, send response to run() to enable dsp.
         respond(handle, file_path->size, LV2_ATOM_BODY_CONST(file_path));
     }
