@@ -742,6 +742,8 @@ int RtNeuralGeneric::loadModel(LV2_Handle instance, const char *path)
         self->type = modelData["layers"][self->n_layers-1-1]["type"];
         self->hidden_size = modelData["layers"][self->n_layers-1-1]["shape"].back().get<int>();
 
+        self->model_index = -1;
+
         if(self->type == std::string("lstm")) {
             if(self->hidden_size == 40) {
                 self->model_index = LSTM_40;
@@ -764,6 +766,9 @@ int RtNeuralGeneric::loadModel(LV2_Handle instance, const char *path)
                 self->model_index = GRU_8;
             }
         }
+
+        if(self->model_index < 0)
+            throw std::invalid_argument( "Unsupported model type" );
 
         std::ifstream jsonStream2(filePath, std::ifstream::binary);
         switch((rnn_t)self->model_index)
