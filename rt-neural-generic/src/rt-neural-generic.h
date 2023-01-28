@@ -29,7 +29,7 @@ typedef enum {
     IN, OUT_1, PLUGIN_CONTROL, PLUGIN_NOTIFY,
     IN_LPF, PREGAIN,
     NET_BYPASS, PARAM1, PARAM2,
-    EQ_BYPASS, EQ_POS, BASS, BFREQ, MID, MFREQ, MIDQ, MTYPE, TREBLE, TFREQ,
+    EQ_BYPASS, EQ_POS, BASS, BFREQ, MID, MFREQ, MIDQ, MTYPE, TREBLE, TFREQ, DEPTH, PRESENCE,
     MASTER,
     PLUGIN_PORT_COUNT} ports_t;
 
@@ -47,6 +47,10 @@ typedef struct {
 /* Defines for tone controls */
 #define PEAK 0.0f
 #define BANDPASS 1.0f
+#define DEPTH_FREQ 75.0f
+#define DEPTH_Q 0.707f
+#define PRESENCE_FREQ 900.0f
+#define PRESENCE_Q 0.707f
 
 /**********************************************************************************************************************************************************/
 
@@ -91,6 +95,10 @@ public:
     float treble_boost_db_old;
     float *treble_freq;
     float treble_freq_old;
+    float *depth_boost_db;
+    float depth_boost_db_old;
+    float *presence_boost_db;
+    float presence_boost_db_old;
     float *eq_bypass;
 
     static LV2_State_Status restore(LV2_Handle instance,
@@ -161,6 +169,8 @@ private:
     Biquad *bass;
     Biquad *mid;
     Biquad *treble;
+    Biquad *depth;
+    Biquad *presence;
 
     /* Static: only json files containing models below will be loaded */
     RTNeural::ModelT<float, 1, 1,

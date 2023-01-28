@@ -64,6 +64,8 @@ void RtNeuralGeneric::applyToneControls(float *out, const float *in, LV2_Handle 
     float treble_boost_db = *self->treble_boost_db;
     float treble_freq = *self->treble_freq;
     uint8_t treble_has_changed = 0;
+    float depth_boost_db = *self->depth_boost_db;
+    float presence_boost_db = *self->presence_boost_db;
 
     /* Bass */
     if (bass_boost_db != self->bass_boost_db_old) {
@@ -100,7 +102,7 @@ void RtNeuralGeneric::applyToneControls(float *out, const float *in, LV2_Handle 
             self->mid->setBiquad(bq_type_bandpass, mid_freq / self->samplerate, mid_q, mid_boost_db);
         }
         else {
-            self->mid->setBiquad(bq_type_lowshelf, mid_freq / self->samplerate, mid_q, mid_boost_db);
+            self->mid->setBiquad(bq_type_peak, mid_freq / self->samplerate, mid_q, mid_boost_db);
         }
     }
 
@@ -117,14 +119,26 @@ void RtNeuralGeneric::applyToneControls(float *out, const float *in, LV2_Handle 
         self->treble->setBiquad(bq_type_highshelf, treble_freq / self->samplerate, 0.707f, treble_boost_db);
     }
 
+    /* Depth & Presence */
+    if(depth_boost_db != self->depth_boost_db_old) {
+        self->depth_boost_db_old = depth_boost_db;
+        self->depth->setBiquad(bq_type_peak, DEPTH_FREQ / self->samplerate, DEPTH_Q, depth_boost_db);
+    }
+    if(presence_boost_db != self->presence_boost_db_old) {
+        self->presence_boost_db_old = presence_boost_db;
+        self->presence->setBiquad(bq_type_highshelf, PRESENCE_FREQ / self->samplerate, PRESENCE_Q, presence_boost_db);
+    }
+
     /* Run biquad cascade filters */
     if(mid_type == BANDPASS) {
         applyBiquadFilter(out, in, self->mid, n_samples);
     }
     else {
-        applyBiquadFilter(out, in, self->bass, n_samples);
+        applyBiquadFilter(out, in, self->depth, n_samples);
+        applyBiquadFilter(out, out, self->bass, n_samples);
         applyBiquadFilter(out, out, self->mid, n_samples);
         applyBiquadFilter(out, out, self->treble, n_samples);
+        applyBiquadFilter(out, out, self->presence, n_samples);
     }
 }
 
@@ -335,6 +349,10 @@ LV2_Handle RtNeuralGeneric::instantiate(const LV2_Descriptor* descriptor, double
     self->treble_boost_db_old = 0.0f;
     self->treble_freq_old = 1500.0f;
     self->treble = new Biquad(bq_type_highshelf, self->treble_freq_old / samplerate, 0.707f, self->treble_boost_db_old);
+    self->depth_boost_db_old = 0.0f;
+    self->depth = new Biquad(bq_type_peak, DEPTH_FREQ / samplerate, DEPTH_Q, self->depth_boost_db_old);
+    self->presence_boost_db_old = 0.0f;
+    self->presence = new Biquad(bq_type_highshelf, PRESENCE_FREQ / samplerate, PRESENCE_Q, self->presence_boost_db_old);
 
     /* Prevent audio thread to use the model */
     self->model_loaded = 0;
@@ -425,6 +443,12 @@ void RtNeuralGeneric::connect_port(LV2_Handle instance, uint32_t port, void *dat
             break;
         case TFREQ:
             self->treble_freq = (float*) data;
+            break;
+        case DEPTH:
+            self->depth_boost_db = (float*) data;
+            break;
+        case PRESENCE:
+            self->presence_boost_db = (float*) data;
             break;
         case EQ_BYPASS:
             self->eq_bypass = (float*) data;

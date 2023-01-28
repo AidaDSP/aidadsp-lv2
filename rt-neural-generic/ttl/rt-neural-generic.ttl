@@ -244,6 +244,26 @@ lv2:port
 [
     a lv2:ControlPort, lv2:InputPort;
     lv2:index 19;
+    lv2:symbol "DEPTH";
+    lv2:name "DEPTH";
+    lv2:default 0;
+    lv2:minimum -8.0;
+    lv2:maximum 8;
+    units:unit units:db;
+],
+[
+    a lv2:ControlPort, lv2:InputPort;
+    lv2:index 20;
+    lv2:symbol "PRESENCE";
+    lv2:name "PRESENCE";
+    lv2:default 0;
+    lv2:minimum -8.0;
+    lv2:maximum 8;
+    units:unit units:db;
+],
+[
+    a lv2:ControlPort, lv2:InputPort;
+    lv2:index 21;
     lv2:symbol "MASTER";
     lv2:name "MASTER";
     lv2:default 0;
