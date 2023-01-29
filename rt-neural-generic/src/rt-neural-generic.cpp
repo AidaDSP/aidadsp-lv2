@@ -197,12 +197,12 @@ void RtNeuralGeneric::applyModel(float *out, const float *in, float param1, LV2_
     RtNeuralGeneric *self = (RtNeuralGeneric*) instance;
     uint32_t i;
     int skip = self->input_skip;
-    self->inArray1[1] = param1;
     switch((rnn_t)self->model_index)
     {
         case LSTM_40_cond1:
             for(i=0; i<n_samples; i++) {
                 self->inArray1[0] = in[i];
+                self->inArray1[1] = self->rampValue(self->inArray1[1], param1, n_samples, i);
                 out[i] = self->lstm_40_cond1.forward(self->inArray1) + (in[i] * skip);
             }
             break;
@@ -219,13 +219,13 @@ void RtNeuralGeneric::applyModel(float *out, const float *in, float param1, floa
     RtNeuralGeneric *self = (RtNeuralGeneric*) instance;
     uint32_t i;
     int skip = self->input_skip;
-    self->inArray2[1] = param1;
-    self->inArray2[2] = param2;
     switch((rnn_t)self->model_index)
     {
         case LSTM_40_cond2:
             for(i=0; i<n_samples; i++) {
                 self->inArray2[0] = in[i];
+                self->inArray1[1] = self->rampValue(self->inArray1[1], param1, n_samples, i);
+                self->inArray1[2] = self->rampValue(self->inArray1[2], param2, n_samples, i);
                 out[i] = self->lstm_40.forward(self->inArray2) + (in[i] * skip);
             }
             break;
