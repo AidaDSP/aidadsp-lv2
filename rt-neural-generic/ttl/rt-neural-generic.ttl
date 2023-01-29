@@ -120,24 +120,6 @@ lv2:port
 [
     a lv2:ControlPort, lv2:InputPort;
     lv2:index 7;
-    lv2:symbol "PARAM1";
-    lv2:name "PARAM1";
-    lv2:default 0;
-    lv2:minimum 0;
-    lv2:maximum 1.0;
-],
-[
-    a lv2:ControlPort, lv2:InputPort;
-    lv2:index 8;
-    lv2:symbol "PARAM2";
-    lv2:name "PARAM2";
-    lv2:default 0;
-    lv2:minimum 0;
-    lv2:maximum 1.0;
-],
-[
-    a lv2:ControlPort, lv2:InputPort;
-    lv2:index 9;
     lv2:symbol "EQBYPASS";
     lv2:name "EQBYPASS";
     lv2:default 0;
@@ -148,7 +130,7 @@ lv2:port
 ],
 [
     a lv2:ControlPort, lv2:InputPort;
-    lv2:index 10;
+    lv2:index 8;
     lv2:symbol "EQPOS";
     lv2:name "EQPOS";
     lv2:default 0;
@@ -161,7 +143,7 @@ lv2:port
 ],
 [
     a lv2:ControlPort, lv2:InputPort;
-    lv2:index 11;
+    lv2:index 9;
     lv2:symbol "BASS";
     lv2:name "BASS";
     lv2:default 0;
@@ -171,7 +153,7 @@ lv2:port
 ],
 [
     a lv2:ControlPort, lv2:InputPort;
-    lv2:index 12;
+    lv2:index 10;
     lv2:symbol "BFREQ";
     lv2:name "BFREQ";
     lv2:default 305.0;
@@ -181,7 +163,7 @@ lv2:port
 ],
 [
     a lv2:ControlPort, lv2:InputPort;
-    lv2:index 13;
+    lv2:index 11;
     lv2:symbol "MID";
     lv2:name "MID";
     lv2:default 0;
@@ -191,7 +173,7 @@ lv2:port
 ],
 [
     a lv2:ControlPort, lv2:InputPort;
-    lv2:index 14;
+    lv2:index 12;
     lv2:symbol "MFREQ";
     lv2:name "MFREQ";
     lv2:default 750.0;
@@ -201,7 +183,7 @@ lv2:port
 ],
 [
     a lv2:ControlPort, lv2:InputPort;
-    lv2:index 15;
+    lv2:index 13;
     lv2:symbol "MIDQ";
     lv2:name "MIDQ";
     lv2:default 0.707;
@@ -210,7 +192,7 @@ lv2:port
 ],
 [
     a lv2:ControlPort, lv2:InputPort;
-    lv2:index 16;
+    lv2:index 14;
     lv2:symbol "MTYPE";
     lv2:name "MTYPE";
     lv2:default 0;
@@ -223,7 +205,7 @@ lv2:port
 ],
 [
     a lv2:ControlPort, lv2:InputPort;
-    lv2:index 17;
+    lv2:index 15;
     lv2:symbol "TREBLE";
     lv2:name "TREBLE";
     lv2:default 0;
@@ -233,7 +215,7 @@ lv2:port
 ],
 [
     a lv2:ControlPort, lv2:InputPort;
-    lv2:index 18;
+    lv2:index 16;
     lv2:symbol "TFREQ";
     lv2:name "TFREQ";
     lv2:default 2000.0;
@@ -243,7 +225,7 @@ lv2:port
 ],
 [
     a lv2:ControlPort, lv2:InputPort;
-    lv2:index 19;
+    lv2:index 17;
     lv2:symbol "DEPTH";
     lv2:name "DEPTH";
     lv2:default 0;
@@ -253,7 +235,7 @@ lv2:port
 ],
 [
     a lv2:ControlPort, lv2:InputPort;
-    lv2:index 20;
+    lv2:index 18;
     lv2:symbol "PRESENCE";
     lv2:name "PRESENCE";
     lv2:default 0;
@@ -263,7 +245,7 @@ lv2:port
 ],
 [
     a lv2:ControlPort, lv2:InputPort;
-    lv2:index 21;
+    lv2:index 19;
     lv2:symbol "MASTER";
     lv2:name "MASTER";
     lv2:default 0;

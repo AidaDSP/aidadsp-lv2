@@ -336,12 +336,6 @@ void RtNeuralGeneric::connect_port(LV2_Handle instance, uint32_t port, void *dat
         case PREGAIN:
             self->pregain_db = (float*) data;
             break;
-        case PARAM1:
-            self->param1 = (float*) data;
-            break;
-        case PARAM2:
-            self->param2 = (float*) data;
-            break;
         case MASTER:
             self->master_db = (float*) data;
             break;
@@ -409,8 +403,10 @@ void RtNeuralGeneric::run(LV2_Handle instance, uint32_t n_samples)
     float in_lpf_f = *self->in_lpf_f * 1000.0f;
     float eq_position = *self->eq_position;
     float eq_bypass = *self->eq_bypass;
-    float param1 = *self->param1;
-    float param2 = *self->param2;
+    /*float param1 = *self->param1;*/
+    /*float param2 = *self->param2;*/
+    float param1 = 0.0f;
+    float param2 = 0.0f;
 
     if (in_lpf_f != self->in_lpf_f_old) { /* Update filter coeffs */
         self->in_lpf->setBiquad(bq_type_lowpass, in_lpf_f / self->samplerate, 0.707f, 0.0f);
