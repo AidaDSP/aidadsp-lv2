@@ -693,9 +693,6 @@ int RtNeuralGeneric::loadModel(LV2_Handle instance, const char *path)
         /* Understand which model type to load */
         self->n_layers = modelData["layers"].size();
         self->input_size = modelData["in_shape"].back().get<int>();
-        if(self->input_size > 1) {
-            throw std::invalid_argument("Values for input_size > 1 are not supported");
-        }
 
         if (modelData["in_skip"].is_number()) {
             self->input_skip = modelData["in_skip"].get<int>();
