@@ -33,7 +33,7 @@ typedef enum {
     MASTER,
     PLUGIN_PORT_COUNT} ports_t;
 
-typedef enum {LSTM_40, LSTM_20, LSTM_16, LSTM_12, GRU_12, GRU_8} rnn_t;
+typedef enum {LSTM_40, LSTM_20, LSTM_16, LSTM_12, GRU_12, GRU_8, LSTM_40_cond1, LSTM_40_cond2} rnn_t;
 
 #define PROCESS_ATOM_MESSAGES
 typedef struct {
@@ -172,7 +172,8 @@ private:
     Biquad *depth;
     Biquad *presence;
 
-    /* Static: only json files containing models below will be loaded */
+    /* Static: only json files matching models below will be loaded */
+    /* Snapshot models: input_size = 1 */
     RTNeural::ModelT<float, 1, 1,
         RTNeural::LSTMLayerT<float, 1, 40>,
         RTNeural::DenseT<float, 40, 1>> lstm_40;
@@ -191,6 +192,14 @@ private:
     RTNeural::ModelT<float, 1, 1,
         RTNeural::GRULayerT<float, 1, 8>,
         RTNeural::DenseT<float, 8, 1>> gru_8;
+
+    /* Conditioned models: input_size > 1 */
+    RTNeural::ModelT<float, 2, 1,
+        RTNeural::LSTMLayerT<float, 1, 40>,
+        RTNeural::DenseT<float, 40, 1>> lstm_40_cond1;
+    RTNeural::ModelT<float, 3, 1,
+        RTNeural::LSTMLayerT<float, 1, 40>,
+        RTNeural::DenseT<float, 40, 1>> lstm_40_cond2;
 
     /* Dynamic: whatever json model will be loaded but poor performance */
     //std::unique_ptr<RTNeural::Model<float>> model;
