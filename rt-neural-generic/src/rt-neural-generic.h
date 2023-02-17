@@ -195,10 +195,10 @@ private:
 
     /* Conditioned models: input_size > 1 */
     RTNeural::ModelT<float, 2, 1,
-        RTNeural::LSTMLayerT<float, 1, 40>,
+        RTNeural::LSTMLayerT<float, 2, 40>,
         RTNeural::DenseT<float, 40, 1>> lstm_40_cond1;
     RTNeural::ModelT<float, 3, 1,
-        RTNeural::LSTMLayerT<float, 1, 40>,
+        RTNeural::LSTMLayerT<float, 3, 40>,
         RTNeural::DenseT<float, 40, 1>> lstm_40_cond2;
 
     /* Dynamic: whatever json model will be loaded but poor performance */
