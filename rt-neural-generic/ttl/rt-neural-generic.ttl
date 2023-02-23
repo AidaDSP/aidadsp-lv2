@@ -15,7 +15,7 @@
 
 <http://aidadsp.cc/plugins/aidadsp-bundle/rt-neural-generic#json>
     a lv2:Parameter ;
-    mod:fileTypes "modelsim" ;
+    mod:fileTypes "aidadspmodel" ;
     rdfs:label "Neural Model" ;
     rdfs:range atom:Path .
 
