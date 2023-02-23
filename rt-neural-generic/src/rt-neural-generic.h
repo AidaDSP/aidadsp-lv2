@@ -16,8 +16,7 @@
 #include <lv2/lv2plug.in/ns/ext/worker/worker.h>
 #include <lv2/lv2plug.in/ns/lv2core/lv2.h>
 
-#include <iostream>
-#include <RTNeural/RTNeural.h>
+#include <model_variant.hpp>
 
 #include <Biquad.h>
 
@@ -33,13 +32,43 @@ typedef enum {
     MASTER,
     PLUGIN_PORT_COUNT} ports_t;
 
-typedef enum {LSTM_40, LSTM_20, LSTM_16, LSTM_12, GRU_12, GRU_8, LSTM_40_cond1, LSTM_40_cond2} rnn_t;
+// Everything needed to run a model
+struct DynamicModel {
+    ModelVariantType variant;
+    char* path;
+    bool input_skip; /* Means the model has been trained with first input element skipped to the output */
+#if 0
+    // is this useful to have? needed?
+    int n_layers; /* The number of layers in the nn model */
+    int input_size; /* The input vector size for the model; 1 is for a snap shot model otherwise is a conditioned model */
+    std::string type; /* The type of the first layer of a nn composed by two hidden layers (e.g., LSTM, GRU) */
+    int hidden_size; /* The hidden size of the above layer */
+#endif
+};
 
 #define PROCESS_ATOM_MESSAGES
-typedef struct {
-    LV2_Atom atom;
-    char*  path;
-} PluginResponseMessage;
+enum WorkerMessageType {
+    kWorkerLoad,
+    kWorkerApply,
+    kWorkerFree
+};
+
+// common fields to all worker messages
+struct WorkerMessage {
+    WorkerMessageType type;
+};
+
+// WorkerMessage compatible, to be used for kWorkerLoad
+struct WorkerLoadMessage {
+    WorkerMessageType type;
+    char path[1024];
+};
+
+// WorkerMessage compatible, to be used for kWorkerApply or kWorkerFree
+struct WorkerApplyMessage {
+    WorkerMessageType type;
+    DynamicModel* model;
+};
 
 /* Define a macro for converting a gain in dB to a coefficient */
 #define DB_CO(g) ((g) > -90.0f ? powf(10.0f, (g) * 0.05f) : 0.0f)
@@ -117,7 +146,8 @@ public:
                                        uint32_t                    size,
                                        const void*                 data);
     static LV2_Worker_Status work_response(LV2_Handle instance, uint32_t size, const void* data);
-    static int loadModel(LV2_Handle instance, const char *path);
+    static DynamicModel* loadModel(LV2_Log_Logger* logger, const char* path);
+    static void freeModel(DynamicModel* model);
 
     // Features
     LV2_URID_Map*        map;
@@ -129,10 +159,6 @@ public:
 
     // Logger convenience API
     LV2_Log_Logger logger;
-
-    // Model json file path
-    const char* path; // Path of file
-    uint32_t path_len; // Length of path
 
     // Ports
     const LV2_Atom_Sequence* control_port;
@@ -146,23 +172,8 @@ public:
     // URIs
     PluginURIs uris;
 
-    // Current position in run()
-    uint32_t frame_offset;
-
 private:
     double samplerate;
-
-    int model_loaded; // Used to prevent audio thread from using model if not ready
-    int model_new; // Used to send a small notification to host when model is changed
-
-    // The number of layers in the nn model
-    int n_layers;
-    // The input vector size for the model
-    // 1 is for a snap shot model otherwise is a conditioned model
-    int input_size;
-    int input_skip; /* Means the model has been trained with first input element skipped to the output */
-    std::string type; /* The type of the first layer of a nn composed by two hidden layers (e.g., LSTM, GRU) */
-    int hidden_size; /* The hidden size of the above layer */
 
     Biquad *dc_blocker;
     Biquad *in_lpf;
@@ -172,39 +183,7 @@ private:
     Biquad *depth;
     Biquad *presence;
 
-    /* Static: only json files matching models below will be loaded */
-    /* Snapshot models: input_size = 1 */
-    RTNeural::ModelT<float, 1, 1,
-        RTNeural::LSTMLayerT<float, 1, 40>,
-        RTNeural::DenseT<float, 40, 1>> lstm_40;
-    RTNeural::ModelT<float, 1, 1,
-        RTNeural::LSTMLayerT<float, 1, 20>,
-        RTNeural::DenseT<float, 20, 1>> lstm_20;
-    RTNeural::ModelT<float, 1, 1,
-        RTNeural::LSTMLayerT<float, 1, 16>,
-        RTNeural::DenseT<float, 16, 1>> lstm_16;
-    RTNeural::ModelT<float, 1, 1,
-        RTNeural::LSTMLayerT<float, 1, 12>,
-        RTNeural::DenseT<float, 12, 1>> lstm_12;
-    RTNeural::ModelT<float, 1, 1,
-        RTNeural::GRULayerT<float, 1, 12>,
-        RTNeural::DenseT<float, 12, 1>> gru_12;
-    RTNeural::ModelT<float, 1, 1,
-        RTNeural::GRULayerT<float, 1, 8>,
-        RTNeural::DenseT<float, 8, 1>> gru_8;
-
-    /* Conditioned models: input_size > 1 */
-    RTNeural::ModelT<float, 2, 1,
-        RTNeural::LSTMLayerT<float, 2, 40>,
-        RTNeural::DenseT<float, 40, 1>> lstm_40_cond1;
-    RTNeural::ModelT<float, 3, 1,
-        RTNeural::LSTMLayerT<float, 3, 40>,
-        RTNeural::DenseT<float, 40, 1>> lstm_40_cond2;
-
-    /* Dynamic: whatever json model will be loaded but poor performance */
-    //std::unique_ptr<RTNeural::Model<float>> model;
-
-    int model_index; /* Used to store model type */
+    DynamicModel* model;
 
     // Pre-allocate arrays for feeding the models
     float inArray1 alignas(RTNEURAL_DEFAULT_ALIGNMENT)[2] = { 0.0, 0.0 };
@@ -213,8 +192,6 @@ private:
     static float rampValue(float start, float end, uint32_t n_samples, uint32_t index);
     static void applyGainRamp(float *out, const float *in, float start, float end, uint32_t n_samples);
     static void applyBiquadFilter(float *out, const float *in, Biquad *filter, uint32_t n_samples);
-    static void applyModel(float *out, const float *in, LV2_Handle instance, uint32_t n_samples);
-    static void applyModel(float *out, const float *in, float param1, LV2_Handle instance, uint32_t n_samples);
-    static void applyModel(float *out, const float *in, float param1, float param2, LV2_Handle instance, uint32_t n_samples);
+    static void applyModel(DynamicModel *model, float *out, uint32_t n_samples);
     static void applyToneControls(float *out, const float *in, LV2_Handle instance, uint32_t n_samples);
 };
