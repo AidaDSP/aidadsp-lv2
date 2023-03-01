@@ -160,12 +160,12 @@ void RtNeuralGeneric::applyModel(DynamicModel* model, float* out, uint32_t n_sam
                 if (input_skip)
                 {
                     for (uint32_t i=0; i<n_samples; ++i)
-                        out[i] = custom_model.forward (out + i);
+                        out[i] += custom_model.forward (out + i);
                 }
                 else
                 {
                     for (uint32_t i=0; i<n_samples; ++i)
-                        out[i] += custom_model.forward (out + i);
+                        out[i] = custom_model.forward (out + i);
                 }
             }
             else
