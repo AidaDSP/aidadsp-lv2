@@ -37,13 +37,6 @@ struct DynamicModel {
     ModelVariantType variant;
     char* path;
     bool input_skip; /* Means the model has been trained with first input element skipped to the output */
-#if 0
-    // is this useful to have? needed?
-    int n_layers; /* The number of layers in the nn model */
-    int input_size; /* The input vector size for the model; 1 is for a snap shot model otherwise is a conditioned model */
-    std::string type; /* The type of the first layer of a nn composed by two hidden layers (e.g., LSTM, GRU) */
-    int hidden_size; /* The hidden size of the above layer */
-#endif
 };
 
 #define PROCESS_ATOM_MESSAGES
