@@ -9,7 +9,7 @@
   border-radius: 5px;
   background-repeat: no-repeats;
   color: white;
-  width: 850px;
+  width: 900px;
 }
 
 .rt-neural .grid {
@@ -118,9 +118,11 @@
 }
 
 .rt-neural .seperator-grid {
-  margin: 0 5px;
-  border-left: 2px solid rgba(129, 247, 0, 1);
-  height: 120px;
+  margin: 0 10px 10px 10px;
+  border-left: 4px solid rgba(97, 97, 97, 0.484);
+  box-shadow: inset 2 0px 10px #000;
+  border-radius: 2px;
+  height: 80px;
 }
 
 /* SWITCH */
