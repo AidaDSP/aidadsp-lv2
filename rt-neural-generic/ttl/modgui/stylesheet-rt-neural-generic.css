@@ -3,45 +3,18 @@
   src: url(/resources/fonts/conthrax-sb.ttf{{{ns}}});
 }
 
+/* MAIN */
+
 .rt-neural {
   border-radius: 5px;
-  background-repeat: no-repeat;
+  background-repeat: no-repeats;
   color: white;
-  width: 940px;
+  width: 850px;
 }
-
-.rt-neural h1 {
-  font-family: "conthrax-sb", sans-serif !important;
-  text-align: center;
-  text-transform: uppercase;
-  font-size: 4rem;
-  font-weight: 800;
-  margin: 0;
-  padding: 0;
-  color: #fff;
-  /* font-size: 12em; */
-  /* font-weight: bold; */
-}
-
-.rt-neural h1 .stronger {
-  font-family: "conthrax-sb", sans-serif !important;
-  font-weight: 800;
-  /* color: rgb(241, 241, 241); */
-}
-
-.rt-neural .lbl-knob {
-  font-size: 1rem;
-}
-
-/* AMPHAED */
-
-
 
 .rt-neural .grid {
-  display: grid;
-  color: white;
-  width: 940px;
-  grid-template-columns: 1fr 1fr 1fr;
+  display: flex;
+  flex-direction: column;
   background-color: rgba(35, 35, 35, 1);
   border-radius: 12px;
   background: linear-gradient(
@@ -50,179 +23,104 @@
     rgba(25, 25, 25, 1) 52%,
     rgba(19, 19, 19, 1) 100%
   );
-}
-
-.rt-neural .head-border {
-  padding: 5px 0;
-  grid-column: 1 / span 3;
+  background: linear-gradient(
+    140deg,
+    rgb(28, 23, 12) 0%,
+    rgb(42, 34, 15) 52%,
+    rgba(19, 19, 19, 1) 100%
+  );
 }
 
 .rt-neural .background_head {
-  display: grid;
-  grid-column: 1 / span 3;
-  grid-template-columns: 2fr 3fr 2fr;
-  grid-gap: 15px;
-  width: fit-content;
-  padding: 0;
-  margin: 0 10px;
-  border-radius: 8px;
-  border: 4px solid #000;
-  box-shadow: inset 0 0px 10px #000;
-  background: linear-gradient(
-      45deg,
-      rgba(131, 185, 65, 1) 12%,
-      transparent 0,
-      transparent 88%,
-      rgba(131, 185, 65, 1)
-    ),
-    linear-gradient(
-      135deg,
-      transparent 37%,
-      rgba(91, 134, 37, 0.8) 0,
-      rgba(91, 134, 37, 0.8) 63%,
-      transparent 0
-    ),
-    linear-gradient(
-      45deg,
-      transparent 37%,
-      rgba(131, 185, 65, 1) 0,
-      rgba(131, 185, 65, 1) 63%,
-      transparent 0
-    ),
-    rgb(26, 29, 27);
-  background-size: 40px 40px;
-}
-
-/* animation
-if you want to go bonkers bind it to a gate and animate accordingly */
-/* .background_head {
-  background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
-  background-size: 400% 400%;
-  animation: gradient 15s ease infinite;
-}
-
-@keyframes gradient {
-  0% {
-      background-position: 0% 50%;
-  }
-  50% {
-      background-position: 100% 50%;
-  }
-  100% {
-      background-position: 0% 50%;
-  }
-} */
-
-.rt-neural .block_name {
-  padding: 15px 25px;
-  color: #fff;
-  text-align: center;
-  align-content: center;
-  justify-items: center;
-  border-radius: 16px;
-  /* text-shadow: 0px 1px 0px #999, 0px 2px 0px #888, 0px 3px 0px #777, 0px 4px 0px #666, 0px 5px 0px #555, 0px 6px 0px #444, 0px 7px 0px #333, 0px 8px 7px #001135; */
-}
-
-.rt-neural .plate {
-  /* width: fit-content; */
-  align-self: center;
-  grid-column: 2;
+  display: flex;
+  justify-content: space-evenly;
   padding: 0px;
-  margin: 35px auto;
-  background-color: rgba(25, 25, 25, 1);
-  border-radius: 8px;
-  background: linear-gradient(
-    140deg,
-    rgba(35, 35, 35, 1) 0%,
-    rgba(25, 25, 25, 1) 52%,
-    rgba(19, 19, 19, 1) 100%
-  );
-  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.25), 0 2px 2px rgba(0, 0, 0, 0.2),
-    0 4px 4px rgba(0, 0, 0, 0.15), 0 8px 8px rgba(0, 0, 0, 0.1),
-    0 16px 16px rgba(0, 0, 0, 0.05);
-}
-
-.rt-neural .plate img {
-  height: 50px;
+  margin: 15px 15px 0px 15px;
+  border-radius: 12px;
+  /* border: 1spx solid #000; */
+  box-shadow: inset 0 0px 10px #000;
+  background-color: #8bf700;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100%25'%3E%3Cdefs%3E%3ClinearGradient id='a' gradientUnits='userSpaceOnUse' x1='0' x2='0' y1='0' y2='100%25' gradientTransform='rotate(0,1280,644)'%3E%3Cstop offset='0' stop-color='%238BF700'/%3E%3Cstop offset='1' stop-color='%23CDFF05'/%3E%3C/linearGradient%3E%3Cpattern patternUnits='userSpaceOnUse' id='b' width='300' height='250' x='0' y='0' viewBox='0 0 1080 900'%3E%3Cg fill-opacity='0.04'%3E%3Cpolygon fill='%23444' points='90 150 0 300 180 300'/%3E%3Cpolygon points='90 150 180 0 0 0'/%3E%3Cpolygon fill='%23AAA' points='270 150 360 0 180 0'/%3E%3Cpolygon fill='%23DDD' points='450 150 360 300 540 300'/%3E%3Cpolygon fill='%23999' points='450 150 540 0 360 0'/%3E%3Cpolygon points='630 150 540 300 720 300'/%3E%3Cpolygon fill='%23DDD' points='630 150 720 0 540 0'/%3E%3Cpolygon fill='%23444' points='810 150 720 300 900 300'/%3E%3Cpolygon fill='%23FFF' points='810 150 900 0 720 0'/%3E%3Cpolygon fill='%23DDD' points='990 150 900 300 1080 300'/%3E%3Cpolygon fill='%23444' points='990 150 1080 0 900 0'/%3E%3Cpolygon fill='%23DDD' points='90 450 0 600 180 600'/%3E%3Cpolygon points='90 450 180 300 0 300'/%3E%3Cpolygon fill='%23666' points='270 450 180 600 360 600'/%3E%3Cpolygon fill='%23AAA' points='270 450 360 300 180 300'/%3E%3Cpolygon fill='%23DDD' points='450 450 360 600 540 600'/%3E%3Cpolygon fill='%23999' points='450 450 540 300 360 300'/%3E%3Cpolygon fill='%23999' points='630 450 540 600 720 600'/%3E%3Cpolygon fill='%23FFF' points='630 450 720 300 540 300'/%3E%3Cpolygon points='810 450 720 600 900 600'/%3E%3Cpolygon fill='%23DDD' points='810 450 900 300 720 300'/%3E%3Cpolygon fill='%23AAA' points='990 450 900 600 1080 600'/%3E%3Cpolygon fill='%23444' points='990 450 1080 300 900 300'/%3E%3Cpolygon fill='%23222' points='90 750 0 900 180 900'/%3E%3Cpolygon points='270 750 180 900 360 900'/%3E%3Cpolygon fill='%23DDD' points='270 750 360 600 180 600'/%3E%3Cpolygon points='450 750 540 600 360 600'/%3E%3Cpolygon points='630 750 540 900 720 900'/%3E%3Cpolygon fill='%23444' points='630 750 720 600 540 600'/%3E%3Cpolygon fill='%23AAA' points='810 750 720 900 900 900'/%3E%3Cpolygon fill='%23666' points='810 750 900 600 720 600'/%3E%3Cpolygon fill='%23999' points='990 750 900 900 1080 900'/%3E%3Cpolygon fill='%23999' points='180 0 90 150 270 150'/%3E%3Cpolygon fill='%23444' points='360 0 270 150 450 150'/%3E%3Cpolygon fill='%23FFF' points='540 0 450 150 630 150'/%3E%3Cpolygon points='900 0 810 150 990 150'/%3E%3Cpolygon fill='%23222' points='0 300 -90 450 90 450'/%3E%3Cpolygon fill='%23FFF' points='0 300 90 150 -90 150'/%3E%3Cpolygon fill='%23FFF' points='180 300 90 450 270 450'/%3E%3Cpolygon fill='%23666' points='180 300 270 150 90 150'/%3E%3Cpolygon fill='%23222' points='360 300 270 450 450 450'/%3E%3Cpolygon fill='%23FFF' points='360 300 450 150 270 150'/%3E%3Cpolygon fill='%23444' points='540 300 450 450 630 450'/%3E%3Cpolygon fill='%23222' points='540 300 630 150 450 150'/%3E%3Cpolygon fill='%23AAA' points='720 300 630 450 810 450'/%3E%3Cpolygon fill='%23666' points='720 300 810 150 630 150'/%3E%3Cpolygon fill='%23FFF' points='900 300 810 450 990 450'/%3E%3Cpolygon fill='%23999' points='900 300 990 150 810 150'/%3E%3Cpolygon points='0 600 -90 750 90 750'/%3E%3Cpolygon fill='%23666' points='0 600 90 450 -90 450'/%3E%3Cpolygon fill='%23AAA' points='180 600 90 750 270 750'/%3E%3Cpolygon fill='%23444' points='180 600 270 450 90 450'/%3E%3Cpolygon fill='%23444' points='360 600 270 750 450 750'/%3E%3Cpolygon fill='%23999' points='360 600 450 450 270 450'/%3E%3Cpolygon fill='%23666' points='540 600 630 450 450 450'/%3E%3Cpolygon fill='%23222' points='720 600 630 750 810 750'/%3E%3Cpolygon fill='%23FFF' points='900 600 810 750 990 750'/%3E%3Cpolygon fill='%23222' points='900 600 990 450 810 450'/%3E%3Cpolygon fill='%23DDD' points='0 900 90 750 -90 750'/%3E%3Cpolygon fill='%23444' points='180 900 270 750 90 750'/%3E%3Cpolygon fill='%23FFF' points='360 900 450 750 270 750'/%3E%3Cpolygon fill='%23AAA' points='540 900 630 750 450 750'/%3E%3Cpolygon fill='%23FFF' points='720 900 810 750 630 750'/%3E%3Cpolygon fill='%23222' points='900 900 990 750 810 750'/%3E%3Cpolygon fill='%23222' points='1080 300 990 450 1170 450'/%3E%3Cpolygon fill='%23FFF' points='1080 300 1170 150 990 150'/%3E%3Cpolygon points='1080 600 990 750 1170 750'/%3E%3Cpolygon fill='%23666' points='1080 600 1170 450 990 450'/%3E%3Cpolygon fill='%23DDD' points='1080 900 1170 750 990 750'/%3E%3C/g%3E%3C/pattern%3E%3C/defs%3E%3Crect x='0' y='0' fill='url(%23a)' width='100%25' height='100%25'/%3E%3Crect x='0' y='0' fill='url(%23b)' width='100%25' height='100%25'/%3E%3C/svg%3E");
+  background-attachment: local;
+  background-size: cover;
 }
 
 .rt-neural .brand {
-  margin: 15px 15px;
-  justify-self: start;
-  align-self: end;
-  grid-column: 1;
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-start;
+  margin: 1em 0em;
+  width: 30%;
 }
 
 .rt-neural .brand img {
-  height: 30px;
-  /* box-shadow: 0 1px 1px rgba(0, 0, 0, 0.25), 0 2px 2px rgba(0, 0, 0, 0.2),
-    0 4px 4px rgba(0, 0, 0, 0.15), 0 8px 8px rgba(0, 0, 0, 0.1),
-    0 16px 16px rgba(0, 0, 0, 0.05); */
-    filter: drop-shadow(7px 7px 7px #666666);
-    -webkit-filter: drop-shadow(7px 7px 7px #666666);
+  height: 25px;
+  align-self: flex-end;
+  filter: invert() opacity(80%);
 }
 
-.rt-neural .model {
-  font-weight: lighter;
-  font-size: 1em;
-  padding: 25px 25px;
-  justify-self: end;
-  align-self: end;
-  grid-column: 3;
-  background-color: #25252591;
+.rt-neural .plugin {
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-end;
+  color: #2727278e;
+  margin: 1em 0em;
+  width: 30%;
+}
+
+.rt-neural .plugin h3 {
+  height: 25px;
+  align-self: flex-end;
+  margin: 0;
+}
+
+.rt-neural .plate {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  /* padding: 0px; */
+  margin: 25px 0 15px 0;
+  /* width: 50%; */
+
+  border-radius: 8px;
+}
+
+.rt-neural .plate-brand {
+  margin: 0;
+}
+
+.rt-neural .plate h3{
+  margin-top: 5px;
+  color: #0c2f03af;
+}
+.rt-neural .plate-brand img {
+  
+  filter: drop-shadow(2px 2px 2px #0c2f03af);
 }
 
 /* CONTROLS */
 
 .rt-neural-controls {
-  display: grid;
-  grid-column: 1 / span 3;
-  grid-template-columns: repeat(13, 1fr);
-  grid-gap: 15px;
-  width: 920px;
-  justify-items: center;
-  align-self: center;
-
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  align-items: end;
 
   text-align: center;
   text-transform: uppercase;
-  padding: 5px;
-  margin: 0 10px;
+  margin: 15px 10px;
   border-radius: 8px;
-  border: 4px solid #000;
 }
 
-.rt-neural .controls .label {
-  grid-area: label;
-  justify-self: center;
+.rt-neural .lbl {
+  font-size: 1rem;
 }
 
 .rt-neural .seperator-grid {
   margin: 0 5px;
-  border-left: 2px solid rgba(131, 185, 65, 1);
+  border-left: 2px solid rgba(129, 247, 0, 1);
   height: 120px;
-}
-
-/* KNOBS */
-.rt-neural .knob-grid {
-  display: grid;
-  grid-template-areas: "knob" "label";
-}
-
-.rt-neural .knob-bg {
-  height: 50px;
-  width: 50px;
-  margin: 15px auto;
-  background: center/cover
-    url("/resources/knobs/rw_knob_large_dark.svg{{{ns}}}");
-  grid-area: knob;
-}
-
-.rt-neural .knob-scale {
-  align-self: end;
-  width: 80px;
-  height: 80px;
-  background: center/cover url("/resources/knobs/scale.png{{{ns}}}");
 }
 
 /* SWITCH */
@@ -232,8 +130,8 @@ if you want to go bonkers bind it to a gate and animate accordingly */
 }
 
 .rt-neural .switch-grid {
-  display: grid;
-  align-self: center;
+  display: flex;
+  flex-direction: column;
 }
 
 .rt-neural .switch-grid .flipsw {
@@ -249,8 +147,8 @@ if you want to go bonkers bind it to a gate and animate accordingly */
   cursor: pointer;
   text-indent: -9999px;
   width: 25px;
-  height: 50px;
-  background: rgba(131, 185, 65, 1);
+  height: 60px;
+  background: rgba(129, 247, 0, 1);
   display: inline-block;
   border-radius: 100px;
   position: relative;
@@ -268,13 +166,13 @@ if you want to go bonkers bind it to a gate and animate accordingly */
   left: 3px;
   width: 20px;
   height: 20px;
-  background: rgb(14, 60, 4);
+  background: rgb(24, 112, 4);
   border-radius: 90px;
   transition: 0.2s;
 }
 
 .rt-neural .off .toggle-sw:after {
-  top: calc(-80% + 25px);
+  top: calc(-80% + 35px);
   transform: translateY(100%);
 }
 
@@ -283,6 +181,26 @@ if you want to go bonkers bind it to a gate and animate accordingly */
 }
 
 .rt-neural .on .toggle-sw:after {
-  top: calc(100% - 5px);
+  top: calc(100% - 10px);
   transform: translateY(-100%);
+}
+
+/* KNOBS */
+.rt-neural .knob-grid {
+  display: flex;
+  flex-direction: column;
+}
+
+.rt-neural .knob-bg {
+  height: 55px;
+  width: 55px;
+  margin: 20px auto;
+  background: center/cover url("/resources/img/rw_knob_large_dark.svg{{{ns}}}");
+}
+
+.rt-neural .knob-scale {
+  width: 90px;
+  height: 90px;
+  background-position: center;
+  background: center/cover url("/resources/img/scale.png{{{ns}}}");
 }

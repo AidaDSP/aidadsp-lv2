@@ -1,25 +1,33 @@
 <div class="rt-neural">
   <div mod-role="drag-handle" class="mod-drag-handle"></div>
   <div class="grid">
-    <div class="head-border"></div>
     <div class="background_head">
-      <div class="brand"><img src="/resources/img/aida.png{{{ns}}}" /></div>
-      <div class="plate">
-        <div class="block_name">
-          <h1>Neural <span class="stronger">Modeler</span></h1>
-          <!-- <img src="/resources/img/aida4.png{{{ns}}}" /> -->
-        </div>
+      <div class="brand">
+        <img src="/resources/img/aida.png{{{ns}}}" />
       </div>
-      <!-- <div class="model">MoonCrunchA</div> -->
+      <div class="plate">
+        <h1 class="plate-brand">
+          <img
+            src="/resources/img/logo-01.svg{{{ns}}}"
+            width="250"
+            height="96"
+          />
+        </h1>
+        <h3>neural profile player</h3>
+      </div>
+      <div class="plugin">
+        <!-- <h3>neural profile player</h3> -->
+        <!-- <h3>powered by</h3> -->
+        <!-- <img src="/resources/img/logo-01.svg{{{ns}}}" width="50" height="20" /> -->
+      </div>
     </div>
-
     <div class="mod-control-group rt-neural-controls">
       <div class="switch-grid">
-        <div class="lbl-knob">ON</div>
-        <div class="flipsw" mod-role="bypass" mod-widget="switch">
+        <div class="lbl">ON</div>
+        <div class="flipsw off" mod-role="bypass" mod-widget="switch">
           <div class="toggle-sw">Toggle</div>
         </div>
-        <div class="lbl-knob">Off</div>
+        <div class="lbl">Off</div>
       </div>
       <div class="knob-grid">
         <div class="knob-scale">
@@ -30,32 +38,32 @@
             mod-port-symbol="PREGAIN"
           ></div>
         </div>
-        <div class="lbl-knob">PREGAIN</div>
+        <div class="lbl">PREGAIN</div>
       </div>
       <div class="seperator-grid"></div>
       <div class="switch-grid">
-        <div class="lbl-knob">Post</div>
+        <div class="lbl">Post</div>
         <div
-          class="flipsw"
+          class="flipsw off"
           mod-role="input-control-port"
           mod-widget="switch"
           mod-port-symbol="EQPOS"
         >
           <div class="toggle-sw">Toggle</div>
         </div>
-        <div class="lbl-knob">Pre</div>
+        <div class="lbl">Pre</div>
       </div>
       <div class="switch-grid">
-        <div class="lbl-knob">Peak</div>
+        <div class="lbl">Peak</div>
         <div
-          class="flipsw"
+          class="flipsw off"
           mod-role="input-control-port"
           mod-widget="switch"
           mod-port-symbol="MTYPE"
         >
           <div class="toggle-sw">Toggle</div>
         </div>
-        <div class="lbl-knob">Bandpass</div>
+        <div class="lbl">Bandpass</div>
       </div>
       <div class="knob-grid">
         <div class="knob-scale">
@@ -66,7 +74,7 @@
             mod-port-symbol="BASS"
           ></div>
         </div>
-        <div class="lbl-knob">Bass</div>
+        <div class="lbl">Bass</div>
       </div>
       <div class="knob-grid">
         <div class="knob-scale">
@@ -77,7 +85,7 @@
             mod-port-symbol="MID"
           ></div>
         </div>
-        <div class="lbl-knob">Middle</div>
+        <div class="lbl">Middle</div>
       </div>
       <div class="knob-grid">
         <div class="knob-scale">
@@ -88,7 +96,7 @@
             mod-port-symbol="TREBLE"
           ></div>
         </div>
-        <div class="lbl-knob">Treble</div>
+        <div class="lbl">Treble</div>
       </div>
       <div class="seperator-grid"></div>
       <div class="knob-grid">
@@ -126,7 +134,6 @@
         <div class="label">Master</div>
       </div>
     </div>
-    <!-- <div class="head-border"></div> -->
   </div>
 </div>
 <!-- inputs/outputs -->
