@@ -49,11 +49,13 @@ mod:label "rt-neural-generic";
 doap:license <http://opensource.org/licenses/isc> ;
 lv2:project <http://lv2plug.in/ns/lv2>;
 lv2:requiredFeature urid:map ,
-    work:schedule ;
+    work:schedule ,
+    <http://moddevices.com/ns/ext/license#feature> ;
 lv2:optionalFeature lv2:hardRTCapable ,
     state:loadDefaultState ;
 lv2:extensionData state:interface ,
-    work:interface ;
+    work:interface ,
+    <http://moddevices.com/ns/ext/license#interface> ;
 patch:writable <http://aidadsp.cc/plugins/aidadsp-bundle/rt-neural-generic#json>;
 lv2:port
 [
