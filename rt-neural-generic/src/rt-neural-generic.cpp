@@ -184,6 +184,10 @@ LV2_Handle RtNeuralGeneric::instantiate(const LV2_Descriptor* descriptor, double
     RtNeuralGeneric *self = new RtNeuralGeneric();
 
     self->samplerate = samplerate;
+#ifdef AIDADSP_COMMERCIAL
+    self->runCount = 0;
+    mod_license_check(features, PLUGIN_URI);
+#endif
 
     // Get host features
     for (int i = 0; features[i]; ++i) {
@@ -361,6 +365,10 @@ void RtNeuralGeneric::run(LV2_Handle instance, uint32_t n_samples)
     float param1 = 0.0f;
     float param2 = 0.0f;
 
+#ifdef AIDADSP_COMMERCIAL
+    self->runCount = mod_license_run_begin(self->runCount, n_samples);
+#endif
+
     if (in_lpf_f != self->in_lpf_f_old) { /* Update filter coeffs */
         self->in_lpf->setBiquad(bq_type_lowpass, in_lpf_f / self->samplerate, 0.707f, 0.0f);
         self->in_lpf_f_old = in_lpf_f;
@@ -443,6 +451,9 @@ void RtNeuralGeneric::run(LV2_Handle instance, uint32_t n_samples)
         applyToneControls(self->out_1, self->out_1, instance, n_samples); // Equalizer section
     }
     applyGainRamp(self->out_1, self->out_1, self->master_old, master, n_samples); // Master volume
+#ifdef AIDADSP_COMMERCIAL
+    mod_license_run_silence(self->runCount, self->out_1, n_samples, 0);
+#endif
     self->pregain_old = pregain;
     self->master_old = master;
     /*++++++++ END AUDIO DSP ++++++++*/
@@ -476,7 +487,11 @@ const void* RtNeuralGeneric::extension_data(const char* uri)
     } else if (!strcmp(uri, LV2_WORKER__interface)) {
         return &worker;
     }
+#ifdef AIDADSP_COMMERCIAL
+    return mod_license_interface(uri);
+#else
     return NULL;
+#endif
 }
 
 /**********************************************************************************************************************************************************/

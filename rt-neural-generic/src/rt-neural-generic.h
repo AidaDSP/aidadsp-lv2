@@ -22,6 +22,11 @@
 
 #include "uris.h"
 
+// #define AIDADSP_COMMERCIAL
+#ifdef AIDADSP_COMMERCIAL
+#include "libmodla.h"
+#endif
+
 /**********************************************************************************************************************************************************/
 
 typedef enum {
@@ -167,6 +172,9 @@ public:
 
 private:
     double samplerate;
+#ifdef AIDADSP_COMMERCIAL
+    uint32_t runCount = 0;
+#endif
 
     Biquad *dc_blocker;
     Biquad *in_lpf;

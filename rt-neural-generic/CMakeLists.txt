@@ -39,8 +39,8 @@ link_directories(rt-neural-generic
     ../modules/RTNeural/modules/json)
 
 # configure target
-target_compile_definitions(rt-neural-generic PUBLIC)
-target_link_libraries(rt-neural-generic ${LV2_LIBRARIES} RTNeural)
+target_compile_definitions(rt-neural-generic PUBLIC AIDADSP_COMMERCIAL)
+target_link_libraries(rt-neural-generic ${LV2_LIBRARIES} RTNeural -lmodla)
 set_target_properties(rt-neural-generic PROPERTIES PREFIX "")
 
 # setup install dir
