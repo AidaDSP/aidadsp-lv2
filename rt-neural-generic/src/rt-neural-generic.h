@@ -66,6 +66,9 @@ struct WorkerApplyMessage {
 /* Define a macro for converting a gain in dB to a coefficient */
 #define DB_CO(g) ((g) > -90.0f ? powf(10.0f, (g) * 0.05f) : 0.0f)
 
+/* Define a macro to scale % to coeff */
+#define PC_CO(g) ((g) < 100.0f ? (g / 100.0f) : 1.0f)
+
 /* Defines for tone controls */
 #define PEAK 0.0f
 #define BANDPASS 1.0f
@@ -97,8 +100,8 @@ public:
     float *master_db;
     float master_old;
     float *net_bypass;
-    float *in_lpf_f;
-    float in_lpf_f_old;
+    float *in_lpf_pc;
+    float in_lpf_pc_old;
     /* Eq section */
     float *eq_position;
     float *bass_boost_db;

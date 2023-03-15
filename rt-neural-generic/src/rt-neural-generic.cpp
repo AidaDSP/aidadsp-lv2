@@ -218,8 +218,9 @@ LV2_Handle RtNeuralGeneric::instantiate(const LV2_Descriptor* descriptor, double
     self->dc_blocker = new Biquad(bq_type_highpass, 35.0f / samplerate, 0.707f, 0.0f);
 
     // Setup variable high frequencies roll-off filter (low pass)
-    self->in_lpf_f_old = samplerate / 4.0f;
-    self->in_lpf = new Biquad(bq_type_lowpass, self->in_lpf_f_old / samplerate, 0.707f, 0.0f);
+
+    self->in_lpf_pc_old = 50.0f;
+    self->in_lpf = new Biquad(bq_type_lowpass, PC_CO(self->in_lpf_pc_old) * 0.5f, 0.707f, 0.0f);
 
     // Setup equalizer section
     self->bass_boost_db_old = 0.0f;
@@ -302,7 +303,7 @@ void RtNeuralGeneric::connect_port(LV2_Handle instance, uint32_t port, void *dat
             self->notify_port = (LV2_Atom_Sequence*)data;
             break;
         case IN_LPF:
-            self->in_lpf_f = (float*) data;
+            self->in_lpf_pc = (float*) data;
             break;
         case EQ_POS:
             self->eq_position = (float*) data;
@@ -353,7 +354,7 @@ void RtNeuralGeneric::run(LV2_Handle instance, uint32_t n_samples)
     float pregain = DB_CO(*self->pregain_db);
     float master = DB_CO(*self->master_db);
     float net_bypass = *self->net_bypass;
-    float in_lpf_f = *self->in_lpf_f * 1000.0f;
+    float in_lpf_pc = *self->in_lpf_pc;
     float eq_position = *self->eq_position;
     float eq_bypass = *self->eq_bypass;
     /*float param1 = *self->param1;*/
@@ -361,9 +362,9 @@ void RtNeuralGeneric::run(LV2_Handle instance, uint32_t n_samples)
     float param1 = 0.0f;
     float param2 = 0.0f;
 
-    if (in_lpf_f != self->in_lpf_f_old) { /* Update filter coeffs */
-        self->in_lpf->setBiquad(bq_type_lowpass, in_lpf_f / self->samplerate, 0.707f, 0.0f);
-        self->in_lpf_f_old = in_lpf_f;
+    if (in_lpf_pc != self->in_lpf_pc_old) { /* Update filter coeffs */
+        self->in_lpf->setBiquad(bq_type_lowpass, PC_CO(in_lpf_pc) * 0.5f, 0.707f, 0.0f);
+        self->in_lpf_pc_old = in_lpf_pc;
     }
 
 #ifdef PROCESS_ATOM_MESSAGES
