@@ -6,21 +6,22 @@ since they're an important part of the preset's sound.
 
 ### Moon
 
+Electric Sunrise Crunch.json'
+'Electric Sunrise Riff.json'
+'Electric Sunrise Solo.json'
+'Selenium Forest Intro Lead.json'
+'Sunhead Jazz Clean.json'
+
 - MoonAcoustic.json Neural DSP Archetype Plini High Life Acoustic Preset
-- MoonSunriseCrunch.json Neural DSP Archetype Plini Electric Sunrise Crunch Preset
-- MoonJazz.json Neural DSP Archetype Plini Sunhead JazzClean Preset
-- MoonSunriseRiff.json Neural DSP Archetype Plini Electric Sunrise Riff Preset
-- MoonSeleniumIntro Neural DSP Archetype Plini Selenium Forest Intro Lead Preset
-
-### Vintage
-
-- VintageEdgeOfBreakup.json Neural DSP Tone King Imperial MKII Pete Thorn Preset
-- VintageRockRythm.json Neural DSP Tone King Imperial MKII Pete Thorn Preset
-- VintageRockSolo.json Neural DSP Tone King Imperial MKII Pete Thorn Preset
-- VintageUnderWater.json Neural DSP Tone King Imperial MKII Pete Thorn Preset
+- Sunhead Jazz Clean.json Neural DSP Archetype Plini factory preset
+- Electric Sunrise Crunch.json Neural DSP Archetype Plini factory preset
+- Electric Sunrise Riff.json Neural DSP Archetype Plini factory preset
+- Electric Sunrise Solo.json Neural DSP Archetype Plini factory preset
+- Selenium Forest Intro Lead.json Neural DSP Archetype Plini factory preset
 
 ### Helix
 
-- Helix_US_Double.json Line6 Helix Native US Double Preset
-- Helix_PV_Panama.json Line6 Helix Native PV Panama Preset
-- Helix_Cali_Texas_Ch_1.json Line6 Helix Native Cali Texas Ch 1 Preset
+- US Double Nrm.json Line6 Helix Native factory preset
+- PV Panama.json Line6 Helix Native factory preset
+- Cali Texas Ch 1.json Line6 Helix Native factory preset
+
