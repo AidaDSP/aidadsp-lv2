@@ -6,13 +6,7 @@ since they're an important part of the preset's sound.
 
 ### Moon
 
-Electric Sunrise Crunch.json'
-'Electric Sunrise Riff.json'
-'Electric Sunrise Solo.json'
-'Selenium Forest Intro Lead.json'
-'Sunhead Jazz Clean.json'
-
-- MoonAcoustic.json Neural DSP Archetype Plini High Life Acoustic Preset
+- High Life Acoustic.json Neural DSP Archetype Plini factory preset
 - Sunhead Jazz Clean.json Neural DSP Archetype Plini factory preset
 - Electric Sunrise Crunch.json Neural DSP Archetype Plini factory preset
 - Electric Sunrise Riff.json Neural DSP Archetype Plini factory preset
