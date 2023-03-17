@@ -255,5 +255,5 @@ lv2:port
 ];
 
 state:state [
-    <http://aidadsp.cc/plugins/aidadsp-bundle/rt-neural-generic#json> <models/Moon/Sunhead Jazz Clean.json>
+    <http://aidadsp.cc/plugins/aidadsp-bundle/rt-neural-generic#json> <models/Moon/Sunhead%20Jazz%20Clean.json>
 ].
