@@ -33,8 +33,7 @@ float RtNeuralGeneric::rampValue(float start, float end, uint32_t n_samples, uin
 
 // Apply a gain ramp to a buffer
 void RtNeuralGeneric::applyGainRamp(float *out, const float *in, float start, float end, uint32_t n_samples) {
-    static uint32_t i;
-    for(i=0; i<n_samples; i++) {
+    for(uint32_t i=0; i<n_samples; i++) {
         out[i] = in[i] * rampValue(start, end, n_samples, i);
     }
 }
@@ -42,8 +41,7 @@ void RtNeuralGeneric::applyGainRamp(float *out, const float *in, float start, fl
 /**********************************************************************************************************************************************************/
 
 void RtNeuralGeneric::applyBiquadFilter(float *out, const float *in, Biquad *filter, uint32_t n_samples) {
-    static uint32_t i;
-    for(i=0; i<n_samples; i++) {
+    for(uint32_t i=0; i<n_samples; i++) {
         out[i] = filter->process(in[i]);
     }
 }
