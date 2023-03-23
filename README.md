@@ -1,5 +1,7 @@
 # Aida DSP lv2 plugin bundle #
 
+[![paypal](https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif)](https://www.paypal.com/donate/?hosted_button_id=UZWHH6HKJTHFJ)
+
 ### What is this repository for? ###
 
 * A bundle of audio plugins from [Aida DSP](http://aidadsp.cc)
