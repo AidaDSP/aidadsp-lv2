@@ -4,16 +4,22 @@
 
 * A bundle of audio plugins from [Aida DSP](http://aidadsp.cc)
 * Bundle version: 1.0
-* This bundle is intended to be used with moddevices's products and derivatives
+* This bundle is intended to be used with Mod Audio's products and derivatives
 
 ### Plugin list ###
 
-* rt-neural-lv2
+* rt-neural-generic.lv2
 
-#### rt-neural-lv2 ####
+#### rt-neural-generic.lv2 ####
 
-It's a simple headless lv2 plugin that leverages [RTNeural](https://github.com/jatinchowdhury18/RTNeural.git) to model
+It's a lv2 plugin that leverages [RTNeural](https://github.com/jatinchowdhury18/RTNeural.git) to model
 pedals or amps.
+
+- Play realistic Amps or Pedals captured with cutting-edge ML technology
+- Full featured 5-band EQ with adjustable Q, frequencies and pre/post switch
+- Input and Output Volume Controls
+
+Developers:
 
 - This plugin supports json model files loading via specific atom messages
 
@@ -22,12 +28,6 @@ pedals or amps.
 This implies neural network training. Please follow __*Automated_GuitarAmpModelling.ipynb*__ script available on
 
 - [Automated-GuitarAmpModelling](https://github.com/MaxPayne86/Automated-GuitarAmpModelling/tree/aidadsp_devel)
-
-##### Dataset #####
-
-Since I was not satisfied with dataset proposed by orignal authors I've put together one:
-
-- [Thomann Stompenberg Dataset](https://github.com/MaxPayne86/ThomannStompenbergDataset)
 
 ### Build ###
 

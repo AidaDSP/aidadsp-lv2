@@ -19,3 +19,10 @@ since they're an important part of the preset's sound.
 - PV Panama.json Line6 Helix Native factory preset
 - Cali Texas Ch 1.json Line6 Helix Native factory preset
 
+### Disclaimer
+
+All the models are self trained and final result is simply not guaranteed.
+We are also not affiliated with any of the commercial brands named above.
+
+Aida DSP team
+
