@@ -31,6 +31,13 @@ This implies neural network training. Please follow __*Automated_GuitarAmpModell
 
 ### Build ###
 
+#### Mod Audio ####
+
+We're proudly part of the amazing Mod Audio platform and community. Our plugin is already integrated
+in their build system [MPB](https://github.com/moddevices/mod-plugin-builder/blob/master/plugins/package/aidadsp-lv2/aidadsp-lv2.mk), so please just follow their instructions.
+
+#### Aida DSP OS ####
+
 Below a guide on how to cross compile this bundle with [aidadsp sdk](https://drive.google.com/drive/folders/1-AAfAP-FAddCw0LJuvzsW8m_1lWHKXaV?usp=sharing).
 You can extract cmake commands to fit your build system.
 
