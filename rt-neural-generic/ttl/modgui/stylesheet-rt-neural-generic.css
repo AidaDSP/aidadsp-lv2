@@ -5,14 +5,14 @@
 
 /* MAIN */
 
-.rt-neural {
+.rt-neural-ax {
   border-radius: 5px;
   background-repeat: no-repeats;
   color: white;
   width: 900px;
 }
 
-.rt-neural .grid {
+.rt-neural-ax .grid {
   display: flex;
   flex-direction: column;
   background-color: rgba(35, 35, 35, 1);
@@ -31,7 +31,7 @@
   );
 }
 
-.rt-neural .background_head {
+.rt-neural-ax .background_head {
   display: flex;
   justify-content: space-evenly;
   padding: 0px;
@@ -45,7 +45,7 @@
   background-size: cover;
 }
 
-.rt-neural .brand {
+.rt-neural-ax .brand {
   display: flex;
   align-items: flex-end;
   justify-content: flex-start;
@@ -53,13 +53,13 @@
   width: 30%;
 }
 
-.rt-neural .brand img {
+.rt-neural-ax .brand img {
   height: 25px;
   align-self: flex-end;
   filter: invert() opacity(80%);
 }
 
-.rt-neural .plugin {
+.rt-neural-ax .plugin {
   display: flex;
   align-items: flex-end;
   justify-content: flex-end;
@@ -68,13 +68,13 @@
   width: 30%;
 }
 
-.rt-neural .plugin h3 {
+.rt-neural-ax .plugin h3 {
   height: 25px;
   align-self: flex-end;
   margin: 0;
 }
 
-.rt-neural .plate {
+.rt-neural-ax .plate {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -86,22 +86,23 @@
   border-radius: 8px;
 }
 
-.rt-neural .plate-brand {
+.rt-neural-ax .plate-brand {
   margin: 0;
 }
 
-.rt-neural .plate h3{
-  margin-top: 5px;
+.rt-neural-ax .plate h3{
+  margin-top: 15px;
   color: #0c2f03af;
+  font-weight: bolder;
 }
-.rt-neural .plate-brand img {
+.rt-neural-ax .plate-brand img {
   
   filter: drop-shadow(2px 2px 2px #0c2f03af);
 }
 
 /* CONTROLS */
 
-.rt-neural-controls {
+.rt-neural-ax-controls {
   display: flex;
   flex-direction: row;
   justify-content: space-around;
@@ -113,11 +114,11 @@
   border-radius: 8px;
 }
 
-.rt-neural .lbl {
+.rt-neural-ax .lbl {
   font-size: 1rem;
 }
 
-.rt-neural .seperator-grid {
+.rt-neural-ax .seperator-grid {
   margin: 0 10px 10px 10px;
   border-left: 4px solid rgba(97, 97, 97, 0.484);
   box-shadow: inset 2 0px 10px #000;
@@ -127,25 +128,25 @@
 
 /* SWITCH */
 
-.rt-neural .switch {
+.rt-neural-ax .switch {
   align-self: center;
 }
 
-.rt-neural .switch-grid {
+.rt-neural-ax .switch-grid {
   display: flex;
   flex-direction: column;
 }
 
-.rt-neural .switch-grid .flipsw {
+.rt-neural-ax .switch-grid .flipsw {
   padding: 5px;
 }
 
-.rt-neural .text-switch {
+.rt-neural-ax .text-switch {
   font-size: 0.5rem;
 }
 
-.rt-neural .on .toggle-sw,
-.rt-neural .off .toggle-sw {
+.rt-neural-ax .on .toggle-sw,
+.rt-neural-ax .off .toggle-sw {
   cursor: pointer;
   text-indent: -9999px;
   width: 25px;
@@ -156,12 +157,12 @@
   position: relative;
 }
 
-.rt-neural .on .toggle-sw {
+.rt-neural-ax .on .toggle-sw {
   background: rgb(84, 84, 84);
 }
 
-.rt-neural .on .toggle-sw:after,
-.rt-neural .off .toggle-sw:after {
+.rt-neural-ax .on .toggle-sw:after,
+.rt-neural-ax .off .toggle-sw:after {
   content: "";
   position: absolute;
   top: 5px;
@@ -173,34 +174,34 @@
   transition: 0.2s;
 }
 
-.rt-neural .off .toggle-sw:after {
+.rt-neural-ax .off .toggle-sw:after {
   top: calc(-80% + 35px);
   transform: translateY(100%);
 }
 
-.rt-neural .on .toggle-sw:after {
+.rt-neural-ax .on .toggle-sw:after {
   background: rgb(218, 214, 203);
 }
 
-.rt-neural .on .toggle-sw:after {
+.rt-neural-ax .on .toggle-sw:after {
   top: calc(100% - 10px);
   transform: translateY(-100%);
 }
 
 /* KNOBS */
-.rt-neural .knob-grid {
+.rt-neural-ax .knob-grid {
   display: flex;
   flex-direction: column;
 }
 
-.rt-neural .knob-bg {
+.rt-neural-ax .knob-bg {
   height: 55px;
   width: 55px;
   margin: 20px auto;
   background: center/cover url("/resources/img/rw_knob_large_dark.svg{{{ns}}}");
 }
 
-.rt-neural .knob-scale {
+.rt-neural-ax .knob-scale {
   width: 90px;
   height: 90px;
   background-position: center;
