@@ -37,6 +37,8 @@ struct DynamicModel {
     ModelVariantType variant;
     char* path;
     bool input_skip; /* Means the model has been trained with first input element skipped to the output */
+    float input_gain;
+    float output_gain;
 };
 
 #define PROCESS_ATOM_MESSAGES

@@ -148,22 +148,30 @@ void RtNeuralGeneric::applyToneControls(float *out, const float *in, LV2_Handle 
 void RtNeuralGeneric::applyModel(DynamicModel* model, float* out, uint32_t n_samples)
 {
     const bool input_skip = model->input_skip;
+    const float input_gain = model->input_gain;
+    const float output_gain = model->output_gain;
 
     std::visit (
-        [&input_skip, &out, &n_samples] (auto&& custom_model)
+        [&input_skip, &out, &n_samples, &input_gain, &output_gain] (auto&& custom_model)
         {
             using ModelType = std::decay_t<decltype (custom_model)>;
             if constexpr (ModelType::input_size == 1)
             {
                 if (input_skip)
                 {
-                    for (uint32_t i=0; i<n_samples; ++i)
+                    for (uint32_t i=0; i<n_samples; ++i) {
+                        out[i] *= input_gain;
                         out[i] += custom_model.forward (out + i);
+                        out[i] *= output_gain;
+                    }
                 }
                 else
                 {
-                    for (uint32_t i=0; i<n_samples; ++i)
+                    for (uint32_t i=0; i<n_samples; ++i) {
+                        out[i] *= input_gain;
                         out[i] = custom_model.forward (out + i);
+                        out[i] *= output_gain;
+                    }
                 }
             }
             else
@@ -637,6 +645,8 @@ LV2_Worker_Status RtNeuralGeneric::work_response(LV2_Handle instance, uint32_t s
 DynamicModel* RtNeuralGeneric::loadModel(LV2_Log_Logger* logger, const char* path)
 {
     int input_skip;
+    float input_gain;
+    float output_gain;
     nlohmann::json model_json;
 
     try {
@@ -655,6 +665,20 @@ DynamicModel* RtNeuralGeneric::loadModel(LV2_Log_Logger* logger, const char* pat
         }
         else {
             input_skip = 0;
+        }
+
+        if (model_json["in_gain"].is_number()) {
+            input_gain = model_json["in_gain"].get<float>();
+        }
+        else {
+            input_gain = 1.0f;
+        }
+
+        if (model_json["out_gain"].is_number()) {
+            output_gain = model_json["out_gain"].get<float>();
+        }
+        else {
+            output_gain = 1.0f;
         }
 
         lv2_log_note(logger, "Successfully loaded json file: %s\n", path);
@@ -690,6 +714,8 @@ DynamicModel* RtNeuralGeneric::loadModel(LV2_Log_Logger* logger, const char* pat
     // save extra info
     model->path = strdup(path);
     model->input_skip = input_skip != 0;
+    model->input_gain = input_gain;
+    model->output_gain = output_gain;
 
     // Pre-buffer to avoid "clicks" during initialization
     float out[2048] = {};
