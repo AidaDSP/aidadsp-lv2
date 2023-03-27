@@ -673,14 +673,14 @@ DynamicModel* RtNeuralGeneric::loadModel(LV2_Log_Logger* logger, const char* pat
         }
 
         if (model_json["in_gain"].is_number()) {
-            input_gain = model_json["in_gain"].get<float>();
+            input_gain = DB_CO(model_json["in_gain"].get<float>());
         }
         else {
             input_gain = 1.0f;
         }
 
         if (model_json["out_gain"].is_number()) {
-            output_gain = model_json["out_gain"].get<float>();
+            output_gain = DB_CO(model_json["out_gain"].get<float>());
         }
         else {
             output_gain = 1.0f;
