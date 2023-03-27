@@ -75,7 +75,7 @@ void RtNeuralGeneric::applyToneControls(float *out, const float *in, LV2_Handle 
         bass_has_changed++;
     }
     if (bass_has_changed) {
-        self->mid->setBiquad(bq_type_lowshelf, bass_freq / self->samplerate, 0.707f, bass_boost_db);
+        self->bass->setBiquad(bq_type_lowshelf, bass_freq / self->samplerate, 0.707f, bass_boost_db);
     }
 
     /* Mid */
@@ -224,7 +224,6 @@ LV2_Handle RtNeuralGeneric::instantiate(const LV2_Descriptor* descriptor, double
     self->dc_blocker = new Biquad(bq_type_highpass, 35.0f / samplerate, 0.707f, 0.0f);
 
     // Setup variable high frequencies roll-off filter (low pass)
-
     self->in_lpf_pc_old = 50.0f;
     self->in_lpf = new Biquad(bq_type_lowpass, PC_CO(self->in_lpf_pc_old) * 0.5f, 0.707f, 0.0f);
 
