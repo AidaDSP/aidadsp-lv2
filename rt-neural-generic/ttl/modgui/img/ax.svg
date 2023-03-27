@@ -7,26 +7,12 @@
 <style type="text/css">
 <![CDATA[
 	.st0 {
-		fill:linear-gradient(
-		140deg,
-		rgba(35, 35, 35, 1) 0%,
-		rgba(25, 25, 25, 1) 52%,
-		rgba(19, 19, 19, 1) 100%
-		);
-		<!-- filter: drop-shadow(0.4rem 0.4rem 1rem rgba(0, 30, 200, 0.8)); -->
+		fill: #1b330d;
 	}
 	.st1 {
-		fill:linear-gradient(
-		140deg,
-		rgba(35, 35, 35, 1) 0%,
-		rgba(25, 25, 25, 1) 52%,
-		rgba(19, 19, 19, 1) 100%
+		fill:#1b330d;
 		);		
-		<!-- filter: drop-shadow(0.4rem 0.4rem 1rem rgba(0, 30, 200, 0.8)); -->
 	}
-	
-	}
-
 ]]>
 </style>
 <g>
