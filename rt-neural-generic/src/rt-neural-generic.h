@@ -1,3 +1,9 @@
+/*
+ * aidadsp-lv2
+ * Copyright (C) 2022-2023 Massimo Pennazio <maxipenna@libero.it>
+ * SPDX-License-Identifier: GPL-3.0-or-later
+ */
+
 #pragma once
 
 #include <stdio.h>
