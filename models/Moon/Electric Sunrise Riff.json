@@ -4,6 +4,7 @@
         null,
         1
     ],
+    "out_gain": -4.2,
     "layers": [
         {
             "type": "lstm",
