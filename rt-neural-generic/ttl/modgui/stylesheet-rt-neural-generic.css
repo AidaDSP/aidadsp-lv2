@@ -108,6 +108,13 @@
   margin: 15px 10px;
   border-radius: 8px;
 }
+.rt-neural-ax .tooltip {
+  display: none;
+}
+
+.rt-neural-ax lbl:hover .tooltip{
+  display: block;
+}
 
 .rt-neural-ax .lbl {
   font-size: 1rem;
@@ -201,5 +208,5 @@
   width: 90px;
   height: 90px;
   background-position: center;
-  background: center/cover url("/resources/img/scale.png{{{ns}}}");
+  background: center/cover url("/resources/img/scale.svg{{{ns}}}");
 }
