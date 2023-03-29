@@ -24,7 +24,7 @@
     doap:name "rt-neural-generic" ;
     lv2:optionalFeature lv2:hardRTCapable ;
 
-doap:license "GPL";
+doap:license <http://spdx.org/licenses/GPL-3.0-or-later.html> ;
 
 rdfs:comment """
 Simple loader for neural models using RTNeural inference engine
