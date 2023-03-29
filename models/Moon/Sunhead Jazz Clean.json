@@ -5,6 +5,7 @@
         1
     ],
     "in_skip": 1,
+    "out_gain": 0,
     "layers": [
         {
             "type": "lstm",
