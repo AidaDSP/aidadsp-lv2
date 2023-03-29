@@ -104,7 +104,6 @@
   align-items: end;
 
   text-align: center;
-  text-transform: uppercase;
   margin: 15px 10px;
   border-radius: 8px;
 }
@@ -112,6 +111,7 @@
 .rt-neural-ax .lbl {
   font-size: 1rem;
   font-weight: bolder;
+  text-transform: uppercase;
 }
 
 .rt-neural-ax .seperator-grid {
@@ -198,11 +198,11 @@
 }
 
 /* TODO: [AID-88]mousewheel display tooltip */
-.rt-neural-ax .knob-scale span.tip {
+.rt-neural-ax .knob-grid span.tip {
   display: None;
 }
 
-.rt-neural-ax .knob-scale:active span.tip {
+.rt-neural-ax .knob-grid:active span.tip {
   display: block;
   position: absolute;
   z-index: 10000;
@@ -210,7 +210,6 @@
   box-shadow: 3px 3px 3px rgba(0, 0, 0, 0.4);
   padding: 4px;
   border-radius: 2px;
-  /* color: #FFFFFF; */
   width: 85px;
 }
 
