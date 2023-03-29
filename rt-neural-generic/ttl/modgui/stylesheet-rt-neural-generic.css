@@ -108,13 +108,6 @@
   margin: 15px 10px;
   border-radius: 8px;
 }
-.rt-neural-ax .tooltip {
-  display: none;
-}
-
-.rt-neural-ax lbl:hover .tooltip{
-  display: block;
-}
 
 .rt-neural-ax .lbl {
   font-size: 1rem;
@@ -202,6 +195,23 @@
   width: 55px;
   margin: 20px auto;
   background: center/cover url("/resources/img/rw_knob_large_dark.svg{{{ns}}}");
+}
+
+/* TODO: [AID-88]mousewheel display tooltip */
+.rt-neural-ax .knob-scale span.tip {
+  display: None;
+}
+
+.rt-neural-ax .knob-scale:active span.tip {
+  display: block;
+  position: absolute;
+  z-index: 10000;
+  background-color: rgba(0, 0, 0, 0.5);
+  box-shadow: 3px 3px 3px rgba(0, 0, 0, 0.4);
+  padding: 4px;
+  border-radius: 2px;
+  /* color: #FFFFFF; */
+  width: 85px;
 }
 
 .rt-neural-ax .knob-scale {
