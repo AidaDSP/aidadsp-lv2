@@ -77,6 +77,9 @@ struct WorkerApplyMessage {
 /* Define a macro to scale % to coeff */
 #define PC_CO(g) ((g) < 100.0f ? (g / 100.0f) : 1.0f)
 
+/* Define a macro to re-maps a number from one range to another  */
+#define MAP(x, in_min, in_max, out_min, out_max) (((x - in_min) * (out_max - out_min) / (in_max - in_min)) + out_min)
+
 /* Defines for tone controls */
 #define PEAK 0.0f
 #define BANDPASS 1.0f
@@ -84,6 +87,10 @@ struct WorkerApplyMessage {
 #define DEPTH_Q 0.707f
 #define PRESENCE_FREQ 900.0f
 #define PRESENCE_Q 0.707f
+
+/* Defines for antialiasing filter */
+#define INLPF_MAX_CO 0.99f * 0.5f /* coeff * ((samplerate / 2) / samplerate) */
+#define INLPF_MIN_CO 0.25f * 0.5f /* coeff * ((samplerate / 2) / samplerate) */
 
 /**********************************************************************************************************************************************************/
 

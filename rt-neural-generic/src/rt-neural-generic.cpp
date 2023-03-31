@@ -230,8 +230,8 @@ LV2_Handle RtNeuralGeneric::instantiate(const LV2_Descriptor* descriptor, double
     self->dc_blocker = new Biquad(bq_type_highpass, 35.0f / samplerate, 0.707f, 0.0f);
 
     // Setup variable high frequencies roll-off filter (low pass)
-    self->in_lpf_pc_old = 50.0f;
-    self->in_lpf = new Biquad(bq_type_lowpass, PC_CO(self->in_lpf_pc_old) * 0.5f, 0.707f, 0.0f);
+    self->in_lpf_pc_old = 66.216f;
+    self->in_lpf = new Biquad(bq_type_lowpass, MAP(self->in_lpf_pc_old, 0.0f, 100.0f, INLPF_MAX_CO, INLPF_MIN_CO), 0.707f, 0.0f);
 
     // Setup equalizer section
     self->bass_boost_db_old = 0.0f;
@@ -374,7 +374,7 @@ void RtNeuralGeneric::run(LV2_Handle instance, uint32_t n_samples)
     float param2 = 0.0f;
 
     if (in_lpf_pc != self->in_lpf_pc_old) { /* Update filter coeffs */
-        self->in_lpf->setBiquad(bq_type_lowpass, PC_CO(in_lpf_pc) * 0.5f, 0.707f, 0.0f);
+        self->in_lpf->setBiquad(bq_type_lowpass, MAP(in_lpf_pc, 0.0f, 100.0f, INLPF_MAX_CO, INLPF_MIN_CO), 0.707f, 0.0f);
         self->in_lpf_pc_old = in_lpf_pc;
     }
 

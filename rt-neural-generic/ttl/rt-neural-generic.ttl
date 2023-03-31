@@ -92,11 +92,11 @@ lv2:port
 [
     a lv2:ControlPort, lv2:InputPort;
     lv2:index 4;
-    lv2:symbol "INLPF";
-    lv2:name "INLPF";
-    lv2:default 50.0;
-    lv2:minimum 25.0;
-    lv2:maximum 99.0;
+    lv2:symbol "ANTIALIASING";
+    lv2:name "ANTIALIASING";
+    lv2:default 66.216;
+    lv2:minimum 0.0;
+    lv2:maximum 100.0;
     units:unit units:pc;
 ],
 [
