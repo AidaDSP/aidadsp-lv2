@@ -6,7 +6,7 @@
 
 * A bundle of audio plugins from [Aida DSP](http://aidadsp.cc)
 * Bundle version: 1.0
-* This bundle is intended to be used with Mod Audio's products and derivatives
+* This bundle is intended to be used with MOD Audio's products and derivatives
 
 ### Plugin list ###
 
@@ -33,9 +33,9 @@ This implies neural network training. Please follow __*Automated_GuitarAmpModell
 
 ### Build ###
 
-#### Mod Audio ####
+#### MOD Audio ####
 
-We're proudly part of the amazing Mod Audio platform and community. Our plugin is already integrated
+We're proudly part of the amazing MOD Audio platform and community. Our plugin is already integrated
 in their build system [MPB](https://github.com/moddevices/mod-plugin-builder/blob/master/plugins/package/aidadsp-lv2/aidadsp-lv2.mk), so please just follow their instructions.
 
 #### Aida DSP OS ####
