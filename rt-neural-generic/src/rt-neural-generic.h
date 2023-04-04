@@ -92,6 +92,9 @@ struct WorkerApplyMessage {
 #define INLPF_MAX_CO 0.99f * 0.5f /* coeff * ((samplerate / 2) / samplerate) */
 #define INLPF_MIN_CO 0.25f * 0.5f /* coeff * ((samplerate / 2) / samplerate) */
 
+/* Define the acceptable threshold for model test */
+#define TEST_MODEL_THR 1.0e-12
+
 /**********************************************************************************************************************************************************/
 
 class RtNeuralGeneric
@@ -205,4 +208,5 @@ private:
     static void applyBiquadFilter(float *out, const float *in, Biquad *filter, uint32_t n_samples);
     static void applyModel(DynamicModel *model, float *out, uint32_t n_samples);
     static void applyToneControls(float *out, const float *in, LV2_Handle instance, uint32_t n_samples);
+    static bool testModel(LV2_Log_Logger* logger, DynamicModel *model, const std::vector<float>& xData, const std::vector<float>& yData);
 };

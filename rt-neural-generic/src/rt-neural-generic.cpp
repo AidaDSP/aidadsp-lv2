@@ -645,6 +645,43 @@ LV2_Worker_Status RtNeuralGeneric::work_response(LV2_Handle instance, uint32_t s
 /**********************************************************************************************************************************************************/
 
 /**
+ * This function tests the inference engine
+*/
+bool RtNeuralGeneric::testModel(LV2_Log_Logger* logger, DynamicModel *model, const std::vector<float>& xData, const std::vector<float>& yData)
+{
+    std::unique_ptr<float[]> out(new float [xData.size()]);
+    for(size_t i = 0; i < xData.size(); i++) {
+        out[i] = xData[i];
+        applyModel(model, out.get(), xData.size());
+    }
+    constexpr double threshold = TEST_MODEL_THR;
+    size_t nErrs = 0;
+    float max_error = 0.0f;
+    for(size_t i = 0; i < xData.size(); i++) {
+        auto err = std::abs(out[i] - yData[i]);
+        if(err > threshold)
+        {
+            max_error = std::max(err, max_error);
+            nErrs++;
+        }
+    }
+    if(nErrs > 0)
+    {
+        lv2_log_error(logger, "Failure %s: %d errors!\n", __func__, (int)nErrs);
+        lv2_log_error(logger, "Maximum error: %.12f\n", max_error);
+    }
+    else
+    {
+        lv2_log_note(logger, "Success %s: %d errors!\n", __func__, (int)nErrs);
+        lv2_log_note(logger, "Maximum error: %.12f\n", max_error);
+        return true;
+    }
+    return false;
+}
+
+/**********************************************************************************************************************************************************/
+
+/**
  * This function loads a pre-trained neural model from a json file
 */
 DynamicModel* RtNeuralGeneric::loadModel(LV2_Log_Logger* logger, const char* path)
@@ -716,15 +753,24 @@ DynamicModel* RtNeuralGeneric::loadModel(LV2_Log_Logger* logger, const char* pat
         return nullptr;
     }
 
-    // save extra info
+    /* Save extra info */
     model->path = strdup(path);
     model->input_skip = input_skip != 0;
     model->input_gain = input_gain;
     model->output_gain = output_gain;
 
-    // Pre-buffer to avoid "clicks" during initialization
-    float out[2048] = {};
-    applyModel(model.get(), out, 2048);
+    /* Sanity check on inference engine with loaded model, also serves as pre-buffer
+    * to avoid "clicks" during initialization */
+    if (model_json["input_batch"].is_array() && model_json["output_batch"].is_array()) {
+        std::vector<float> input_batch = model_json["input_batch"_json_pointer];
+        std::vector<float> output_batch = model_json["output_batch"_json_pointer];
+        testModel(logger, model.get(), input_batch, output_batch);
+    }
+    else
+    {
+        float out[2048] = {};
+        applyModel(model.get(), out, 2048);
+    }
 
     return model.release();
 }
