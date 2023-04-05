@@ -2,7 +2,7 @@
 
 layer_types = ('GRU', 'LSTM')
 io_dims = tuple(range(1, 2 + 1))
-rnn_dims = (8, 12, 16, 20, 32, 40)
+rnn_dims = (8, 12, 16, 20, 32, 40, 64)
 
 model_variant_using_declarations = []
 model_variant_types = []
