@@ -1,6 +1,7 @@
 #include <variant>
 #include <RTNeural/RTNeural.h>
 
+#define MAX_INPUT_SIZE 3
 struct NullModel { static constexpr int input_size = 0; static constexpr int output_size = 0; };
 using ModelType_GRU_8_1_sigmoid = RTNeural::ModelT<float, 1, 1, RTNeural::GRULayerT<float, 1, 8>, RTNeural::DenseT<float, 8, 8>, RTNeural::SigmoidActivationT<float, 8>, RTNeural::DenseT<float, 8, 1>>;
 using ModelType_GRU_8_1 = RTNeural::ModelT<float, 1, 1, RTNeural::GRULayerT<float, 1, 8>, RTNeural::DenseT<float, 8, 1>>;
