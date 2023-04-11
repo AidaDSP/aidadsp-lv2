@@ -25,6 +25,7 @@
 #include <model_variant.hpp>
 
 #include <Biquad.h>
+#include <ExpSmoother.hpp>
 
 #include "uris.h"
 
@@ -43,10 +44,10 @@ struct DynamicModel {
     ModelVariantType variant;
     char* path;
     bool input_skip; /* Means the model has been trained with first input element skipped to the output */
-    float param1;
-    float param2;
     float input_gain;
     float output_gain;
+    ExpSmoother param1Coeff;
+    ExpSmoother param2Coeff;
 };
 
 #define PROCESS_ATOM_MESSAGES
@@ -114,11 +115,11 @@ public:
     float *in;
     float *out_1;
     float *pregain_db;
-    float pregain_old;
+    ExpSmoother preGain;
     float *param1;
     float *param2;
     float *master_db;
-    float master_old;
+    ExpSmoother masterGain;
     float *net_bypass;
     float *in_lpf_pc;
     float in_lpf_pc_old;
