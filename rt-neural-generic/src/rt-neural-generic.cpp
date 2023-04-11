@@ -747,6 +747,11 @@ DynamicModel* RtNeuralGeneric::loadModel(LV2_Log_Logger* logger, const char* pat
         std::ifstream jsonStream(path, std::ifstream::binary);
         jsonStream >> model_json;
 
+        /* Understand which model type to load */
+        if(model_json["in_shape"].back().get<int>() > MAX_INPUT_SIZE) {
+            throw std::invalid_argument("Values for input_size > 1 are not supported");
+        }
+
         if (model_json["in_skip"].is_number()) {
             input_skip = model_json["in_skip"].get<int>();
             if (input_skip > 1)
