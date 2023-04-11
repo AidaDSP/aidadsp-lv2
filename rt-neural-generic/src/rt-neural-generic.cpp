@@ -31,14 +31,14 @@ const LV2_Descriptor* lv2_descriptor(uint32_t index)
 /**********************************************************************************************************************************************************/
 
 // Ramp calculation
-float RtNeuralGeneric::rampValue(float start, float end, uint32_t n_samples, uint32_t index) {
+static float rampValue(float start, float end, uint32_t n_samples, uint32_t index) {
     return (start + ((end - start)/n_samples) * (index+1));
 }
 
 /**********************************************************************************************************************************************************/
 
 // Apply a gain ramp to a buffer
-void RtNeuralGeneric::applyGainRamp(float *out, const float *in, float start, float end, uint32_t n_samples) {
+static void applyGainRamp(float *out, const float *in, float start, float end, uint32_t n_samples) {
     for(uint32_t i=0; i<n_samples; i++) {
         out[i] = in[i] * rampValue(start, end, n_samples, i);
     }
@@ -154,11 +154,13 @@ void RtNeuralGeneric::applyToneControls(float *out, const float *in, LV2_Handle 
 void RtNeuralGeneric::applyModel(DynamicModel* model, float* out, uint32_t n_samples)
 {
     const bool input_skip = model->input_skip;
+    const float param1 = model->param1;
+    const float param2 = model->param2;
     const float input_gain = model->input_gain;
     const float output_gain = model->output_gain;
 
     std::visit (
-        [&input_skip, &out, &n_samples, &input_gain, &output_gain] (auto&& custom_model)
+        [&input_skip, &out, &n_samples, &param1, &param2, &input_gain, &output_gain] (auto&& custom_model)
         {
             using ModelType = std::decay_t<decltype (custom_model)>;
             if constexpr (ModelType::input_size == 1)
@@ -180,9 +182,55 @@ void RtNeuralGeneric::applyModel(DynamicModel* model, float* out, uint32_t n_sam
                     }
                 }
             }
-            else
+            else if constexpr (ModelType::input_size == 2)
             {
-                // TODO
+                float inArray1 alignas(RTNEURAL_DEFAULT_ALIGNMENT)[2] = { 0.0, 0.0 };
+                if (input_skip)
+                {
+                    for (uint32_t i=0; i<n_samples; ++i) {
+                        out[i] *= input_gain;
+                        inArray1[0] = out[i];
+                        inArray1[1] = rampValue(inArray1[1], param1, n_samples, i);
+                        out[i] += custom_model.forward (inArray1);
+                        out[i] *= output_gain;
+                    }
+                }
+                else
+                {
+                    for (uint32_t i=0; i<n_samples; ++i) {
+                        out[i] *= input_gain;
+                        inArray1[0] = out[i];
+                        inArray1[1] = rampValue(inArray1[1], param1, n_samples, i);
+                        out[i] = custom_model.forward (inArray1);
+                        out[i] *= output_gain;
+                    }
+                }
+            }
+            else if constexpr (ModelType::input_size == 3)
+            {
+                float inArray2 alignas(RTNEURAL_DEFAULT_ALIGNMENT)[3] = { 0.0, 0.0, 0.0 };
+                if (input_skip)
+                {
+                    for (uint32_t i=0; i<n_samples; ++i) {
+                        out[i] *= input_gain;
+                        inArray2[0] = out[i];
+                        inArray2[1] = rampValue(inArray2[1], param1, n_samples, i);
+                        inArray2[2] = rampValue(inArray2[2], param2, n_samples, i);
+                        out[i] += custom_model.forward (inArray2);
+                        out[i] *= output_gain;
+                    }
+                }
+                else
+                {
+                    for (uint32_t i=0; i<n_samples; ++i) {
+                        out[i] *= input_gain;
+                        inArray2[0] = out[i];
+                        inArray2[1] = rampValue(inArray2[1], param1, n_samples, i);
+                        inArray2[2] = rampValue(inArray2[2], param2, n_samples, i);
+                        out[i] = custom_model.forward (inArray2);
+                        out[i] *= output_gain;
+                    }
+                }
             }
         },
         model->variant
@@ -301,6 +349,12 @@ void RtNeuralGeneric::connect_port(LV2_Handle instance, uint32_t port, void *dat
         case PREGAIN:
             self->pregain_db = (float*) data;
             break;
+        case PARAM1:
+            self->param1 = (float*) data;
+            break;
+        case PARAM2:
+            self->param2 = (float*) data;
+            break;
         case MASTER:
             self->master_db = (float*) data;
             break;
@@ -368,10 +422,8 @@ void RtNeuralGeneric::run(LV2_Handle instance, uint32_t n_samples)
     float in_lpf_pc = *self->in_lpf_pc;
     float eq_position = *self->eq_position;
     float eq_bypass = *self->eq_bypass;
-    /*float param1 = *self->param1;*/
-    /*float param2 = *self->param2;*/
-    float param1 = 0.0f;
-    float param2 = 0.0f;
+    self->model->param1 = *self->param1;
+    self->model->param2 = *self->param2;
 
     if (in_lpf_pc != self->in_lpf_pc_old) { /* Update filter coeffs */
         self->in_lpf->setBiquad(bq_type_lowpass, MAP(in_lpf_pc, 0.0f, 100.0f, INLPF_MAX_CO, INLPF_MIN_CO), 0.707f, 0.0f);
@@ -694,11 +746,6 @@ DynamicModel* RtNeuralGeneric::loadModel(LV2_Log_Logger* logger, const char* pat
     try {
         std::ifstream jsonStream(path, std::ifstream::binary);
         jsonStream >> model_json;
-
-        /* Understand which model type to load */
-        if(model_json["in_shape"].back().get<int>() > 1) {
-            throw std::invalid_argument("Values for input_size > 1 are not supported");
-        }
 
         if (model_json["in_skip"].is_number()) {
             input_skip = model_json["in_skip"].get<int>();
