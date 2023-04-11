@@ -33,7 +33,7 @@
 typedef enum {
     IN, OUT_1, PLUGIN_CONTROL, PLUGIN_NOTIFY,
     IN_LPF, PREGAIN,
-    NET_BYPASS,
+    NET_BYPASS, PARAM1, PARAM2,
     EQ_BYPASS, EQ_POS, BASS, BFREQ, MID, MFREQ, MIDQ, MTYPE, TREBLE, TFREQ, DEPTH, PRESENCE,
     MASTER,
     PLUGIN_PORT_COUNT} ports_t;
@@ -43,6 +43,8 @@ struct DynamicModel {
     ModelVariantType variant;
     char* path;
     bool input_skip; /* Means the model has been trained with first input element skipped to the output */
+    float param1;
+    float param2;
     float input_gain;
     float output_gain;
 };
@@ -199,12 +201,6 @@ private:
 
     DynamicModel* model;
 
-    // Pre-allocate arrays for feeding the models
-    float inArray1 alignas(RTNEURAL_DEFAULT_ALIGNMENT)[2] = { 0.0, 0.0 };
-    float inArray2 alignas(RTNEURAL_DEFAULT_ALIGNMENT)[3] = { 0.0, 0.0, 0.0 };
-
-    static float rampValue(float start, float end, uint32_t n_samples, uint32_t index);
-    static void applyGainRamp(float *out, const float *in, float start, float end, uint32_t n_samples);
     static void applyBiquadFilter(float *out, const float *in, Biquad *filter, uint32_t n_samples);
     static void applyModel(DynamicModel *model, float *out, uint32_t n_samples);
     static void applyToneControls(float *out, const float *in, LV2_Handle instance, uint32_t n_samples);
