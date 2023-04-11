@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 
+max_in_dims = 3
 layer_types = ('GRU', 'LSTM')
-in_dims = tuple(range(1, 3 + 1))
+in_dims = tuple(range(1, max_in_dims + 1))
 rnn_dims = (8, 12, 16, 20, 32, 40, 64)
 
 model_variant_using_declarations = []
@@ -51,6 +52,8 @@ with open("rt-neural-generic/src/model_variant.hpp", "w") as header_file:
     header_file.write('#include <variant>\n')
     header_file.write('#include <RTNeural/RTNeural.h>\n')
     header_file.write('\n')
+
+    header_file.write(f'#define MAX_INPUT_SIZE {max_in_dims}\n')
 
     header_file.write('struct NullModel { static constexpr int input_size = 0; static constexpr int output_size = 0; };\n')
     header_file.writelines(model_variant_using_declarations)
