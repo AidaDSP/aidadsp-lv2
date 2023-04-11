@@ -272,8 +272,10 @@ LV2_Handle RtNeuralGeneric::instantiate(const LV2_Descriptor* descriptor, double
     lv2_log_logger_init(&self->logger, self->map, self->log);
 
     // Setup initial values
+    self->preGain.setSampleRate(self->samplerate);
     self->preGain.setTimeConstant(0.1f);
     self->preGain.setTarget(1.f);
+    self->masterGain.setSampleRate(self->samplerate);
     self->masterGain.setTimeConstant(0.1f);
     self->masterGain.setTarget(1.f);
 
@@ -312,10 +314,16 @@ void RtNeuralGeneric::activate(LV2_Handle instance)
 {
     RtNeuralGeneric *self = (RtNeuralGeneric*) instance;
 
+    self->preGain.clearToTarget();
+    self->masterGain.clearToTarget();
+
     if (self->model == nullptr)
         return;
 
     // TODO: include the activate function code here
+    // TODO: if (self->samplerate != self->model->sr) ???
+    self->model->param1Coeff.clearToTarget();
+    self->model->param2Coeff.clearToTarget();
     std::visit (
         [] (auto&& custom_model)
         {
@@ -747,6 +755,7 @@ DynamicModel* RtNeuralGeneric::loadModel(LV2_Log_Logger* logger, const char* pat
     int input_skip;
     float input_gain;
     float output_gain;
+    float model_sr;
     nlohmann::json model_json;
 
     try {
@@ -779,6 +788,13 @@ DynamicModel* RtNeuralGeneric::loadModel(LV2_Log_Logger* logger, const char* pat
         }
         else {
             output_gain = 1.0f;
+        }
+
+        if (model_json["samplerate"].is_number()) {
+            model_sr = model_json["samplerate"].get<float>();
+        }
+        else {
+            model_sr = 48000.f;
         }
 
         lv2_log_note(logger, "Successfully loaded json file: %s\n", path);
@@ -816,8 +832,11 @@ DynamicModel* RtNeuralGeneric::loadModel(LV2_Log_Logger* logger, const char* pat
     model->input_skip = input_skip != 0;
     model->input_gain = input_gain;
     model->output_gain = output_gain;
+    model->sr = model_sr;
+    model->param1Coeff.setSampleRate(model_sr);
     model->param1Coeff.setTimeConstant(0.1f);
     model->param1Coeff.setTarget(0.f);
+    model->param2Coeff.setSampleRate(model_sr);
     model->param2Coeff.setTimeConstant(0.1f);
     model->param2Coeff.setTarget(0.f);
 
