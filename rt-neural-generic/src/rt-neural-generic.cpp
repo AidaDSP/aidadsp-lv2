@@ -275,9 +275,11 @@ LV2_Handle RtNeuralGeneric::instantiate(const LV2_Descriptor* descriptor, double
     self->preGain.setSampleRate(self->samplerate);
     self->preGain.setTimeConstant(0.1f);
     self->preGain.setTarget(1.f);
+    self->preGain.clearToTarget();
     self->masterGain.setSampleRate(self->samplerate);
     self->masterGain.setTimeConstant(0.1f);
     self->masterGain.setTarget(1.f);
+    self->masterGain.clearToTarget();
 
     // Setup fixed frequency dc blocker filter (high pass)
     self->dc_blocker = new Biquad(bq_type_highpass, 35.0f / samplerate, 0.707f, 0.0f);
@@ -755,7 +757,7 @@ DynamicModel* RtNeuralGeneric::loadModel(LV2_Log_Logger* logger, const char* pat
     int input_skip;
     float input_gain;
     float output_gain;
-    float model_sr;
+    float model_samplerate;
     nlohmann::json model_json;
 
     try {
@@ -791,10 +793,10 @@ DynamicModel* RtNeuralGeneric::loadModel(LV2_Log_Logger* logger, const char* pat
         }
 
         if (model_json["samplerate"].is_number()) {
-            model_sr = model_json["samplerate"].get<float>();
+            model_samplerate = model_json["samplerate"].get<float>();
         }
         else {
-            model_sr = 48000.f;
+            model_samplerate = 48000.0f;
         }
 
         lv2_log_note(logger, "Successfully loaded json file: %s\n", path);
@@ -832,13 +834,15 @@ DynamicModel* RtNeuralGeneric::loadModel(LV2_Log_Logger* logger, const char* pat
     model->input_skip = input_skip != 0;
     model->input_gain = input_gain;
     model->output_gain = output_gain;
-    model->sr = model_sr;
-    model->param1Coeff.setSampleRate(model_sr);
+    model->samplerate = model_samplerate;
+    model->param1Coeff.setSampleRate(model_samplerate);
     model->param1Coeff.setTimeConstant(0.1f);
     model->param1Coeff.setTarget(0.f);
-    model->param2Coeff.setSampleRate(model_sr);
+    model->param1Coeff.clearToTarget();
+    model->param2Coeff.setSampleRate(model_samplerate);
     model->param2Coeff.setTimeConstant(0.1f);
     model->param2Coeff.setTarget(0.f);
+    model->param2Coeff.clearToTarget();
 
     /* Sanity check on inference engine with loaded model, also serves as pre-buffer
     * to avoid "clicks" during initialization */

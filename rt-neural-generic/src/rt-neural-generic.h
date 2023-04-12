@@ -46,7 +46,7 @@ struct DynamicModel {
     bool input_skip; /* Means the model has been trained with first input element skipped to the output */
     float input_gain;
     float output_gain;
-    float sr;
+    float samplerate;
     ExpSmoother param1Coeff;
     ExpSmoother param2Coeff;
 };
