@@ -1,59 +1,50 @@
 #!/usr/bin/env python3
 
-max_in_dims = 3
+max_input_size = 3
 layer_types = ('GRU', 'LSTM')
-in_dims = tuple(range(1, max_in_dims + 1))
-rnn_dims = (8, 12, 16, 20, 32, 40, 64)
+input_sizes = tuple(range(1, max_input_size + 1))
+hidden_sizes = (8, 12, 16, 20, 32, 40, 64)
 
 model_variant_using_declarations = []
 model_variant_types = []
 model_type_checkers = []
 
-def add_model(layer_type, rnn_dim, in_dim, model_type, sigmoid):
-    model_type_alias = f'ModelType_{layer_type}_{rnn_dim}_{in_dim}{"_sigmoid" if sigmoid else ""}'
+def add_model(input_size, layer_type, hidden_size, model_type):
+    model_type_alias = f'ModelType_{layer_type}_{hidden_size}_{input_size}'
     model_variant_using_declarations.append(f'using {model_type_alias} = {model_type};\n')
     model_variant_types.append(model_type_alias)
     model_type_checkers.append(f'''inline bool is_model_type_{model_type_alias} (const nlohmann::json& model_json) {{
     const auto json_layers = model_json.at ("layers");
     const auto rnn_layer_type = json_layers.at (0).at ("type").get<std::string>();
     const auto is_layer_type_correct = rnn_layer_type == "{layer_type.lower()}";
-    const auto rnn_dim = json_layers.at (0).at ("shape").back().get<int>();
-    const auto is_rnn_dim_correct = rnn_dim == {rnn_dim};
-    const auto in_dim = model_json.at ("in_shape").back().get<int>();
-    const auto is_in_dim_correct = in_dim == {in_dim};
-    const auto has_sigmoid_activation = json_layers.size() == 3 && json_layers.at (1).at ("activation") == "sigmoid";
-    const auto is_sigmoid_activation_correct = has_sigmoid_activation == {"true" if sigmoid else "false"};
-    return is_layer_type_correct && is_rnn_dim_correct && is_in_dim_correct && is_sigmoid_activation_correct;
+    const auto hidden_size = json_layers.at (0).at ("shape").back().get<int>();
+    const auto is_hidden_size_correct = hidden_size == {hidden_size};
+    const auto input_size = model_json.at ("in_shape").back().get<int>();
+    const auto is_input_size_correct = input_size == {input_size};
+    return is_layer_type_correct && is_hidden_size_correct && is_input_size_correct;
 }}\n\n''')
 
 for layer_type in layer_types:
-    for rnn_dim in rnn_dims:
-        for in_dim in in_dims:
-            print(f'Setting up Model: {layer_type} w/ RNN dims {rnn_dim}, w/ I/O dims {in_dim}')
+    for hidden_size in hidden_sizes:
+        for input_size in input_sizes:
+            print(f'Setting up Model: {layer_type} w/ RNN dims {hidden_size}, w/ I/O dims {input_size} / 1')
 
             if layer_type == 'GRU':
-                rnn_layer_type = f'RTNeural::GRULayerT<float, {in_dim}, {rnn_dim}>'
+                rnn_layer_type = f'RTNeural::GRULayerT<float, 1, {hidden_size}>'
             elif layer_type == 'LSTM':
-                rnn_layer_type = f'RTNeural::LSTMLayerT<float, {in_dim}, {rnn_dim}>'
+                rnn_layer_type = f'RTNeural::LSTMLayerT<float, 1, {hidden_size}>'
 
-            dense_layer_mid_type = f'RTNeural::DenseT<float, {rnn_dim}, {rnn_dim}>'
-            dense_layer_end_type = f'RTNeural::DenseT<float, {rnn_dim}, 1>'
+            dense_layer_type = f'RTNeural::DenseT<float, {hidden_size}, 1>'
 
-            # with sigmoid activation
-            activation_layer_type = f'RTNeural::SigmoidActivationT<float, {rnn_dim}>'
-            model_type = f'RTNeural::ModelT<float, {in_dim}, 1, {rnn_layer_type}, {dense_layer_mid_type}, {activation_layer_type}, {dense_layer_end_type}>'
-            add_model(layer_type, rnn_dim, in_dim, model_type, True)
-
-            # without sigmoid activation
-            model_type = f'RTNeural::ModelT<float, {in_dim}, 1, {rnn_layer_type}, {dense_layer_end_type}>'
-            add_model(layer_type, rnn_dim, in_dim, model_type, False)
+            model_type = f'RTNeural::ModelT<float, {input_size}, 1, {rnn_layer_type}, {dense_layer_type}>'
+            add_model(input_size, layer_type, hidden_size, model_type)
 
 with open("rt-neural-generic/src/model_variant.hpp", "w") as header_file:
     header_file.write('#include <variant>\n')
     header_file.write('#include <RTNeural/RTNeural.h>\n')
     header_file.write('\n')
 
-    header_file.write(f'#define MAX_INPUT_SIZE {max_in_dims}\n')
+    header_file.write(f'#define MAX_INPUT_SIZE {max_input_size}\n')
 
     header_file.write('struct NullModel { static constexpr int input_size = 0; static constexpr int output_size = 0; };\n')
     header_file.writelines(model_variant_using_declarations)
