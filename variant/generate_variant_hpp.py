@@ -27,12 +27,12 @@ def add_model(input_size, layer_type, hidden_size, model_type):
 for layer_type in layer_types:
     for hidden_size in hidden_sizes:
         for input_size in input_sizes:
-            print(f'Setting up Model: {layer_type} w/ RNN dims {hidden_size}, w/ I/O dims {input_size} / 1')
+            print(f'Setting up Model: {layer_type} w/ RNN dims {input_size} / {hidden_size}, w/ I/O dims {input_size} / 1')
 
             if layer_type == 'GRU':
-                rnn_layer_type = f'RTNeural::GRULayerT<float, 1, {hidden_size}>'
+                rnn_layer_type = f'RTNeural::GRULayerT<float, {input_size}, {hidden_size}>'
             elif layer_type == 'LSTM':
-                rnn_layer_type = f'RTNeural::LSTMLayerT<float, 1, {hidden_size}>'
+                rnn_layer_type = f'RTNeural::LSTMLayerT<float, {input_size}, {hidden_size}>'
 
             dense_layer_type = f'RTNeural::DenseT<float, {hidden_size}, 1>'
 
