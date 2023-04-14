@@ -37,6 +37,7 @@ typedef enum {
     NET_BYPASS, PARAM1, PARAM2,
     EQ_BYPASS, EQ_POS, BASS, BFREQ, MID, MFREQ, MIDQ, MTYPE, TREBLE, TFREQ, DEPTH, PRESENCE,
     MASTER,
+    INPUT_SIZE,
     PLUGIN_PORT_COUNT} ports_t;
 
 // Everything needed to run a model
@@ -147,6 +148,10 @@ public:
     float *presence_boost_db;
     float presence_boost_db_old;
     float *eq_bypass;
+    float *input_size;
+
+    // to be used for reporting input_size to GUI (0 for error/unloaded, otherwise matching input_size)
+    int last_input_size;
 
     static LV2_State_Status restore(LV2_Handle instance,
                                        LV2_State_Retrieve_Function retrieve,
@@ -164,7 +169,7 @@ public:
                                        uint32_t                    size,
                                        const void*                 data);
     static LV2_Worker_Status work_response(LV2_Handle instance, uint32_t size, const void* data);
-    static DynamicModel* loadModel(LV2_Log_Logger* logger, const char* path);
+    static DynamicModel* loadModel(LV2_Log_Logger* logger, const char* path, int* input_size_ptr);
     static void freeModel(DynamicModel* model);
 
     // Features

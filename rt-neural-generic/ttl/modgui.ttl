@@ -5,6 +5,7 @@
     modgui:gui [
         modgui:resourcesDirectory <modgui> ;
         modgui:iconTemplate <modgui/icon-rt-neural-generic.html> ;
+        modgui:javascript <modgui/javascript-rt-neural-generic.js> ;
         modgui:stylesheet <modgui/stylesheet-rt-neural-generic.css> ;
         modgui:screenshot <modgui/screenshot-rt-neural-generic.png> ;
         modgui:thumbnail <modgui/thumbnail-rt-neural-generic.png> ;
@@ -27,5 +28,8 @@
             lv2:index 3 ;
             lv2:symbol "MASTER" ;
             lv2:name "MASTER" ;
+        ] ;
+        modgui:monitoredOutputs [
+            lv2:symbol "ModelInSize";
         ] ;
     ] .

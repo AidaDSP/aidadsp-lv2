@@ -298,6 +298,8 @@ LV2_Handle RtNeuralGeneric::instantiate(const LV2_Descriptor* descriptor, double
     self->presence_boost_db_old = 0.0f;
     self->presence = new Biquad(bq_type_highshelf, PRESENCE_FREQ / samplerate, PRESENCE_Q, self->presence_boost_db_old);
 
+    self->last_input_size = 0;
+
     self->model = nullptr;
 
     return (LV2_Handle)self;
@@ -412,6 +414,9 @@ void RtNeuralGeneric::connect_port(LV2_Handle instance, uint32_t port, void *dat
         case EQ_BYPASS:
             self->eq_bypass = (float*) data;
             break;
+        case INPUT_SIZE:
+            self->input_size = (float*) data;
+            break;
     }
 }
 
@@ -438,6 +443,8 @@ void RtNeuralGeneric::run(LV2_Handle instance, uint32_t n_samples)
         self->in_lpf->setBiquad(bq_type_lowpass, MAP(in_lpf_pc, 0.0f, 100.0f, INLPF_MAX_CO, INLPF_MIN_CO), 0.707f, 0.0f);
         self->in_lpf_pc_old = in_lpf_pc;
     }
+
+    *self->input_size = self->last_input_size;
 
 #ifdef PROCESS_ATOM_MESSAGES
     /*++++++++ READ ATOM MESSAGES ++++++++*/
@@ -501,6 +508,11 @@ void RtNeuralGeneric::run(LV2_Handle instance, uint32_t n_samples)
     }
     /*++++++++ END READ ATOM MESSAGES ++++++++*/
 #endif
+
+    // 0 samples means pre-run, nothing left for us to do
+    if (n_samples == 0) {
+        return;
+    }
 
     /*++++++++ AUDIO DSP ++++++++*/
     applyBiquadFilter(self->out_1, self->in, self->in_lpf, n_samples); // High frequencies roll-off (lowpass)
@@ -644,7 +656,7 @@ LV2_Worker_Status RtNeuralGeneric::work(LV2_Handle instance,
     switch (msg->type)
     {
     case kWorkerLoad:
-        if (DynamicModel* newmodel = RtNeuralGeneric::loadModel(&self->logger, ((const WorkerLoadMessage*)data)->path))
+        if (DynamicModel* newmodel = RtNeuralGeneric::loadModel(&self->logger, ((const WorkerLoadMessage*)data)->path, &self->last_input_size))
         {
             WorkerApplyMessage reply = { kWorkerApply, newmodel };
             respond (handle, sizeof(reply), &reply);
@@ -745,9 +757,10 @@ bool RtNeuralGeneric::testModel(LV2_Log_Logger* logger, DynamicModel *model, con
 /**
  * This function loads a pre-trained neural model from a json file
 */
-DynamicModel* RtNeuralGeneric::loadModel(LV2_Log_Logger* logger, const char* path)
+DynamicModel* RtNeuralGeneric::loadModel(LV2_Log_Logger* logger, const char* path, int* input_size_ptr)
 {
     int input_skip;
+    int input_size;
     float input_gain;
     float output_gain;
     float model_samplerate;
@@ -758,8 +771,9 @@ DynamicModel* RtNeuralGeneric::loadModel(LV2_Log_Logger* logger, const char* pat
         jsonStream >> model_json;
 
         /* Understand which model type to load */
-        if(model_json["in_shape"].back().get<int>() > MAX_INPUT_SIZE) {
-            throw std::invalid_argument("Values for input_size > 1 are not supported");
+        input_size = model_json["in_shape"].back().get<int>();
+        if (input_size > MAX_INPUT_SIZE) {
+            throw std::invalid_argument("Value for input_size not supported");
         }
 
         if (model_json["in_skip"].is_number()) {
@@ -849,6 +863,9 @@ DynamicModel* RtNeuralGeneric::loadModel(LV2_Log_Logger* logger, const char* pat
         float out[2048] = {};
         applyModel(model.get(), out, 2048);
     }
+
+    // cache input size for later
+    *input_size_ptr = input_size;
 
     return model.release();
 }
