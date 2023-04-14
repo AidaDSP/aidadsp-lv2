@@ -30,17 +30,10 @@ const LV2_Descriptor* lv2_descriptor(uint32_t index)
 
 /**********************************************************************************************************************************************************/
 
-// Ramp calculation
-static float rampValue(ExpSmoother& smoother) {
-    return smoother.next();
-}
-
-/**********************************************************************************************************************************************************/
-
 // Apply a gain ramp to a buffer
-static void applyGainRamp(ExpSmoother& smoother, float *out, const float *in, uint32_t n_samples) {
+static void applyGainRamp(ExponentialValueSmoother& smoother, float *out, const float *in, uint32_t n_samples) {
     for(uint32_t i=0; i<n_samples; i++) {
-        out[i] = in[i] * rampValue(smoother);
+        out[i] = in[i] * smoother.next();
     }
 }
 
@@ -157,11 +150,11 @@ void RtNeuralGeneric::applyModel(DynamicModel* model, float* out, uint32_t n_sam
     const bool input_skip = model->input_skip;
     const float input_gain = model->input_gain;
     const float output_gain = model->output_gain;
-    ExpSmoother param1Coeff = model->param1Coeff;
-    ExpSmoother param2Coeff = model->param2Coeff;
+    LinearValueSmoother& param1Coeff = model->param1Coeff;
+    LinearValueSmoother& param2Coeff = model->param2Coeff;
 
     std::visit (
-        [&input_skip, &out, &n_samples, &input_gain, &output_gain, &param1Coeff, &param2Coeff] (auto&& custom_model)
+        [input_skip, &out, n_samples, input_gain, output_gain, &param1Coeff, &param2Coeff] (auto&& custom_model)
         {
             using ModelType = std::decay_t<decltype (custom_model)>;
             if constexpr (ModelType::input_size == 1)
@@ -191,7 +184,7 @@ void RtNeuralGeneric::applyModel(DynamicModel* model, float* out, uint32_t n_sam
                     for (uint32_t i=0; i<n_samples; ++i) {
                         out[i] *= input_gain;
                         inArray1[0] = out[i];
-                        inArray1[1] = rampValue(param1Coeff);
+                        inArray1[1] = param1Coeff.next();
                         out[i] += custom_model.forward (inArray1);
                         out[i] *= output_gain;
                     }
@@ -201,7 +194,7 @@ void RtNeuralGeneric::applyModel(DynamicModel* model, float* out, uint32_t n_sam
                     for (uint32_t i=0; i<n_samples; ++i) {
                         out[i] *= input_gain;
                         inArray1[0] = out[i];
-                        inArray1[1] = rampValue(param1Coeff);
+                        inArray1[1] = param1Coeff.next();
                         out[i] = custom_model.forward (inArray1);
                         out[i] *= output_gain;
                     }
@@ -215,8 +208,8 @@ void RtNeuralGeneric::applyModel(DynamicModel* model, float* out, uint32_t n_sam
                     for (uint32_t i=0; i<n_samples; ++i) {
                         out[i] *= input_gain;
                         inArray2[0] = out[i];
-                        inArray2[1] = rampValue(param1Coeff);
-                        inArray2[2] = rampValue(param2Coeff);
+                        inArray2[1] = param1Coeff.next();
+                        inArray2[2] = param2Coeff.next();
                         out[i] += custom_model.forward (inArray2);
                         out[i] *= output_gain;
                     }
@@ -226,8 +219,8 @@ void RtNeuralGeneric::applyModel(DynamicModel* model, float* out, uint32_t n_sam
                     for (uint32_t i=0; i<n_samples; ++i) {
                         out[i] *= input_gain;
                         inArray2[0] = out[i];
-                        inArray2[1] = rampValue(param1Coeff);
-                        inArray2[2] = rampValue(param2Coeff);
+                        inArray2[1] = param1Coeff.next();
+                        inArray2[2] = param2Coeff.next();
                         out[i] = custom_model.forward (inArray2);
                         out[i] *= output_gain;
                     }
@@ -274,12 +267,12 @@ LV2_Handle RtNeuralGeneric::instantiate(const LV2_Descriptor* descriptor, double
     // Setup initial values
     self->preGain.setSampleRate(self->samplerate);
     self->preGain.setTimeConstant(0.1f);
-    self->preGain.setTarget(1.f);
-    self->preGain.clearToTarget();
+    self->preGain.setTargetValue(1.f);
+    self->preGain.clearToTargetValue();
     self->masterGain.setSampleRate(self->samplerate);
     self->masterGain.setTimeConstant(0.1f);
-    self->masterGain.setTarget(1.f);
-    self->masterGain.clearToTarget();
+    self->masterGain.setTargetValue(1.f);
+    self->masterGain.clearToTargetValue();
 
     // Setup fixed frequency dc blocker filter (high pass)
     self->dc_blocker = new Biquad(bq_type_highpass, 35.0f / samplerate, 0.707f, 0.0f);
@@ -316,16 +309,16 @@ void RtNeuralGeneric::activate(LV2_Handle instance)
 {
     RtNeuralGeneric *self = (RtNeuralGeneric*) instance;
 
-    self->preGain.clearToTarget();
-    self->masterGain.clearToTarget();
+    self->preGain.clearToTargetValue();
+    self->masterGain.clearToTargetValue();
 
     if (self->model == nullptr)
         return;
 
     // TODO: include the activate function code here
     // TODO: if (self->samplerate != self->model->sr) ???
-    self->model->param1Coeff.clearToTarget();
-    self->model->param2Coeff.clearToTarget();
+    self->model->param1Coeff.clearToTargetValue();
+    self->model->param2Coeff.clearToTargetValue();
     std::visit (
         [] (auto&& custom_model)
         {
@@ -438,8 +431,8 @@ void RtNeuralGeneric::run(LV2_Handle instance, uint32_t n_samples)
     const float param1 = *self->param1;
     const float param2 = *self->param2;
 
-    self->preGain.setTarget(pregain);
-    self->masterGain.setTarget(master);
+    self->preGain.setTargetValue(pregain);
+    self->masterGain.setTargetValue(master);
 
     if (in_lpf_pc != self->in_lpf_pc_old) { /* Update filter coeffs */
         self->in_lpf->setBiquad(bq_type_lowpass, MAP(in_lpf_pc, 0.0f, 100.0f, INLPF_MAX_CO, INLPF_MIN_CO), 0.707f, 0.0f);
@@ -516,8 +509,8 @@ void RtNeuralGeneric::run(LV2_Handle instance, uint32_t n_samples)
         applyToneControls(self->out_1, self->out_1, instance, n_samples); // Equalizer section
     }
     if (net_bypass == 0.0f && self->model != nullptr) {
-        self->model->param1Coeff.setTarget(param1);
-        self->model->param2Coeff.setTarget(param2);
+        self->model->param1Coeff.setTargetValue(param1);
+        self->model->param2Coeff.setTargetValue(param2);
         applyModel(self->model, self->out_1, n_samples);
     }
     applyBiquadFilter(self->out_1, self->out_1, self->dc_blocker, n_samples); // Dc blocker filter (highpass)
@@ -837,12 +830,12 @@ DynamicModel* RtNeuralGeneric::loadModel(LV2_Log_Logger* logger, const char* pat
     model->samplerate = model_samplerate;
     model->param1Coeff.setSampleRate(model_samplerate);
     model->param1Coeff.setTimeConstant(0.1f);
-    model->param1Coeff.setTarget(0.f);
-    model->param1Coeff.clearToTarget();
+    model->param1Coeff.setTargetValue(0.f);
+    model->param1Coeff.clearToTargetValue();
     model->param2Coeff.setSampleRate(model_samplerate);
     model->param2Coeff.setTimeConstant(0.1f);
-    model->param2Coeff.setTarget(0.f);
-    model->param2Coeff.clearToTarget();
+    model->param2Coeff.setTargetValue(0.f);
+    model->param2Coeff.clearToTargetValue();
 
     /* Sanity check on inference engine with loaded model, also serves as pre-buffer
     * to avoid "clicks" during initialization */

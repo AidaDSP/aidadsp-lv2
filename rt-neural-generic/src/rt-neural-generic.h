@@ -25,7 +25,7 @@
 #include <model_variant.hpp>
 
 #include <Biquad.h>
-#include <ExpSmoother.hpp>
+#include <ValueSmoother.hpp>
 
 #include "uris.h"
 
@@ -47,8 +47,8 @@ struct DynamicModel {
     float input_gain;
     float output_gain;
     float samplerate;
-    ExpSmoother param1Coeff;
-    ExpSmoother param2Coeff;
+    LinearValueSmoother param1Coeff;
+    LinearValueSmoother param2Coeff;
 };
 
 #define PROCESS_ATOM_MESSAGES
@@ -116,11 +116,11 @@ public:
     float *in;
     float *out_1;
     float *pregain_db;
-    ExpSmoother preGain;
+    ExponentialValueSmoother preGain;
     float *param1;
     float *param2;
     float *master_db;
-    ExpSmoother masterGain;
+    ExponentialValueSmoother masterGain;
     float *net_bypass;
     float *in_lpf_pc;
     float in_lpf_pc_old;
