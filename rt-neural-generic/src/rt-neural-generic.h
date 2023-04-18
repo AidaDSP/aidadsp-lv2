@@ -173,10 +173,7 @@ public:
 
     // to be used for reporting input_size to GUI (0 for error/unloaded, otherwise matching input_size)
     int last_input_size;
-#ifndef AIDADSP_MODEL_LOADER
-=======
 #if ! AIDADSP_MODEL_LOADER
->>>>>>> Add commercial plugin related code, adjust build macros
     float *model_index;
     float model_index_old;
 #endif

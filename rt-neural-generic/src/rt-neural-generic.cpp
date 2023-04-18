@@ -466,12 +466,12 @@ void RtNeuralGeneric::run(LV2_Handle instance, uint32_t n_samples)
 
     *self->input_size = self->last_input_size;
 
-#ifdef PROCESS_ATOM_MESSAGES
 #if AIDADSP_COMMERCIAL
     self->run_count = mod_license_run_begin(self->run_count, n_samples);
 #endif
 
 #if AIDADSP_MODEL_LOADER
+#ifdef PROCESS_ATOM_MESSAGES
     /*++++++++ READ ATOM MESSAGES ++++++++*/
     // Set up forge to write directly to notify output port.
     const uint32_t notify_capacity = self->notify_port->atom.size;
@@ -532,6 +532,7 @@ void RtNeuralGeneric::run(LV2_Handle instance, uint32_t n_samples)
         }
     }
     /*++++++++ END READ ATOM MESSAGES ++++++++*/
+#endif
 #else
     float model_index = *self->model_index;
 
@@ -569,8 +570,6 @@ void RtNeuralGeneric::run(LV2_Handle instance, uint32_t n_samples)
 #if AIDADSP_COMMERCIAL
     mod_license_run_silence(self->run_count, self->out_1, n_samples, 0);
 #endif
-    self->pregain_old = pregain;
-    self->master_old = master;
     /*++++++++ END AUDIO DSP ++++++++*/
 }
 
