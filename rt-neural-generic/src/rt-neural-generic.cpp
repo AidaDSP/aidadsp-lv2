@@ -781,8 +781,8 @@ bool RtNeuralGeneric::testModel(LV2_Log_Logger* logger, DynamicModel *model, con
     std::unique_ptr<float[]> out(new float [xData.size()]);
     for(size_t i = 0; i < xData.size(); i++) {
         out[i] = xData[i];
-        applyModel(model, out.get(), xData.size());
     }
+    applyModel(model, out.get(), xData.size());
     constexpr double threshold = TEST_MODEL_THR;
     size_t nErrs = 0;
     float max_error = 0.0f;
