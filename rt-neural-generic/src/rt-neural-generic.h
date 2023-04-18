@@ -6,6 +6,13 @@
 
 #pragma once
 
+#ifndef AIDADSP_COMMERCIAL
+#error AIDADSP_COMMERCIAL undefined, must be 0 or 1
+#endif
+#ifndef AIDADSP_MODEL_LOADER
+#error AIDADSP_MODEL_LOADER undefined, must be 0 or 1
+#endif
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -29,10 +36,19 @@
 
 #include "uris.h"
 
+#if AIDADSP_COMMERCIAL
+#include "libmodla.h"
+#endif
+
 /**********************************************************************************************************************************************************/
 
 typedef enum {
-    IN, OUT_1, PLUGIN_CONTROL, PLUGIN_NOTIFY,
+    IN, OUT_1,
+#if AIDADSP_MODEL_LOADER
+    PLUGIN_CONTROL, PLUGIN_NOTIFY,
+#else
+    PLUGIN_MODEL_INDEX,
+#endif
     IN_LPF, PREGAIN,
     NET_BYPASS, PARAM1, PARAM2,
     EQ_BYPASS, EQ_POS, BASS, BFREQ, MID, MFREQ, MIDQ, MTYPE, TREBLE, TFREQ, DEPTH, PRESENCE,
@@ -43,7 +59,9 @@ typedef enum {
 // Everything needed to run a model
 struct DynamicModel {
     ModelVariantType variant;
+#if AIDADSP_MODEL_LOADER
     char* path;
+#endif
     bool input_skip; /* Means the model has been trained with first input element skipped to the output */
     float input_gain;
     float output_gain;
@@ -52,7 +70,6 @@ struct DynamicModel {
     LinearValueSmoother param2Coeff;
 };
 
-#define PROCESS_ATOM_MESSAGES
 enum WorkerMessageType {
     kWorkerLoad,
     kWorkerApply,
@@ -67,7 +84,11 @@ struct WorkerMessage {
 // WorkerMessage compatible, to be used for kWorkerLoad
 struct WorkerLoadMessage {
     WorkerMessageType type;
+#if AIDADSP_MODEL_LOADER
     char path[1024];
+#else
+    int modelIndex;
+#endif
 };
 
 // WorkerMessage compatible, to be used for kWorkerApply or kWorkerFree
@@ -152,7 +173,15 @@ public:
 
     // to be used for reporting input_size to GUI (0 for error/unloaded, otherwise matching input_size)
     int last_input_size;
+#ifndef AIDADSP_MODEL_LOADER
+=======
+#if ! AIDADSP_MODEL_LOADER
+>>>>>>> Add commercial plugin related code, adjust build macros
+    float *model_index;
+    float model_index_old;
+#endif
 
+#if AIDADSP_MODEL_LOADER
     static LV2_State_Status restore(LV2_Handle instance,
                                        LV2_State_Retrieve_Function retrieve,
                                        LV2_State_Handle            handle,
@@ -163,13 +192,19 @@ public:
                                        LV2_State_Handle          handle,
                                        uint32_t                  flags,
                                        const LV2_Feature* const* features);
+#endif
+
     static LV2_Worker_Status work(LV2_Handle instance,
                                        LV2_Worker_Respond_Function respond,
                                        LV2_Worker_Respond_Handle   handle,
                                        uint32_t                    size,
                                        const void*                 data);
     static LV2_Worker_Status work_response(LV2_Handle instance, uint32_t size, const void* data);
-    static DynamicModel* loadModel(LV2_Log_Logger* logger, const char* path, int* input_size_ptr);
+#if AIDADSP_MODEL_LOADER
+    static DynamicModel* loadModelFromPath(LV2_Log_Logger* logger, const char* path, int* input_size_ptr);
+#else
+    static DynamicModel* loadModelFromIndex(LV2_Log_Logger* logger, int modelIndex, int* input_size_ptr);
+#endif
     static void freeModel(DynamicModel* model);
 
     // Features
@@ -177,26 +212,33 @@ public:
     LV2_Worker_Schedule* schedule;
     LV2_Log_Log*         log;
 
+#if AIDADSP_MODEL_LOADER
     // Forge for creating atoms
     LV2_Atom_Forge forge;
+
+    // Forge frame for notify port (for writing worker replies)
+    LV2_Atom_Forge_Frame notify_frame;
+#endif
 
     // Logger convenience API
     LV2_Log_Logger logger;
 
     // Ports
+#if AIDADSP_MODEL_LOADER
     const LV2_Atom_Sequence* control_port;
     LV2_Atom_Sequence*       notify_port;
+#endif
     float*                   output_port;
     float*                   input_port;
-
-    // Forge frame for notify port (for writing worker replies)
-    LV2_Atom_Forge_Frame notify_frame;
 
     // URIs
     PluginURIs uris;
 
 private:
     double samplerate;
+#if AIDADSP_COMMERCIAL
+    uint32_t run_count;
+#endif
 
     Biquad *dc_blocker;
     Biquad *in_lpf;

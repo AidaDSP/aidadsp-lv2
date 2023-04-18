@@ -239,6 +239,11 @@ LV2_Handle RtNeuralGeneric::instantiate(const LV2_Descriptor* descriptor, double
 
     self->samplerate = samplerate;
 
+#if AIDADSP_COMMERCIAL
+    self->run_count = 0;
+    mod_license_check(features, PLUGIN_URI);
+#endif
+
     // Get host features
     for (int i = 0; features[i]; ++i) {
         if (!strcmp(features[i]->URI, LV2_URID__map)) {
@@ -261,8 +266,10 @@ LV2_Handle RtNeuralGeneric::instantiate(const LV2_Descriptor* descriptor, double
 
     // Map URIs and initialize forge
     map_plugin_uris(self->map, &self->uris);
-    lv2_atom_forge_init(&self->forge, self->map);
     lv2_log_logger_init(&self->logger, self->map, self->log);
+#if AIDADSP_MODEL_LOADER
+    lv2_atom_forge_init(&self->forge, self->map);
+#endif
 
     // Setup initial values
     self->preGain.setSampleRate(self->samplerate);
@@ -300,7 +307,14 @@ LV2_Handle RtNeuralGeneric::instantiate(const LV2_Descriptor* descriptor, double
 
     self->last_input_size = 0;
 
+#if AIDADSP_MODEL_LOADER
+    // initial model triggered by host default state load later on
     self->model = nullptr;
+#else
+    // start with 1st model loaded
+    self->model_index_old = 0.0f;
+    self->model = loadModelFromIndex(&self->logger, 1);
+#endif
 
     return (LV2_Handle)self;
 }
@@ -369,12 +383,18 @@ void RtNeuralGeneric::connect_port(LV2_Handle instance, uint32_t port, void *dat
         case NET_BYPASS:
             self->net_bypass = (float*) data;
             break;
+#if AIDADSP_MODEL_LOADER
         case PLUGIN_CONTROL:
             self->control_port = (const LV2_Atom_Sequence*)data;
             break;
         case PLUGIN_NOTIFY:
             self->notify_port = (LV2_Atom_Sequence*)data;
             break;
+#else
+        case PLUGIN_MODEL_INDEX:
+            self->model_index = (float*)data;
+            break;
+#endif
         case IN_LPF:
             self->in_lpf_pc = (float*) data;
             break;
@@ -447,6 +467,11 @@ void RtNeuralGeneric::run(LV2_Handle instance, uint32_t n_samples)
     *self->input_size = self->last_input_size;
 
 #ifdef PROCESS_ATOM_MESSAGES
+#if AIDADSP_COMMERCIAL
+    self->run_count = mod_license_run_begin(self->run_count, n_samples);
+#endif
+
+#if AIDADSP_MODEL_LOADER
     /*++++++++ READ ATOM MESSAGES ++++++++*/
     // Set up forge to write directly to notify output port.
     const uint32_t notify_capacity = self->notify_port->atom.size;
@@ -507,6 +532,17 @@ void RtNeuralGeneric::run(LV2_Handle instance, uint32_t n_samples)
         }
     }
     /*++++++++ END READ ATOM MESSAGES ++++++++*/
+#else
+    float model_index = *self->model_index;
+
+    if (model_index != self->model_index_old) {
+        self->model_index_old = model_index;
+
+        // Json model file change, send it to the worker.
+        lv2_log_trace(&self->logger, "Queueing set message\n");
+        WorkerLoadMessage msg = { kWorkerLoad, static_cast<int>(model_index + 1.5f) }; // round to int + 1
+        self->schedule->schedule_work(self->schedule->handle, sizeof(msg), &msg);
+    }
 #endif
 
     // 0 samples means pre-run, nothing left for us to do
@@ -530,6 +566,11 @@ void RtNeuralGeneric::run(LV2_Handle instance, uint32_t n_samples)
         applyToneControls(self->out_1, self->out_1, instance, n_samples); // Equalizer section
     }
     applyGainRamp(self->masterGain, self->out_1, self->out_1, n_samples); // Master volume
+#if AIDADSP_COMMERCIAL
+    mod_license_run_silence(self->run_count, self->out_1, n_samples, 0);
+#endif
+    self->pregain_old = pregain;
+    self->master_old = master;
     /*++++++++ END AUDIO DSP ++++++++*/
 }
 
@@ -554,18 +595,26 @@ void RtNeuralGeneric::cleanup(LV2_Handle instance)
 
 const void* RtNeuralGeneric::extension_data(const char* uri)
 {
+#if AIDADSP_MODEL_LOADER
     static const LV2_State_Interface state = { save, restore };
-    static const LV2_Worker_Interface worker = { work, work_response, NULL };
     if (!strcmp(uri, LV2_STATE__interface)) {
         return &state;
-    } else if (!strcmp(uri, LV2_WORKER__interface)) {
+    }
+#endif
+    static const LV2_Worker_Interface worker = { work, work_response, NULL };
+    if (!strcmp(uri, LV2_WORKER__interface)) {
         return &worker;
     }
+#if AIDADSP_COMMERCIAL
+    return mod_license_interface(uri);
+#else
     return NULL;
+#endif
 }
 
 /**********************************************************************************************************************************************************/
 
+#if AIDADSP_MODEL_LOADER
 /**
  * This function is invoked during startup, after RtNeuralGeneric::instantiate
  * or whenever a state is restored
@@ -635,6 +684,7 @@ LV2_State_Status RtNeuralGeneric::save(LV2_Handle instance,
         return LV2_STATE_ERR_NO_FEATURE;
     }
 }
+#endif
 
 /**********************************************************************************************************************************************************/
 
@@ -656,7 +706,11 @@ LV2_Worker_Status RtNeuralGeneric::work(LV2_Handle instance,
     switch (msg->type)
     {
     case kWorkerLoad:
-        if (DynamicModel* newmodel = RtNeuralGeneric::loadModel(&self->logger, ((const WorkerLoadMessage*)data)->path, &self->last_input_size))
+#if AIDADSP_MODEL_LOADER
+        if (DynamicModel* newmodel = RtNeuralGeneric::loadModelFromPath(&self->logger, ((const WorkerLoadMessage*)data)->path, &self->last_input_size))
+#else
+        if (DynamicModel* newmodel = RtNeuralGeneric::loadModelFromIndex(&self->logger, ((const WorkerLoadMessage*)data)->modelIndex, &self->last_input_size))
+#endif
         {
             WorkerApplyMessage reply = { kWorkerApply, newmodel };
             respond (handle, sizeof(reply), &reply);
@@ -705,18 +759,21 @@ LV2_Worker_Status RtNeuralGeneric::work_response(LV2_Handle instance, uint32_t s
     // log about new model in use
     lv2_log_trace(&self->logger, "New model in use\n");
 
+#if AIDADSP_MODEL_LOADER
     // report change to host/ui
     lv2_atom_forge_frame_time(&self->forge, 0);
     write_set_file(&self->forge,
                    &self->uris,
                    self->model->path,
                    strlen(self->model->path));
+#endif
 
     return LV2_WORKER_SUCCESS;
 }
 
 /**********************************************************************************************************************************************************/
 
+#if AIDADSP_MODEL_LOADER
 /**
  * This function tests the inference engine
 */
@@ -757,7 +814,7 @@ bool RtNeuralGeneric::testModel(LV2_Log_Logger* logger, DynamicModel *model, con
 /**
  * This function loads a pre-trained neural model from a json file
 */
-DynamicModel* RtNeuralGeneric::loadModel(LV2_Log_Logger* logger, const char* path, int* input_size_ptr)
+DynamicModel* RtNeuralGeneric::loadModelFromPath(LV2_Log_Logger* logger, const char* path, int* input_size_ptr)
 {
     int input_skip;
     int input_size;
@@ -869,6 +926,7 @@ DynamicModel* RtNeuralGeneric::loadModel(LV2_Log_Logger* logger, const char* pat
 
     return model.release();
 }
+#endif
 
 /**********************************************************************************************************************************************************/
 
@@ -879,6 +937,8 @@ void RtNeuralGeneric::freeModel(DynamicModel* model)
 {
     if (model == nullptr)
         return;
+#if AIDADSP_MODEL_LOADER
     free (model->path);
+#endif
     delete model;
 }

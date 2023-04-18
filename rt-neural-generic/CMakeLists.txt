@@ -39,7 +39,10 @@ link_directories(rt-neural-generic
     ../modules/RTNeural/modules/json)
 
 # configure target
-target_compile_definitions(rt-neural-generic PUBLIC)
+target_compile_definitions(rt-neural-generic PUBLIC
+    AIDADSP_COMMERCIAL=0
+    AIDADSP_MODEL_LOADER=1
+)
 target_link_libraries(rt-neural-generic ${LV2_LIBRARIES} RTNeural)
 set_target_properties(rt-neural-generic PROPERTIES PREFIX "")
 

@@ -40,4 +40,10 @@ endif()
 message("CMAKE_CXX_FLAGS_RELEASE in ${CMAKE_PROJECT_NAME} = ${CMAKE_CXX_FLAGS_RELEASE}")
 message("CMAKE_SHARED_LINKER_FLAGS_RELEASE in ${CMAKE_PROJECT_NAME} = ${CMAKE_SHARED_LINKER_FLAGS_RELEASE}")
 
-add_subdirectory(rt-neural-generic)
+set(AIDADSP_MODEL "" CACHE STRING "Which commercial plugin model to build")
+
+if (AIDADSP_MODEL)
+    add_subdirectory(commercial)
+else()
+    add_subdirectory(rt-neural-generic)
+endif()

@@ -23,7 +23,10 @@
 #include "lv2/lv2plug.in/ns/ext/state/state.h"
 #include "lv2/lv2plug.in/ns/ext/parameters/parameters.h"
 
+#ifndef PLUGIN_URI
 #define PLUGIN_URI "http://aidadsp.cc/plugins/aidadsp-bundle/rt-neural-generic"
+#endif
+
 #define PLUGIN__json PLUGIN_URI "#json"
 #define PLUGIN__applyJson PLUGIN_URI "#applyJson"
 
