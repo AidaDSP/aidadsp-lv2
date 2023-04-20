@@ -70,6 +70,7 @@ struct DynamicModel {
     LinearValueSmoother param2Coeff;
 };
 
+#define PROCESS_ATOM_MESSAGES
 enum WorkerMessageType {
     kWorkerLoad,
     kWorkerApply,
