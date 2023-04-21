@@ -856,6 +856,9 @@ DynamicModel* RtNeuralGeneric::loadModelFromPath(LV2_Log_Logger* logger, const c
         }
 
         if (model_json["metadata"]["samplerate"].is_number()) {
+            model_samplerate = model_json["metadata"]["samplerate"].get<float>();
+        }
+        else if (model_json["samplerate"].is_number()) {
             model_samplerate = model_json["samplerate"].get<float>();
         }
         else {
