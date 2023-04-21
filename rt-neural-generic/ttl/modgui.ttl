@@ -15,7 +15,7 @@
         modgui:port [
             lv2:index 0 ;
             lv2:symbol "PREGAIN" ;
-            lv2:name "PREGAIN" ;
+            lv2:name "INLEVEL" ;
         ] , [
             lv2:index 1 ;
             lv2:symbol "BASS" ;
@@ -27,7 +27,7 @@
         ] , [
             lv2:index 3 ;
             lv2:symbol "MASTER" ;
-            lv2:name "MASTER" ;
+            lv2:name "OUTLEVEL" ;
         ] ;
         modgui:monitoredOutputs [
             lv2:symbol "ModelInSize";
