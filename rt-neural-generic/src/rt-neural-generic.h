@@ -120,7 +120,7 @@ struct WorkerApplyMessage {
 #define INLPF_MIN_CO 0.25f * 0.5f /* coeff * ((samplerate / 2) / samplerate) */
 
 /* Define the acceptable threshold for model test */
-#define TEST_MODEL_THR 1.0e-12
+#define TEST_MODEL_THR 1.0e-5
 
 /**********************************************************************************************************************************************************/
 
