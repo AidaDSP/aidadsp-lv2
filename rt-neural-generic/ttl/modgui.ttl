@@ -11,6 +11,7 @@
         modgui:thumbnail <modgui/thumbnail-rt-neural-generic.png> ;
         modgui:brand "Aida DSP" ;
         modgui:label "rt-neural-gen" ;
+        modgui:documentation <modgui/aida-x-manual.pdf> ;
         modgui:discussionURL <https://forum.mod.audio/t/new-neural-lv2-plugin-from-aida-dsp-based-extensively-on-existing-neuralpi-reduced-to-the-bone/8047> ;
         modgui:port [
             lv2:index 0 ;
