@@ -779,10 +779,22 @@ LV2_Worker_Status RtNeuralGeneric::work_response(LV2_Handle instance, uint32_t s
 bool RtNeuralGeneric::testModel(LV2_Log_Logger* logger, DynamicModel *model, const std::vector<float>& xData, const std::vector<float>& yData)
 {
     std::unique_ptr<float[]> out(new float [xData.size()]);
+    /* Conditioned models tested with all params at 0 */
+    float param1 = model->param1Coeff.getTargetValue();
+    float param2 = model->param2Coeff.getTargetValue();
+    model->param1Coeff.setTargetValue(0.f);
+    model->param1Coeff.clearToTargetValue();
+    model->param2Coeff.setTargetValue(0.f);
+    model->param2Coeff.clearToTargetValue();
     for(size_t i = 0; i < xData.size(); i++) {
         out[i] = xData[i];
     }
     applyModel(model, out.get(), xData.size());
+    /* Restore params previously saved */
+    model->param1Coeff.setTargetValue(param1);
+    model->param1Coeff.clearToTargetValue();
+    model->param2Coeff.setTargetValue(param2);
+    model->param2Coeff.clearToTargetValue();
     constexpr double threshold = TEST_MODEL_THR;
     size_t nErrs = 0;
     float max_error = 0.0f;
