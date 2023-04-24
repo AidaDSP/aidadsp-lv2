@@ -800,11 +800,9 @@ bool RtNeuralGeneric::testModel(LV2_Log_Logger* logger, DynamicModel *model, con
     float max_error = 0.0f;
     for(size_t i = 0; i < xData.size(); i++) {
         auto err = std::abs(out[i] - yData[i]);
+        max_error = std::max(err, max_error);
         if(err > threshold)
-        {
-            max_error = std::max(err, max_error);
             nErrs++;
-        }
     }
     if(nErrs > 0)
     {
