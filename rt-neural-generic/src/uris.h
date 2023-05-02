@@ -18,10 +18,10 @@
 */
 #pragma once
 
-#include "lv2/lv2plug.in/ns/ext/log/log.h"
-#include "lv2/lv2plug.in/ns/ext/midi/midi.h"
-#include "lv2/lv2plug.in/ns/ext/state/state.h"
-#include "lv2/lv2plug.in/ns/ext/parameters/parameters.h"
+#include <lv2/log/log.h>
+#include <lv2/midi/midi.h>
+#include <lv2/state/state.h>
+#include <lv2/parameters/parameters.h>
 
 #ifndef PLUGIN_URI
 #define PLUGIN_URI "http://aidadsp.cc/plugins/aidadsp-bundle/rt-neural-generic"
