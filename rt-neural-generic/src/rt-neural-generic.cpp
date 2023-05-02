@@ -150,11 +150,17 @@ void RtNeuralGeneric::applyModel(DynamicModel* model, float* out, uint32_t n_sam
     const bool input_skip = model->input_skip;
     const float input_gain = model->input_gain;
     const float output_gain = model->output_gain;
+#if AIDADSP_CONDITIONED_MODELS
     LinearValueSmoother& param1Coeff = model->param1Coeff;
     LinearValueSmoother& param2Coeff = model->param2Coeff;
+#endif
 
     std::visit (
-        [input_skip, &out, n_samples, input_gain, output_gain, &param1Coeff, &param2Coeff] (auto&& custom_model)
+        [input_skip, &out, n_samples, input_gain, output_gain
+#if AIDADSP_CONDITIONED_MODELS
+        , &param1Coeff, &param2Coeff
+#endif
+        ] (auto&& custom_model)
         {
             using ModelType = std::decay_t<decltype (custom_model)>;
             if constexpr (ModelType::input_size == 1)
@@ -176,6 +182,7 @@ void RtNeuralGeneric::applyModel(DynamicModel* model, float* out, uint32_t n_sam
                     }
                 }
             }
+#if AIDADSP_CONDITIONED_MODELS
             else if constexpr (ModelType::input_size == 2)
             {
                 float inArray1 alignas(RTNEURAL_DEFAULT_ALIGNMENT)[2] = { 0.0, 0.0 };
@@ -226,6 +233,7 @@ void RtNeuralGeneric::applyModel(DynamicModel* model, float* out, uint32_t n_sam
                     }
                 }
             }
+#endif
         },
         model->variant
     );
@@ -333,8 +341,10 @@ void RtNeuralGeneric::activate(LV2_Handle instance)
 
     // TODO: include the activate function code here
     // TODO: if (self->samplerate != self->model->sr) ???
+#if AIDADSP_CONDITIONED_MODELS
     self->model->param1Coeff.clearToTargetValue();
     self->model->param2Coeff.clearToTargetValue();
+#endif
     std::visit (
         [] (auto&& custom_model)
         {
@@ -371,12 +381,14 @@ void RtNeuralGeneric::connect_port(LV2_Handle instance, uint32_t port, void *dat
         case PREGAIN:
             self->pregain_db = (float*) data;
             break;
+#if AIDADSP_CONDITIONED_MODELS
         case PARAM1:
             self->param1 = (float*) data;
             break;
         case PARAM2:
             self->param2 = (float*) data;
             break;
+#endif
         case MASTER:
             self->master_db = (float*) data;
             break;
@@ -453,8 +465,10 @@ void RtNeuralGeneric::run(LV2_Handle instance, uint32_t n_samples)
     float in_lpf_pc = *self->in_lpf_pc;
     float eq_position = *self->eq_position;
     float eq_bypass = *self->eq_bypass;
+#if AIDADSP_CONDITIONED_MODELS
     const float param1 = *self->param1;
     const float param2 = *self->param2;
+#endif
 
     self->preGain.setTargetValue(pregain);
     self->masterGain.setTargetValue(master);
@@ -558,8 +572,10 @@ void RtNeuralGeneric::run(LV2_Handle instance, uint32_t n_samples)
         applyToneControls(self->out_1, self->out_1, instance, n_samples); // Equalizer section
     }
     if (net_bypass == 0.0f && self->model != nullptr) {
+#if AIDADSP_CONDITIONED_MODELS
         self->model->param1Coeff.setTargetValue(param1);
         self->model->param2Coeff.setTargetValue(param2);
+#endif
         applyModel(self->model, self->out_1, n_samples);
     }
     applyBiquadFilter(self->out_1, self->out_1, self->dc_blocker, n_samples); // Dc blocker filter (highpass)
@@ -911,6 +927,7 @@ DynamicModel* RtNeuralGeneric::loadModelFromPath(LV2_Log_Logger* logger, const c
     model->input_gain = input_gain;
     model->output_gain = output_gain;
     model->samplerate = model_samplerate;
+#if AIDADSP_CONDITIONED_MODELS
     model->param1Coeff.setSampleRate(model_samplerate);
     model->param1Coeff.setTimeConstant(0.1f);
     model->param1Coeff.setTargetValue(0.f);
@@ -919,6 +936,7 @@ DynamicModel* RtNeuralGeneric::loadModelFromPath(LV2_Log_Logger* logger, const c
     model->param2Coeff.setTimeConstant(0.1f);
     model->param2Coeff.setTargetValue(0.f);
     model->param2Coeff.clearToTargetValue();
+#endif
 
     /* Sanity check on inference engine with loaded model, also serves as pre-buffer
     * to avoid "clicks" during initialization */
