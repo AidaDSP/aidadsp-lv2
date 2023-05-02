@@ -13,6 +13,11 @@
 #error AIDADSP_MODEL_LOADER undefined, must be 0 or 1
 #endif
 
+// enabled by default, can be turned off
+#ifndef AIDADSP_CONDITIONED_MODELS
+#define AIDADSP_CONDITIONED_MODELS 1
+#endif
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -49,7 +54,10 @@ typedef enum {
     PLUGIN_MODEL_INDEX,
 #endif
     IN_LPF, PREGAIN,
-    NET_BYPASS, PARAM1, PARAM2,
+    NET_BYPASS,
+#if AIDADSP_CONDITIONED_MODELS
+    PARAM1, PARAM2,
+#endif
     EQ_BYPASS, EQ_POS, BASS, BFREQ, MID, MFREQ, MIDQ, MTYPE, TREBLE, TFREQ, DEPTH, PRESENCE,
     MASTER,
     INPUT_SIZE,
@@ -65,8 +73,10 @@ struct DynamicModel {
     float input_gain;
     float output_gain;
     float samplerate;
+#if AIDADSP_CONDITIONED_MODELS
     LinearValueSmoother param1Coeff;
     LinearValueSmoother param2Coeff;
+#endif
 };
 
 #define PROCESS_ATOM_MESSAGES
@@ -139,8 +149,10 @@ public:
     float *out_1;
     float *pregain_db;
     ExponentialValueSmoother preGain;
+#if AIDADSP_CONDITIONED_MODELS
     float *param1;
     float *param2;
+#endif
     float *master_db;
     ExponentialValueSmoother masterGain;
     float *net_bypass;
