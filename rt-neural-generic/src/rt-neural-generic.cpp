@@ -313,7 +313,7 @@ LV2_Handle RtNeuralGeneric::instantiate(const LV2_Descriptor* descriptor, double
 #else
     // start with 1st model loaded
     self->model_index_old = 0.0f;
-    self->model = loadModelFromIndex(&self->logger, 1);
+    self->model = loadModelFromIndex(&self->logger, 1, &self->last_input_size);
 #endif
 
     return (LV2_Handle)self;
