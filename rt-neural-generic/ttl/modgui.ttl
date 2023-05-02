@@ -12,7 +12,7 @@
         modgui:brand "Aida DSP" ;
         modgui:label "rt-neural-gen" ;
         modgui:documentation <modgui/aida-x-manual.pdf> ;
-        modgui:discussionURL <https://forum.mod.audio/t/new-neural-lv2-plugin-from-aida-dsp-based-extensively-on-existing-neuralpi-reduced-to-the-bone/8047> ;
+        modgui:discussionURL <https://forum.mod.audio/t/aida-dsp-aida-x/9639> ;
         modgui:port [
             lv2:index 0 ;
             lv2:symbol "PREGAIN" ;
