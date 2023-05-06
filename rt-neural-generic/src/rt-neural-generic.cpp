@@ -788,7 +788,6 @@ LV2_Worker_Status RtNeuralGeneric::work_response(LV2_Handle instance, uint32_t s
 
 /**********************************************************************************************************************************************************/
 
-#if AIDADSP_MODEL_LOADER
 /**
  * This function tests the inference engine
 */
@@ -836,6 +835,7 @@ bool RtNeuralGeneric::testModel(LV2_Log_Logger* logger, DynamicModel *model, con
 
 /**********************************************************************************************************************************************************/
 
+#if AIDADSP_MODEL_LOADER
 /**
  * This function loads a pre-trained neural model from a json file
 */
