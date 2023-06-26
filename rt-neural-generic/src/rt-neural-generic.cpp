@@ -825,13 +825,13 @@ bool RtNeuralGeneric::testModel(LV2_Log_Logger* logger, DynamicModel *model, con
     }
     if(nErrs > 0)
     {
-        lv2_log_error(logger, "Failure %s: %d errors!\n", __func__, (int)nErrs);
-        lv2_log_error(logger, "Maximum error: %.12f, threshold: %.12f\n", max_error, threshold);
+        lv2_log_trace(logger, "Failure %s: %d errors!\n", __func__, (int)nErrs);
+        lv2_log_trace(logger, "Maximum error: %.12f, threshold: %.12f\n", max_error, threshold);
     }
     else
     {
-        lv2_log_note(logger, "Success %s: %d errors!\n", __func__, (int)nErrs);
-        lv2_log_note(logger, "Maximum error: %.12f, threshold: %.12f\n", max_error, threshold);
+        lv2_log_trace(logger, "Success %s: %d errors!\n", __func__, (int)nErrs);
+        lv2_log_trace(logger, "Maximum error: %.12f, threshold: %.12f\n", max_error, threshold);
         return true;
     }
     return false;
