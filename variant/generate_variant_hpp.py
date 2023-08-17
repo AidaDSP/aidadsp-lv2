@@ -3,7 +3,7 @@
 max_input_size = 3
 layer_types = ('GRU', 'LSTM')
 input_sizes = tuple(range(1, max_input_size + 1))
-hidden_sizes = (8, 12, 16, 20, 32, 40, 64, 80)
+hidden_sizes = (8, 12, 16, 20, 24, 32, 40, 64, 80)
 
 model_variant_using_declarations = []
 model_variant_types = []
