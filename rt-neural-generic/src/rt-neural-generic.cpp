@@ -817,16 +817,21 @@ bool RtNeuralGeneric::testModel(LV2_Log_Logger* logger, DynamicModel *model, con
     constexpr double threshold = TEST_MODEL_THR;
     size_t nErrs = 0;
     float max_error = 0.0f;
+    std::vector<float> inputErrors;
     for(size_t i = 0; i < xData.size(); i++) {
         auto err = std::abs(out[i] - yData[i]);
         max_error = std::max(err, max_error);
-        if(err > threshold)
+        if(err > threshold) {
             nErrs++;
+            inputErrors.push_back(xData[i]);
+        }
     }
     if(nErrs > 0)
     {
         lv2_log_trace(logger, "Failure %s: %d errors!\n", __func__, (int)nErrs);
         lv2_log_trace(logger, "Maximum error: %.12f, threshold: %.12f\n", max_error, threshold);
+        lv2_log_trace(logger, "%.12f < in error < %.12f\n", *std::min_element(inputErrors.begin(), inputErrors.end()), *std::max_element(inputErrors.begin(), inputErrors.end()));
+        lv2_log_trace(logger, "%.12f < in range < %.12f\n", *std::min_element(xData.begin(), xData.end()), *std::max_element(xData.begin(), xData.end()));
     }
     else
     {
