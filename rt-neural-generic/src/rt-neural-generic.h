@@ -107,8 +107,9 @@ struct WorkerApplyMessage {
     DynamicModel* model;
 };
 
-/* Define a macro for converting a gain in dB to a coefficient */
+/* Convert a value in dB's to a coefficent */
 #define DB_CO(g) ((g) > -90.0f ? powf(10.0f, (g) * 0.05f) : 0.0f)
+#define CO_DB(v) (20.0f * log10f(v))
 
 /* Define a macro to scale % to coeff */
 #define PC_CO(g) ((g) < 100.0f ? (g / 100.0f) : 1.0f)

@@ -823,20 +823,19 @@ bool RtNeuralGeneric::testModel(LV2_Log_Logger* logger, DynamicModel *model, con
         max_error = std::max(err, max_error);
         if(err > threshold) {
             nErrs++;
-            inputErrors.push_back(xData[i]);
+            inputErrors.push_back(std::abs(xData[i]));
         }
     }
     if(nErrs > 0)
     {
-        lv2_log_trace(logger, "Failure %s: %d errors!\n", __func__, (int)nErrs);
-        lv2_log_trace(logger, "Maximum error: %.12f, threshold: %.12f\n", max_error, threshold);
-        lv2_log_trace(logger, "%.12f < in error < %.12f\n", *std::min_element(inputErrors.begin(), inputErrors.end()), *std::max_element(inputErrors.begin(), inputErrors.end()));
-        lv2_log_trace(logger, "%.12f < in range < %.12f\n", *std::min_element(xData.begin(), xData.end()), *std::max_element(xData.begin(), xData.end()));
+        lv2_log_trace(logger, "Failure %s: %d errs!\n", __func__, (int)nErrs);
+        lv2_log_trace(logger, "Max err: %.12f, thr: %.12f\n", max_error, threshold);
+        lv2_log_trace(logger, "< %.6f [dB]\n", CO_DB(*std::max_element(inputErrors.begin(), inputErrors.end())));
     }
     else
     {
-        lv2_log_trace(logger, "Success %s: %d errors!\n", __func__, (int)nErrs);
-        lv2_log_trace(logger, "Maximum error: %.12f, threshold: %.12f\n", max_error, threshold);
+        lv2_log_trace(logger, "Success %s: %d errs!\n", __func__, (int)nErrs);
+        lv2_log_trace(logger, "Max err: %.12f, thr: %.12f\n", max_error, threshold);
         return true;
     }
     return false;
