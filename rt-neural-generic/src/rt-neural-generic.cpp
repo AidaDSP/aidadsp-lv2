@@ -794,6 +794,11 @@ LV2_Worker_Status RtNeuralGeneric::work_response(LV2_Handle instance, uint32_t s
 bool RtNeuralGeneric::testModel(LV2_Log_Logger* logger, DynamicModel *model, const std::vector<float>& xData, const std::vector<float>& yData)
 {
     std::unique_ptr<float[]> out(new float [xData.size()]);
+    float in_gain = model->input_gain;
+    float out_gain = model->output_gain;
+    /* Gain correction inject unwanted errors */
+    model->input_gain = 1.f;
+    model->output_gain = 1.f;
 #if AIDADSP_CONDITIONED_MODELS
     /* Conditioned models tested with all params at 0 */
     float param1 = model->param1Coeff.getTargetValue();
@@ -809,6 +814,8 @@ bool RtNeuralGeneric::testModel(LV2_Log_Logger* logger, DynamicModel *model, con
     applyModel(model, out.get(), xData.size());
 #if AIDADSP_CONDITIONED_MODELS
     /* Restore params previously saved */
+    model->input_gain = in_gain;
+    model->output_gain = out_gain;
     model->param1Coeff.setTargetValue(param1);
     model->param1Coeff.clearToTargetValue();
     model->param2Coeff.setTargetValue(param2);
