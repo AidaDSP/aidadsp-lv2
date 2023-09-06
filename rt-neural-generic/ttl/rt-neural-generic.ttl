@@ -54,7 +54,7 @@ lv2:project <http://lv2plug.in/ns/lv2>;
 lv2:requiredFeature urid:map ,
     work:schedule ;
 lv2:optionalFeature lv2:hardRTCapable ,
-    state:loadDefaultState ;
+    state:loadDefaultState, state:mapPath ;
 lv2:extensionData state:interface ,
     work:interface ;
 patch:writable <http://aidadsp.cc/plugins/aidadsp-bundle/rt-neural-generic#json>;

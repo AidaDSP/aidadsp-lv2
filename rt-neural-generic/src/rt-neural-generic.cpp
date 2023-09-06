@@ -654,9 +654,25 @@ LV2_State_Status RtNeuralGeneric::restore(LV2_Handle instance,
 
     if (value) {
         lv2_log_note(&self->logger, "Restoring file %s\n", (const char*)value);
+
         // send to worker for loading
         WorkerLoadMessage msg = { kWorkerLoad, {} };
-        std::memcpy(msg.path, value, std::min(size, sizeof(msg.path) - 1u));
+
+        LV2_State_Map_Path* map_path = NULL;
+        for (int i = 0; features[i]; ++i) {
+            if (!strcmp(features[i]->URI, LV2_STATE__mapPath)) {
+                map_path = (LV2_State_Map_Path*)features[i]->data;
+            }
+        }
+
+        if (map_path) {
+            char* apath = map_path->absolute_path(map_path->handle, (const char*)value);
+            std::memcpy(msg.path, apath, std::min(size, strlen(msg.path) - 1u));
+            free(apath);
+        } else {
+            std::memcpy(msg.path, value, std::min(size, sizeof(msg.path) - 1u));
+        }
+
         self->schedule->schedule_work(self->schedule->handle, sizeof(msg), &msg);
     }
 
