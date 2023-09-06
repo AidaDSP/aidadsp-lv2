@@ -449,6 +449,9 @@ void RtNeuralGeneric::connect_port(LV2_Handle instance, uint32_t port, void *dat
         case INPUT_SIZE:
             self->input_size = (float*) data;
             break;
+        case PLUGIN_ENABLED:
+            self->enabled = (float*) data;
+            break;
     }
 }
 
@@ -465,13 +468,14 @@ void RtNeuralGeneric::run(LV2_Handle instance, uint32_t n_samples)
     float in_lpf_pc = *self->in_lpf_pc;
     float eq_position = *self->eq_position;
     float eq_bypass = *self->eq_bypass;
+    bool enabled = *self->enabled > 0.5f;
 #if AIDADSP_CONDITIONED_MODELS
     const float param1 = *self->param1;
     const float param2 = *self->param2;
 #endif
 
     self->preGain.setTargetValue(pregain);
-    self->masterGain.setTargetValue(master);
+    self->masterGain.setTargetValue(enabled ? master : 0.f);
 
     if (in_lpf_pc != self->in_lpf_pc_old) { /* Update filter coeffs */
         self->in_lpf->setBiquad(bq_type_lowpass, MAP(in_lpf_pc, 0.0f, 100.0f, INLPF_MAX_CO, INLPF_MIN_CO), 0.707f, 0.0f);

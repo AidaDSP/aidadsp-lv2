@@ -288,6 +288,16 @@ lv2:port
     lv2:scalePoint [rdfs:label "SNAPSHOT"; rdf:value 1];
     lv2:scalePoint [rdfs:label "WITH 1 PARAM"; rdf:value 2];
     lv2:scalePoint [rdfs:label "WITH 2 PARAMS"; rdf:value 3];
+],
+[
+    a lv2:ControlPort, lv2:InputPort;
+    lv2:index 23;
+    lv2:symbol "enabled";
+    lv2:name "Enabled";
+    lv2:default 1;
+    lv2:minimum 0;
+    lv2:maximum 1;
+    lv2:designation lv2:enabled;
 ];
 
 state:state [
