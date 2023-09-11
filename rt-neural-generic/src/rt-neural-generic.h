@@ -61,6 +61,7 @@ typedef enum {
     EQ_BYPASS, EQ_POS, BASS, BFREQ, MID, MFREQ, MIDQ, MTYPE, TREBLE, TFREQ, DEPTH, PRESENCE,
     MASTER,
     INPUT_SIZE,
+    PLUGIN_ENABLED,
     PLUGIN_PORT_COUNT} ports_t;
 
 // Everything needed to run a model
@@ -183,6 +184,7 @@ public:
     float presence_boost_db_old;
     float *eq_bypass;
     float *input_size;
+    float *enabled;
 
     // to be used for reporting input_size to GUI (0 for error/unloaded, otherwise matching input_size)
     int last_input_size;
