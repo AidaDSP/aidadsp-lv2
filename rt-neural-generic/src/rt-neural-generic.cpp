@@ -475,7 +475,7 @@ void RtNeuralGeneric::run(LV2_Handle instance, uint32_t n_samples)
 #endif
 
     self->preGain.setTargetValue(pregain);
-    self->masterGain.setTargetValue(enabled ? master : 0.f);
+    self->masterGain.setTargetValue(master);
 
     if (in_lpf_pc != self->in_lpf_pc_old) { /* Update filter coeffs */
         self->in_lpf->setBiquad(bq_type_lowpass, MAP(in_lpf_pc, 0.0f, 100.0f, INLPF_MAX_CO, INLPF_MIN_CO), 0.707f, 0.0f);
@@ -566,6 +566,16 @@ void RtNeuralGeneric::run(LV2_Handle instance, uint32_t n_samples)
 
     // 0 samples means pre-run, nothing left for us to do
     if (n_samples == 0) {
+        return;
+    }
+
+    // not enabled (bypass)
+    if (!enabled) {
+        if (self->out_1 != self->in)
+            std::memcpy(self->out_1, self->in, sizeof(float)*n_samples);
+#if AIDADSP_COMMERCIAL
+        mod_license_run_silence(self->run_count, self->out_1, n_samples, 0);
+#endif
         return;
     }
 
