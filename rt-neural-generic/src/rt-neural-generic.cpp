@@ -469,7 +469,7 @@ void RtNeuralGeneric::run(LV2_Handle instance, uint32_t n_samples)
 
     const float pregain = DB_CO(*self->pregain_db);
     const float master = DB_CO(*self->master_db);
-    float net_bypass = *self->net_bypass;
+    bool net_bypass = *self->net_bypass > 0.5f;
     float in_lpf_pc = *self->in_lpf_pc;
     float eq_position = *self->eq_position;
     float eq_bypass = *self->eq_bypass;
@@ -480,13 +480,10 @@ void RtNeuralGeneric::run(LV2_Handle instance, uint32_t n_samples)
 #endif
 
     self->preGain.setTargetValue(pregain);
-    self->masterGain.setTargetValue(master);
-
     if (in_lpf_pc != self->in_lpf_pc_old) { /* Update filter coeffs */
         self->in_lpf->setBiquad(bq_type_lowpass, MAP(in_lpf_pc, 0.0f, 100.0f, INLPF_MAX_CO, INLPF_MIN_CO), 0.707f, 0.0f);
         self->in_lpf_pc_old = in_lpf_pc;
     }
-
     *self->input_size = self->last_input_size;
 
 #if AIDADSP_COMMERCIAL
@@ -594,12 +591,17 @@ void RtNeuralGeneric::run(LV2_Handle instance, uint32_t n_samples)
     if(eq_position == 1.0f && eq_bypass == 0.0f) {
         applyToneControls(self->out_1, self->out_1, instance, n_samples); // Equalizer section
     }
-    if (net_bypass == 0.0f && self->model != nullptr) {
+    if (self->model != nullptr) {
+        if (!net_bypass) {
 #if AIDADSP_CONDITIONED_MODELS
-        self->model->param1Coeff.setTargetValue(param1);
-        self->model->param2Coeff.setTargetValue(param2);
+            self->model->param1Coeff.setTargetValue(param1);
+            self->model->param2Coeff.setTargetValue(param2);
 #endif
-        applyModel(self->model, self->out_1, n_samples);
+            applyModel(self->model, self->out_1, n_samples);
+        }
+        self->masterGain.setTargetValue(master);
+    } else {
+        self->masterGain.setTargetValue(net_bypass ? master : 0.f);
     }
 #if AIDADSP_OPTIONAL_DCBLOCKER
     if (*self->dc_blocker_param == 1.0f)
