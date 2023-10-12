@@ -169,6 +169,7 @@ public:
     float *master_db;
     ExponentialValueSmoother masterGain;
     float *net_bypass;
+    bool loading;
     float *in_lpf_pc;
     float in_lpf_pc_old;
     /* Eq section */

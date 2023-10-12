@@ -315,6 +315,8 @@ LV2_Handle RtNeuralGeneric::instantiate(const LV2_Descriptor* descriptor, double
 
     self->last_input_size = 0;
 
+    self->loading = false;
+
 #if AIDADSP_MODEL_LOADER
     // initial model triggered by host default state load later on
     self->model = nullptr;
@@ -469,12 +471,16 @@ void RtNeuralGeneric::run(LV2_Handle instance, uint32_t n_samples)
 
     const float pregain = DB_CO(*self->pregain_db);
     const float master = DB_CO(*self->master_db);
-    bool net_bypass = *self->net_bypass > 0.5f;
-    float in_lpf_pc = *self->in_lpf_pc;
-    float eq_position = *self->eq_position;
-    float eq_bypass = *self->eq_bypass;
-    bool enabled = *self->enabled > 0.5f;
 #if AIDADSP_CONDITIONED_MODELS
+    const bool net_bypass = *self->net_bypass > 0.5f;
+    const float in_lpf_pc = *self->in_lpf_pc;
+    const float eq_position = *self->eq_position;
+    const float eq_bypass = *self->eq_bypass;
+    const bool enabled = *self->enabled > 0.5f;
+#if AIDADSP_CONDITIONED_MODELS && (AIDADSP_PARAMS == 1)
+    const float param1 = *self->param1;
+    const float param2 = 0.f;
+#elif AIDADSP_CONDITIONED_MODELS && (AIDADSP_PARAMS == 2)
     const float param1 = *self->param1;
     const float param2 = *self->param2;
 #endif
@@ -542,6 +548,7 @@ void RtNeuralGeneric::run(LV2_Handle instance, uint32_t n_samples)
                 WorkerLoadMessage msg = { kWorkerLoad, {} };
                 std::memcpy(msg.path, value + 1, std::min(value->size, static_cast<uint32_t>(sizeof(msg.path) - 1u)));
                 self->schedule->schedule_work(self->schedule->handle, sizeof(msg), &msg);
+                self->loading = true;
             } else {
                 lv2_log_trace(&self->logger,
                     "Unknown object type %d\n", obj->body.otype);
@@ -563,6 +570,7 @@ void RtNeuralGeneric::run(LV2_Handle instance, uint32_t n_samples)
         lv2_log_trace(&self->logger, "Queueing set message\n");
         WorkerLoadMessage msg = { kWorkerLoad, static_cast<int>(model_index + 1.5f) }; // round to int + 1
         self->schedule->schedule_work(self->schedule->handle, sizeof(msg), &msg);
+        self->loading = true;
     }
 #endif
 
@@ -592,16 +600,13 @@ void RtNeuralGeneric::run(LV2_Handle instance, uint32_t n_samples)
         applyToneControls(self->out_1, self->out_1, instance, n_samples); // Equalizer section
     }
     if (self->model != nullptr) {
-        if (!net_bypass) {
+        if (!net_bypass || !self->loading) {
 #if AIDADSP_CONDITIONED_MODELS
             self->model->param1Coeff.setTargetValue(param1);
             self->model->param2Coeff.setTargetValue(param2);
 #endif
             applyModel(self->model, self->out_1, n_samples);
         }
-        self->masterGain.setTargetValue(master);
-    } else {
-        self->masterGain.setTargetValue(net_bypass ? master : 0.f);
     }
 #if AIDADSP_OPTIONAL_DCBLOCKER
     if (*self->dc_blocker_param == 1.0f)
@@ -828,6 +833,8 @@ LV2_Worker_Status RtNeuralGeneric::work_response(LV2_Handle instance, uint32_t s
                    self->model->path,
                    strlen(self->model->path));
 #endif
+
+    self->loading = false;
 
     return LV2_WORKER_SUCCESS;
 }
