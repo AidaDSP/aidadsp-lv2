@@ -600,7 +600,7 @@ void RtNeuralGeneric::run(LV2_Handle instance, uint32_t n_samples)
         applyToneControls(self->out_1, self->out_1, instance, n_samples); // Equalizer section
     }
     if (self->model != nullptr) {
-        if (!net_bypass) {
+        if (!net_bypass || !self->loading) {
 #if AIDADSP_CONDITIONED_MODELS
             self->model->param1Coeff.setTargetValue(param1);
             self->model->param2Coeff.setTargetValue(param2);
