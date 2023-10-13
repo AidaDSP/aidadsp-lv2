@@ -836,6 +836,7 @@ LV2_Worker_Status RtNeuralGeneric::work_response(LV2_Handle instance, uint32_t s
 #endif
 
     self->loading = false;
+    lv2_log_trace(&self->logger, "loading = false\n");
 
     return LV2_WORKER_SUCCESS;
 }
