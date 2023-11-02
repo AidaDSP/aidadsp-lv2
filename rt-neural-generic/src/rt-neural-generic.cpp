@@ -341,8 +341,8 @@ void RtNeuralGeneric::activate(LV2_Handle instance)
     if (self->model == nullptr)
         return;
 
-    // TODO: include the activate function code here
-    // TODO: if (self->samplerate != self->model->sr) ???
+    // @TODO: include the activate function code here
+    // @TODO: if (self->samplerate != self->model->samplerate) ???
 #if AIDADSP_CONDITIONED_MODELS
     self->model->paramFirstRun = true;
 #endif
@@ -362,7 +362,7 @@ void RtNeuralGeneric::activate(LV2_Handle instance)
 
 void RtNeuralGeneric::deactivate(LV2_Handle instance)
 {
-    // TODO: include the deactivate function code here
+    // @TODO: include the deactivate function code here
 }
 
 /**********************************************************************************************************************************************************/
