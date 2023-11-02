@@ -201,7 +201,8 @@ void RtNeuralGeneric::applyModel(DynamicModel* model, float* out, uint32_t n_sam
                     for (uint32_t i=0; i<n_samples; ++i) {
                         out[i] *= input_gain;
                         inArray1[0] = out[i];
-                        inArray1[1] = param1Coeff.next();
+                        //inArray1[1] = param1Coeff.next();
+                        inArray1[1] = 1.0f;
                         out[i] = custom_model.forward (inArray1);
                         out[i] *= output_gain;
                     }
