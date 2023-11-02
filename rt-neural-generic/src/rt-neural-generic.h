@@ -46,7 +46,33 @@
 #include "uris.h"
 
 #if AIDADSP_COMMERCIAL
-#include "libmodla.h"
+    #define TWINCLASSIC 0
+    #define LEAD 1
+    #define TWEAKER 2
+    #define VIBRO 3
+    #define JCVM 4
+    #define SHOWCASE 5
+#endif
+
+#if AIDADSP_COMMERCIAL && (AIDADSP_MODEL_DEFINE != SHOWCASE)
+    #include "libmodla.h"
+#endif
+
+#if AIDADSP_COMMERCIAL && (AIDADSP_MODEL_DEFINE == TWINCLASSIC \
+    || AIDADSP_MODEL_DEFINE == VIBRO \
+    || AIDADSP_MODEL_DEFINE == TWEAKER \
+    || AIDADSP_MODEL_DEFINE == JCVM)
+    #define AIDADSP_PARAMS 1
+    #define AIDADSP_CHANNELS 1
+#elif AIDADSP_COMMERCIAL && (AIDADSP_MODEL_DEFINE == SHOWCASE)
+    #ifdef AIDADSP_CONDITIONED_MODELS
+        #undef AIDADSP_CONDITIONED_MODELS
+    #endif
+    #define AIDADSP_MODEL_LOADER 0
+    #define AIDADSP_PARAMS 0
+    #undef AIDADSP_CHANNELS
+#else
+    #define AIDADSP_PARAMS 2
 #endif
 
 /**********************************************************************************************************************************************************/
