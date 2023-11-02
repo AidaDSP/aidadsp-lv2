@@ -867,10 +867,10 @@ bool RtNeuralGeneric::testModel(LV2_Log_Logger* logger, DynamicModel *model, con
         out[i] = xData[i];
     }
     applyModel(model, out.get(), xData.size());
-#if AIDADSP_CONDITIONED_MODELS
     /* Restore params previously saved */
     model->input_gain = in_gain;
     model->output_gain = out_gain;
+#if AIDADSP_CONDITIONED_MODELS
     model->param1Coeff.setTargetValue(param1);
     model->param1Coeff.clearToTargetValue();
     model->param2Coeff.setTargetValue(param2);
