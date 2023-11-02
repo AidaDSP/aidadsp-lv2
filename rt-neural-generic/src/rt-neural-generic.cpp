@@ -989,6 +989,7 @@ DynamicModel* RtNeuralGeneric::loadModelFromPath(LV2_Log_Logger* logger, const c
                 }
             },
             model->variant);
+        lv2_log_note(logger, "%s %d: mdl rst!\n", __func__, __LINE__);
     }
     catch (const std::exception& e) {
         lv2_log_error(logger, "Error loading model: %s\n", e.what());
