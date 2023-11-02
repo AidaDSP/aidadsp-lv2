@@ -324,7 +324,7 @@ LV2_Handle RtNeuralGeneric::instantiate(const LV2_Descriptor* descriptor, double
 #else
     // start with 1st model loaded
     self->model_index_old = 0.0f;
-    self->model = loadModelFromIndex(&self->logger, 1, &self->last_input_size);
+    self->model = loadModelFromIndex(&self->logger, 1, &self->last_input_size, 0.0f, 0.0f);
 #endif
 
     return (LV2_Handle)self;
@@ -783,9 +783,9 @@ LV2_Worker_Status RtNeuralGeneric::work(LV2_Handle instance,
     {
     case kWorkerLoad:
 #if AIDADSP_MODEL_LOADER
-        if (DynamicModel* newmodel = RtNeuralGeneric::loadModelFromPath(&self->logger, ((const WorkerLoadMessage*)data)->path, &self->last_input_size))
+        if (DynamicModel* newmodel = RtNeuralGeneric::loadModelFromPath(&self->logger, ((const WorkerLoadMessage*)data)->path, &self->last_input_size, self->model->param1Coeff.getTargetValue(), self->model->param1Coeff.getTargetValue()))
 #else
-        if (DynamicModel* newmodel = RtNeuralGeneric::loadModelFromIndex(&self->logger, ((const WorkerLoadMessage*)data)->modelIndex, &self->last_input_size))
+        if (DynamicModel* newmodel = RtNeuralGeneric::loadModelFromIndex(&self->logger, ((const WorkerLoadMessage*)data)->modelIndex, &self->last_input_size, self->model->param1Coeff.getTargetValue(), self->model->param1Coeff.getTargetValue()))
 #endif
         {
             WorkerApplyMessage reply = { kWorkerApply, newmodel };
@@ -918,7 +918,7 @@ bool RtNeuralGeneric::testModel(LV2_Log_Logger* logger, DynamicModel *model, con
 /**
  * This function loads a pre-trained neural model from a json file
 */
-DynamicModel* RtNeuralGeneric::loadModelFromPath(LV2_Log_Logger* logger, const char* path, int* input_size_ptr)
+DynamicModel* RtNeuralGeneric::loadModelFromPath(LV2_Log_Logger* logger, const char* path, int* input_size_ptr, const float old_param1, const float old_param2)
 {
     int input_skip;
     int input_size;
@@ -1010,8 +1010,12 @@ DynamicModel* RtNeuralGeneric::loadModelFromPath(LV2_Log_Logger* logger, const c
 #if AIDADSP_CONDITIONED_MODELS
     model->param1Coeff.setSampleRate(model_samplerate);
     model->param1Coeff.setTimeConstant(0.1f);
+    model->param1Coeff.setTargetValue(old_param1);
+    model->param1Coeff.clearToTargetValue();
     model->param2Coeff.setSampleRate(model_samplerate);
     model->param2Coeff.setTimeConstant(0.1f);
+    model->param2Coeff.setTargetValue(old_param2);
+    model->param2Coeff.clearToTargetValue();
     model->paramFirstRun = true;
 #endif
 
