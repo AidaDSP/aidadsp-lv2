@@ -20,6 +20,7 @@
 
 #include <cmath>
 #include <limits>
+#include <stdio.h>
 
 // --------------------------------------------------------------------------------------------------------------------
 
@@ -231,6 +232,11 @@ public:
         const float y0 = mem;
         const float dy = target - y0;
         return (mem = y0 + std::copysign(std::fmin(std::abs(dy), std::abs(step)), dy));
+    }
+
+    void dump()
+    {
+        printf("step: %.02f\ntarget: %.02f\nmem: %.02f\ntau: %.02f\nsampleRate: %.02f\n", step, target, mem, tau, sampleRate);
     }
 
 private:
