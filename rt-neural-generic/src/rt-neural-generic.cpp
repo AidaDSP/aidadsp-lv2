@@ -344,8 +344,7 @@ void RtNeuralGeneric::activate(LV2_Handle instance)
     // TODO: include the activate function code here
     // TODO: if (self->samplerate != self->model->sr) ???
 #if AIDADSP_CONDITIONED_MODELS
-    self->model->param1Coeff.clearToTargetValue();
-    self->model->param2Coeff.clearToTargetValue();
+    self->model->paramFirstRun = true;
 #endif
     std::visit (
         [] (auto&& custom_model)
@@ -604,6 +603,11 @@ void RtNeuralGeneric::run(LV2_Handle instance, uint32_t n_samples)
 #if AIDADSP_CONDITIONED_MODELS
             self->model->param1Coeff.setTargetValue(param1);
             self->model->param2Coeff.setTargetValue(param2);
+            if (self->model->paramFirstRun) {
+                self->model->paramFirstRun = false;
+                self->model->param1Coeff.clearToTargetValue();
+                self->model->param2Coeff.clearToTargetValue();
+            }
 #endif
             applyModel(self->model, self->out_1, n_samples);
         }
@@ -1000,12 +1004,9 @@ DynamicModel* RtNeuralGeneric::loadModelFromPath(LV2_Log_Logger* logger, const c
 #if AIDADSP_CONDITIONED_MODELS
     model->param1Coeff.setSampleRate(model_samplerate);
     model->param1Coeff.setTimeConstant(0.1f);
-    model->param1Coeff.setTargetValue(0.f);
-    model->param1Coeff.clearToTargetValue();
     model->param2Coeff.setSampleRate(model_samplerate);
     model->param2Coeff.setTimeConstant(0.1f);
-    model->param2Coeff.setTargetValue(0.f);
-    model->param2Coeff.clearToTargetValue();
+    model->paramFirstRun = true;
 #endif
 
     /* Sanity check on inference engine with loaded model, also serves as pre-buffer

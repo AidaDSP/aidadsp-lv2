@@ -111,6 +111,7 @@ struct DynamicModel {
 #if AIDADSP_CONDITIONED_MODELS
     LinearValueSmoother param1Coeff;
     LinearValueSmoother param2Coeff;
+    bool paramFirstRun;
 #endif
 };
 
