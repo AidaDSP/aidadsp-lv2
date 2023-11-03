@@ -347,6 +347,7 @@ void RtNeuralGeneric::activate(LV2_Handle instance)
 #if AIDADSP_CONDITIONED_MODELS
     self->model->paramFirstRun = true;
 #endif
+#if 0
     std::visit (
         [] (auto&& custom_model)
         {
@@ -357,6 +358,8 @@ void RtNeuralGeneric::activate(LV2_Handle instance)
             }
         },
         self->model->variant);
+    lv2_log_note(&self->logger, "%s %d: mdl rst!\n", __func__, __LINE__);
+#endif
 }
 
 /**********************************************************************************************************************************************************/
