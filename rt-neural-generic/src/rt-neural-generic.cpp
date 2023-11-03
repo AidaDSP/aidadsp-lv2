@@ -610,7 +610,6 @@ void RtNeuralGeneric::run(LV2_Handle instance, uint32_t n_samples)
                 self->model->paramFirstRun = false;
                 self->model->param1Coeff.clearToTargetValue();
                 self->model->param2Coeff.clearToTargetValue();
-                lv2_log_trace(&self->logger, "n: %.02f\n", self->model->param1Coeff.next());
             }
 #endif
             applyModel(self->model, self->out_1, n_samples);
