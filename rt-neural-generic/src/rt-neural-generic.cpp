@@ -318,13 +318,12 @@ LV2_Handle RtNeuralGeneric::instantiate(const LV2_Descriptor* descriptor, double
 
     self->loading = true;
 
-#if AIDADSP_MODEL_LOADER
-    // initial model triggered by host default state load later on
+    // Initial model triggered by host default state load later on
     self->model = nullptr;
-#else
-    // start with 1st model loaded
-    self->model_index_old = 0.0f;
-    self->model = loadModelFromIndex(&self->logger, 1, &self->last_input_size, 0.0f, 0.0f);
+
+#if ! AIDADSP_MODEL_LOADER
+    // Trigger the loading of the first model later in ::run
+    self->model_index_old = -1.0f;
 #endif
 
     return (LV2_Handle)self;
@@ -781,14 +780,20 @@ LV2_Worker_Status RtNeuralGeneric::work(LV2_Handle instance,
 {
     RtNeuralGeneric* self = (RtNeuralGeneric*) instance;
     const WorkerMessage* msg = (const WorkerMessage*)data;
+    float param1 = 0.0f;
+    float param2 = 0.0f;
 
     switch (msg->type)
     {
     case kWorkerLoad:
+        if (self->model != nullptr) {
+            param1 = self->model->param1Coeff.getTargetValue();
+            param2 = self->model->param2Coeff.getTargetValue();
+        }
 #if AIDADSP_MODEL_LOADER
-        if (DynamicModel* newmodel = RtNeuralGeneric::loadModelFromPath(&self->logger, ((const WorkerLoadMessage*)data)->path, &self->last_input_size, self->model->param1Coeff.getTargetValue(), self->model->param1Coeff.getTargetValue()))
+        if (DynamicModel* newmodel = RtNeuralGeneric::loadModelFromPath(&self->logger, ((const WorkerLoadMessage*)data)->path, &self->last_input_size, param1, param2))
 #else
-        if (DynamicModel* newmodel = RtNeuralGeneric::loadModelFromIndex(&self->logger, ((const WorkerLoadMessage*)data)->modelIndex, &self->last_input_size, self->model->param1Coeff.getTargetValue(), self->model->param1Coeff.getTargetValue()))
+        if (DynamicModel* newmodel = RtNeuralGeneric::loadModelFromIndex(&self->logger, ((const WorkerLoadMessage*)data)->modelIndex, &self->last_input_size, param1, param2))
 #endif
         {
             WorkerApplyMessage reply = { kWorkerApply, newmodel };
