@@ -287,7 +287,7 @@ LV2_Handle RtNeuralGeneric::instantiate(const LV2_Descriptor* descriptor, double
     self->preGain.clearToTargetValue();
     self->masterGain.setSampleRate(self->samplerate);
     self->masterGain.setTimeConstant(0.1f);
-    self->masterGain.setTargetValue(1.f);
+    self->masterGain.setTargetValue(0.f);
     self->masterGain.clearToTargetValue();
 
     // Setup fixed frequency dc blocker filter (high pass)
@@ -316,7 +316,7 @@ LV2_Handle RtNeuralGeneric::instantiate(const LV2_Descriptor* descriptor, double
 
     self->last_input_size = 0;
 
-    self->loading = false;
+    self->loading = true;
 
 #if AIDADSP_MODEL_LOADER
     // initial model triggered by host default state load later on
