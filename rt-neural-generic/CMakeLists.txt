@@ -51,7 +51,6 @@ set(LV2_INSTALL_DIR ${DESTDIR}${PREFIX}/rt-neural-generic.lv2)
 
 # config install
 install(TARGETS rt-neural-generic
-    LIBRARY
     DESTINATION ${LV2_INSTALL_DIR}
 )
 
