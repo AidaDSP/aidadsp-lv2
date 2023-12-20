@@ -446,6 +446,11 @@ void RtNeuralGeneric::connect_port(LV2_Handle instance, uint32_t port, void *dat
         case EQ_BYPASS:
             self->eq_bypass = (float*) data;
             break;
+#if AIDADSP_OPTIONAL_DCBLOCKER
+        case DCBLOCKER:
+            self->dc_blocker_param = (float*) data;
+            break;
+#endif
         case INPUT_SIZE:
             self->input_size = (float*) data;
             break;
@@ -580,7 +585,11 @@ void RtNeuralGeneric::run(LV2_Handle instance, uint32_t n_samples)
     }
 
     /*++++++++ AUDIO DSP ++++++++*/
-    applyBiquadFilter(self->out_1, self->in, self->in_lpf, n_samples); // High frequencies roll-off (lowpass)
+    if (in_lpf_pc != 0.0f) {
+        applyBiquadFilter(self->out_1, self->in, self->in_lpf, n_samples); // High frequencies roll-off (lowpass)
+    } else {
+        std::memcpy(self->out_1, self->in, sizeof(float)*n_samples);
+    }
     applyGainRamp(self->preGain, self->out_1, self->out_1, n_samples); // Pre-gain
     if(eq_position == 1.0f && eq_bypass == 0.0f) {
         applyToneControls(self->out_1, self->out_1, instance, n_samples); // Equalizer section
@@ -592,7 +601,12 @@ void RtNeuralGeneric::run(LV2_Handle instance, uint32_t n_samples)
 #endif
         applyModel(self->model, self->out_1, n_samples);
     }
-    applyBiquadFilter(self->out_1, self->out_1, self->dc_blocker, n_samples); // Dc blocker filter (highpass)
+#if AIDADSP_OPTIONAL_DCBLOCKER
+    if (*self->dc_blocker_param == 1.0f)
+#endif
+    {
+        applyBiquadFilter(self->out_1, self->out_1, self->dc_blocker, n_samples); // Dc blocker filter (highpass)
+    }
     if(eq_position == 0.0f && eq_bypass == 0.0f) {
         applyToneControls(self->out_1, self->out_1, instance, n_samples); // Equalizer section
     }

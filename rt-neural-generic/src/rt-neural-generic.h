@@ -18,6 +18,11 @@
 #define AIDADSP_CONDITIONED_MODELS 1
 #endif
 
+// DC blocker is optional for model loader
+#ifdef AIDADSP_MODEL_LOADER
+#define AIDADSP_OPTIONAL_DCBLOCKER 1
+#endif
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -59,6 +64,9 @@ typedef enum {
     PARAM1, PARAM2,
 #endif
     EQ_BYPASS, EQ_POS, BASS, BFREQ, MID, MFREQ, MIDQ, MTYPE, TREBLE, TFREQ, DEPTH, PRESENCE,
+#if AIDADSP_OPTIONAL_DCBLOCKER
+    DCBLOCKER,
+#endif
     MASTER,
     INPUT_SIZE,
     PLUGIN_ENABLED,
@@ -154,6 +162,9 @@ public:
 #if AIDADSP_CONDITIONED_MODELS
     float *param1;
     float *param2;
+#endif
+#if AIDADSP_OPTIONAL_DCBLOCKER
+    float *dc_blocker_param;
 #endif
     float *master_db;
     ExponentialValueSmoother masterGain;
