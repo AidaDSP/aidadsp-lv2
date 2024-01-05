@@ -499,6 +499,7 @@ void RtNeuralGeneric::run(LV2_Handle instance, uint32_t n_samples)
     const float param1 = *self->param1;
     const float param2 = *self->param2;
 #endif
+#endif
 #ifdef AIDADSP_CHANNELS
     std::vector<float> ctrls(8);
 #if AIDADSP_CHANNELS == 1
