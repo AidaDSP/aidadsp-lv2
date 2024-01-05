@@ -409,6 +409,20 @@ void RtNeuralGeneric::connect_port(LV2_Handle instance, uint32_t port, void *dat
         case PLUGIN_MODEL_INDEX:
             self->model_index = (float*)data;
             break;
+#ifdef AIDADSP_CHANNELS
+#if AIDADSP_CHANNELS == 1
+        case CHANNEL:
+            self->channel_switch[0] = (float*)data;
+            break;
+#elif AIDADSP_CHANNELS == 2
+        case CHANNEL1:
+            self->channel_switch[0] = (float*)data;
+            break;
+        case CHANNEL2:
+            self->channel_switch[1] = (float*)data;
+            break;
+#endif
+#endif
 #endif
         case IN_LPF:
             self->in_lpf_pc = (float*) data;
@@ -484,6 +498,15 @@ void RtNeuralGeneric::run(LV2_Handle instance, uint32_t n_samples)
 #elif AIDADSP_CONDITIONED_MODELS && (AIDADSP_PARAMS == 2)
     const float param1 = *self->param1;
     const float param2 = *self->param2;
+#endif
+#ifdef AIDADSP_CHANNELS
+    std::vector<float> ctrls(8);
+#if AIDADSP_CHANNELS == 1
+    ctrls[0] = *self->channel_switch[0];
+#elif AIDADSP_CHANNELS == 2
+    ctrls[0] = *self->channel_switch[0];
+    ctrls[1] = *self->channel_switch[1];
+#endif
 #endif
 
     self->preGain.setTargetValue(pregain);

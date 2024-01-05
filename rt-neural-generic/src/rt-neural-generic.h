@@ -95,6 +95,16 @@ typedef enum {
 #endif
     MASTER,
     INPUT_SIZE,
+#if ! AIDADSP_MODEL_LOADER
+#ifdef AIDADSP_CHANNELS
+#if AIDADSP_CHANNELS == 1
+    CHANNEL,
+#elif AIDADSP_CHANNELS == 2
+    CHANNEL1,
+    CHANNEL2,
+#endif
+#endif
+#endif
     PLUGIN_ENABLED,
     PLUGIN_PORT_COUNT} ports_t;
 
@@ -230,6 +240,9 @@ public:
 #if ! AIDADSP_MODEL_LOADER
     float *model_index;
     float model_index_old;
+#ifdef AIDADSP_CHANNELS
+    std::vector<float*> channel_switch(8);
+#endif
 #endif
 
 #if AIDADSP_MODEL_LOADER
