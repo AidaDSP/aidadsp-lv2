@@ -86,7 +86,9 @@ typedef enum {
 #endif
     IN_LPF, PREGAIN,
     NET_BYPASS,
-#if AIDADSP_CONDITIONED_MODELS
+#if AIDADSP_CONDITIONED_MODELS && (AIDADSP_PARAMS == 1)
+    PARAM1,
+#elif AIDADSP_CONDITIONED_MODELS && (AIDADSP_PARAMS == 2)
     PARAM1, PARAM2,
 #endif
     EQ_BYPASS, EQ_POS, BASS, BFREQ, MID, MFREQ, MIDQ, MTYPE, TREBLE, TFREQ, DEPTH, PRESENCE,
@@ -301,7 +303,7 @@ public:
 
 private:
     double samplerate;
-#if AIDADSP_COMMERCIAL
+#if AIDADSP_COMMERCIAL && (AIDADSP_MODEL_DEFINE != SHOWCASE)
     uint32_t run_count;
 #endif
 
@@ -320,3 +322,4 @@ private:
     static void applyToneControls(float *out, const float *in, LV2_Handle instance, uint32_t n_samples);
     static bool testModel(LV2_Log_Logger* logger, DynamicModel *model, const std::vector<float>& xData, const std::vector<float>& yData);
 };
+

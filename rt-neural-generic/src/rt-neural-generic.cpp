@@ -384,7 +384,11 @@ void RtNeuralGeneric::connect_port(LV2_Handle instance, uint32_t port, void *dat
         case PREGAIN:
             self->pregain_db = (float*) data;
             break;
-#if AIDADSP_CONDITIONED_MODELS
+#if AIDADSP_CONDITIONED_MODELS && (AIDADSP_PARAMS == 1)
+        case PARAM1:
+            self->param1 = (float*) data;
+            break;
+#elif AIDADSP_CONDITIONED_MODELS && (AIDADSP_PARAMS == 2)
         case PARAM1:
             self->param1 = (float*) data;
             break;
@@ -486,7 +490,6 @@ void RtNeuralGeneric::run(LV2_Handle instance, uint32_t n_samples)
 
     const float pregain = DB_CO(*self->pregain_db);
     const float master = DB_CO(*self->master_db);
-#if AIDADSP_CONDITIONED_MODELS
     const bool net_bypass = *self->net_bypass > 0.5f;
     const float in_lpf_pc = *self->in_lpf_pc;
     const float eq_position = *self->eq_position;
@@ -498,7 +501,6 @@ void RtNeuralGeneric::run(LV2_Handle instance, uint32_t n_samples)
 #elif AIDADSP_CONDITIONED_MODELS && (AIDADSP_PARAMS == 2)
     const float param1 = *self->param1;
     const float param2 = *self->param2;
-#endif
 #endif
 #ifdef AIDADSP_CHANNELS
     std::vector<float> ctrls(8);
@@ -586,7 +588,11 @@ void RtNeuralGeneric::run(LV2_Handle instance, uint32_t n_samples)
     /*++++++++ END READ ATOM MESSAGES ++++++++*/
 #endif
 #else
+#ifdef AIDADSP_CHANNELS
+    float model_index = controlsToModelIndex(*self->model_index, ctrls);
+#else
     float model_index = *self->model_index;
+#endif
 
     if (model_index != self->model_index_old) {
         self->model_index_old = model_index;
@@ -1048,7 +1054,11 @@ DynamicModel* RtNeuralGeneric::loadModelFromPath(LV2_Log_Logger* logger, const c
 
     /* Sanity check on inference engine with loaded model, also serves as pre-buffer
     * to avoid "clicks" during initialization */
+#ifdef DEBUG
     if (model_json["input_batch"].is_array() && model_json["input_batch"].is_array()) {
+#else
+    if(false) {
+#endif
         std::vector<float> input_batch = model_json["/input_batch"_json_pointer];
         std::vector<float> output_batch = model_json["/output_batch"_json_pointer];
         testModel(logger, model.get(), input_batch, output_batch);
@@ -1080,3 +1090,4 @@ void RtNeuralGeneric::freeModel(DynamicModel* model)
 #endif
     delete model;
 }
+
