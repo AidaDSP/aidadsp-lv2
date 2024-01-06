@@ -247,7 +247,7 @@ LV2_Handle RtNeuralGeneric::instantiate(const LV2_Descriptor* descriptor, double
 
     self->samplerate = samplerate;
 
-#if AIDADSP_COMMERCIAL
+#if AIDADSP_COMMERCIAL && (AIDADSP_MODEL_DEFINE != SHOWCASE)
     self->run_count = 0;
     mod_license_check(features, PLUGIN_URI);
 #endif
@@ -517,7 +517,7 @@ void RtNeuralGeneric::run(LV2_Handle instance, uint32_t n_samples)
     }
     *self->input_size = self->last_input_size;
 
-#if AIDADSP_COMMERCIAL
+#if AIDADSP_COMMERCIAL && (AIDADSP_MODEL_DEFINE != SHOWCASE)
     self->run_count = mod_license_run_begin(self->run_count, n_samples);
 #endif
 
@@ -608,7 +608,7 @@ void RtNeuralGeneric::run(LV2_Handle instance, uint32_t n_samples)
     if (!enabled) {
         if (self->out_1 != self->in)
             std::memcpy(self->out_1, self->in, sizeof(float)*n_samples);
-#if AIDADSP_COMMERCIAL
+#if AIDADSP_COMMERCIAL && (AIDADSP_MODEL_DEFINE != SHOWCASE)
         mod_license_run_silence(self->run_count, self->out_1, n_samples, 0);
 #endif
         return;
@@ -649,7 +649,7 @@ void RtNeuralGeneric::run(LV2_Handle instance, uint32_t n_samples)
     }
     self->masterGain.setTargetValue(self->loading ? 0.f : master);
     applyGainRamp(self->masterGain, self->out_1, self->out_1, n_samples); // Master volume
-#if AIDADSP_COMMERCIAL
+#if AIDADSP_COMMERCIAL && (AIDADSP_MODEL_DEFINE != SHOWCASE)
     mod_license_run_silence(self->run_count, self->out_1, n_samples, 0);
 #endif
     /*++++++++ END AUDIO DSP ++++++++*/
@@ -686,7 +686,7 @@ const void* RtNeuralGeneric::extension_data(const char* uri)
     if (!strcmp(uri, LV2_WORKER__interface)) {
         return &worker;
     }
-#if AIDADSP_COMMERCIAL
+#if AIDADSP_COMMERCIAL && (AIDADSP_MODEL_DEFINE != SHOWCASE)
     return mod_license_interface(uri);
 #else
     return NULL;
