@@ -243,7 +243,7 @@ public:
     float *model_index;
     float model_index_old;
 #ifdef AIDADSP_CHANNELS
-    std::vector<float*> channel_switch(8);
+    std::vector<float*> channel_switch;
 #endif
 #endif
 

@@ -325,6 +325,10 @@ LV2_Handle RtNeuralGeneric::instantiate(const LV2_Descriptor* descriptor, double
     self->model_index_old = -1.0f;
 #endif
 
+#ifdef AIDADSP_CHANNELS
+    self->channel_switch.resize(8);
+#endif
+
     return (LV2_Handle)self;
 }
 
