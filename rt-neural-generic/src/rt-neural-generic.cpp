@@ -815,10 +815,12 @@ LV2_Worker_Status RtNeuralGeneric::work(LV2_Handle instance,
     switch (msg->type)
     {
     case kWorkerLoad:
+#if AIDADSP_CONDITIONED_MODELS
         if (self->model != nullptr) {
             param1 = self->model->param1Coeff.getTargetValue();
             param2 = self->model->param2Coeff.getTargetValue();
         }
+#endif
 #if AIDADSP_MODEL_LOADER
         if (DynamicModel* newmodel = RtNeuralGeneric::loadModelFromPath(&self->logger, ((const WorkerLoadMessage*)data)->path, &self->last_input_size, param1, param2))
 #else
