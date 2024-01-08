@@ -19,8 +19,10 @@
 #endif
 
 // DC blocker is optional for model loader
-#ifdef AIDADSP_MODEL_LOADER
+#if AIDADSP_MODEL_LOADER
 #define AIDADSP_OPTIONAL_DCBLOCKER 1
+#else
+#define AIDADSP_OPTIONAL_DCBLOCKER 0
 #endif
 
 #include <stdio.h>
