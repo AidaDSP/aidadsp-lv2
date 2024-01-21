@@ -4,13 +4,15 @@ max_input_size = 3
 layer_types = ('GRU', 'LSTM')
 input_sizes = tuple(range(1, max_input_size + 1))
 hidden_sizes = (8, 12, 16, 20, 24, 32, 40, 64, 80)
+max_num_layers = 3
+nums_layers = tuple(range(1, max_num_layers + 1))
 
 model_variant_using_declarations = []
 model_variant_types = []
 model_type_checkers = []
 
-def add_model(input_size, layer_type, hidden_size, model_type):
-    model_type_alias = f'ModelType_{layer_type}_{hidden_size}_{input_size}'
+def add_model(input_size, layer_type, hidden_size, model_type, num_layers):
+    model_type_alias = f'ModelType_in{input_size}_{layer_type}_{hidden_size}_{num_layers}'
     model_variant_using_declarations.append(f'using {model_type_alias} = {model_type};\n')
     model_variant_types.append(model_type_alias)
     model_type_checkers.append(f'''inline bool is_model_type_{model_type_alias} (const nlohmann::json& model_json) {{
@@ -21,23 +23,37 @@ def add_model(input_size, layer_type, hidden_size, model_type):
     const auto is_hidden_size_correct = hidden_size == {hidden_size};
     const auto input_size = model_json.at ("in_shape").back().get<int>();
     const auto is_input_size_correct = input_size == {input_size};
-    return is_layer_type_correct && is_hidden_size_correct && is_input_size_correct;
+    const auto num_layers = {num_layers};
+    const auto is_num_layers_correct = num_layers == {num_layers};
+    return is_layer_type_correct && is_hidden_size_correct && is_input_size_correct && is_num_layers_correct;
 }}\n\n''')
 
 for layer_type in layer_types:
     for hidden_size in hidden_sizes:
         for input_size in input_sizes:
-            print(f'Setting up Model: {layer_type} w/ RNN dims {input_size} / {hidden_size}, w/ I/O dims {input_size} / 1')
+            for num_layers in nums_layers:
+                print(f'Setting up Model: {layer_type} w/ RNN dims {input_size} / {hidden_size} / {num_layers}, w/ I/O dims {input_size} / 1')
 
-            if layer_type == 'GRU':
-                rnn_layer_type = f'RTNeural::GRULayerT<float, {input_size}, {hidden_size}>'
-            elif layer_type == 'LSTM':
-                rnn_layer_type = f'RTNeural::LSTMLayerT<float, {input_size}, {hidden_size}>'
+                if num_layers == 1:
+                    if layer_type == 'GRU':
+                        rnn_layer_type = f'RTNeural::GRULayerT<float, {input_size}, {hidden_size}>'
+                    elif layer_type == 'LSTM':
+                        rnn_layer_type = f'RTNeural::LSTMLayerT<float, {input_size}, {hidden_size}>'
+                elif num_layers == 2:
+                    if layer_type == 'GRU':
+                        rnn_layer_type = f'RTNeural::GRULayerT<float, {input_size}, {hidden_size}>, RTNeural::GRULayerT<float, {hidden_size}, {hidden_size}>'
+                    elif layer_type == 'LSTM':
+                        rnn_layer_type = f'RTNeural::LSTMLayerT<float, {input_size}, {hidden_size}>, RTNeural::LSTMLayerT<float, {hidden_size}, {hidden_size}>'
+                elif num_layers == 3:
+                    if layer_type == 'GRU':
+                        rnn_layer_type = f'RTNeural::GRULayerT<float, {input_size}, {hidden_size}>, RTNeural::GRULayerT<float, {hidden_size}, {hidden_size}>, RTNeural::GRULayerT<float, {hidden_size}, {hidden_size}>'
+                    elif layer_type == 'LSTM':
+                        rnn_layer_type = f'RTNeural::LSTMLayerT<float, {input_size}, {hidden_size}>, RTNeural::LSTMLayerT<float, {hidden_size}, {hidden_size}>, RTNeural::LSTMLayerT<float, {hidden_size}, {hidden_size}>'
 
-            dense_layer_type = f'RTNeural::DenseT<float, {hidden_size}, 1>'
+                dense_layer_type = f'RTNeural::DenseT<float, {hidden_size}, 1>'
 
-            model_type = f'RTNeural::ModelT<float, {input_size}, 1, {rnn_layer_type}, {dense_layer_type}>'
-            add_model(input_size, layer_type, hidden_size, model_type)
+                model_type = f'RTNeural::ModelT<float, {input_size}, 1, {rnn_layer_type}, {dense_layer_type}>'
+                add_model(input_size, layer_type, hidden_size, model_type, num_layers)
 
 with open("rt-neural-generic/src/model_variant.hpp", "w") as header_file:
     header_file.write('#include <variant>\n')
@@ -45,6 +61,8 @@ with open("rt-neural-generic/src/model_variant.hpp", "w") as header_file:
     header_file.write('\n')
 
     header_file.write(f'#define MAX_INPUT_SIZE {max_input_size}\n')
+
+    header_file.write(f'#define MAX_NUM_LAYERS {max_num_layers}\n')
 
     header_file.write('struct NullModel { static constexpr int input_size = 0; static constexpr int output_size = 0; };\n')
     header_file.writelines(model_variant_using_declarations)
