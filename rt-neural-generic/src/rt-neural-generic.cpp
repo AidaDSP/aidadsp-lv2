@@ -388,11 +388,11 @@ void RtNeuralGeneric::connect_port(LV2_Handle instance, uint32_t port, void *dat
         case PREGAIN:
             self->pregain_db = (float*) data;
             break;
-#if AIDADSP_CONDITIONED_MODELS && (AIDADSP_PARAMS == 1)
+#if AIDADSP_PARAMS == 1
         case PARAM1:
             self->param1 = (float*) data;
             break;
-#elif AIDADSP_CONDITIONED_MODELS && (AIDADSP_PARAMS == 2)
+#elif AIDADSP_PARAMS == 2
         case PARAM1:
             self->param1 = (float*) data;
             break;
@@ -417,7 +417,6 @@ void RtNeuralGeneric::connect_port(LV2_Handle instance, uint32_t port, void *dat
         case PLUGIN_MODEL_INDEX:
             self->model_index = (float*)data;
             break;
-#ifdef AIDADSP_CHANNELS
 #if AIDADSP_CHANNELS == 1
         case CHANNEL:
             self->channel_switch[0] = (float*)data;
@@ -429,7 +428,6 @@ void RtNeuralGeneric::connect_port(LV2_Handle instance, uint32_t port, void *dat
         case CHANNEL2:
             self->channel_switch[1] = (float*)data;
             break;
-#endif
 #endif
 #endif
         case IN_LPF:
@@ -499,10 +497,10 @@ void RtNeuralGeneric::run(LV2_Handle instance, uint32_t n_samples)
     const float eq_position = *self->eq_position;
     const float eq_bypass = *self->eq_bypass;
     const bool enabled = *self->enabled > 0.5f;
-#if AIDADSP_CONDITIONED_MODELS && (AIDADSP_PARAMS == 1)
+#if AIDADSP_PARAMS == 1
     const float param1 = *self->param1;
     const float param2 = 0.f;
-#elif AIDADSP_CONDITIONED_MODELS && (AIDADSP_PARAMS == 2)
+#elif AIDADSP_PARAMS == 2
     const float param1 = *self->param1;
     const float param2 = *self->param2;
 #endif
