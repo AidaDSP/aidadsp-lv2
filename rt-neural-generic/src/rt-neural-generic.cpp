@@ -388,14 +388,11 @@ void RtNeuralGeneric::connect_port(LV2_Handle instance, uint32_t port, void *dat
         case PREGAIN:
             self->pregain_db = (float*) data;
             break;
-#if AIDADSP_PARAMS == 1
+#if AIDADSP_PARAMS >= 1
         case PARAM1:
             self->param1 = (float*) data;
             break;
-#elif AIDADSP_PARAMS == 2
-        case PARAM1:
-            self->param1 = (float*) data;
-            break;
+#elif AIDADSP_PARAMS >= 2
         case PARAM2:
             self->param2 = (float*) data;
             break;
@@ -417,14 +414,11 @@ void RtNeuralGeneric::connect_port(LV2_Handle instance, uint32_t port, void *dat
         case PLUGIN_MODEL_INDEX:
             self->model_index = (float*)data;
             break;
-#if AIDADSP_CHANNELS == 1
-        case CHANNEL:
-            self->channel_switch[0] = (float*)data;
-            break;
-#elif AIDADSP_CHANNELS == 2
+#if AIDADSP_CHANNELS >= 1
         case CHANNEL1:
             self->channel_switch[0] = (float*)data;
             break;
+#elif AIDADSP_CHANNELS >= 2
         case CHANNEL2:
             self->channel_switch[1] = (float*)data;
             break;
@@ -506,10 +500,9 @@ void RtNeuralGeneric::run(LV2_Handle instance, uint32_t n_samples)
 #endif
 #ifdef AIDADSP_CHANNELS
     std::vector<float> ctrls(8);
-#if AIDADSP_CHANNELS == 1
+#if AIDADSP_CHANNELS >= 1
     ctrls[0] = *self->channel_switch[0];
-#elif AIDADSP_CHANNELS == 2
-    ctrls[0] = *self->channel_switch[0];
+#elif AIDADSP_CHANNELS >= 2
     ctrls[1] = *self->channel_switch[1];
 #endif
 #endif
