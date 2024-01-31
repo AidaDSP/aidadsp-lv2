@@ -92,8 +92,9 @@ typedef enum {
     NET_BYPASS,
 #if AIDADSP_PARAMS >= 1
     PARAM1,
-#elif AIDADSP_PARAMS >= 2
+#if AIDADSP_PARAMS >= 2
     PARAM2,
+#endif
 #endif
     EQ_BYPASS, EQ_POS, BASS, BFREQ, MID, MFREQ, MIDQ, MTYPE, TREBLE, TFREQ, DEPTH, PRESENCE,
 #if AIDADSP_OPTIONAL_DCBLOCKER
@@ -103,8 +104,9 @@ typedef enum {
     INPUT_SIZE,
 #if AIDADSP_CHANNELS >= 1
     CHANNEL1,
-#elif AIDADSP_CHANNELS >= 2
+#if AIDADSP_CHANNELS >= 2
     CHANNEL2,
+#endif
 #endif
     PLUGIN_ENABLED,
     PLUGIN_PORT_COUNT} ports_t;

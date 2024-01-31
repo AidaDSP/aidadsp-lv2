@@ -392,10 +392,11 @@ void RtNeuralGeneric::connect_port(LV2_Handle instance, uint32_t port, void *dat
         case PARAM1:
             self->param1 = (float*) data;
             break;
-#elif AIDADSP_PARAMS >= 2
+#if AIDADSP_PARAMS >= 2
         case PARAM2:
             self->param2 = (float*) data;
             break;
+#endif
 #endif
         case MASTER:
             self->master_db = (float*) data;
@@ -418,10 +419,11 @@ void RtNeuralGeneric::connect_port(LV2_Handle instance, uint32_t port, void *dat
         case CHANNEL1:
             self->channel_switch[0] = (float*)data;
             break;
-#elif AIDADSP_CHANNELS >= 2
+#if AIDADSP_CHANNELS >= 2
         case CHANNEL2:
             self->channel_switch[1] = (float*)data;
             break;
+#endif
 #endif
 #endif
         case IN_LPF:
@@ -502,8 +504,9 @@ void RtNeuralGeneric::run(LV2_Handle instance, uint32_t n_samples)
     std::vector<float> ctrls(8);
 #if AIDADSP_CHANNELS >= 1
     ctrls[0] = *self->channel_switch[0];
-#elif AIDADSP_CHANNELS >= 2
+#if AIDADSP_CHANNELS >= 2
     ctrls[1] = *self->channel_switch[1];
+#endif
 #endif
 #endif
 
@@ -726,16 +729,25 @@ LV2_State_Status RtNeuralGeneric::restore(LV2_Handle instance,
         WorkerLoadMessage msg = { kWorkerLoad, {} };
 
         LV2_State_Map_Path* map_path = NULL;
+        LV2_State_Free_Path* free_path = NULL;
         for (int i = 0; features[i]; ++i) {
             if (!strcmp(features[i]->URI, LV2_STATE__mapPath)) {
                 map_path = (LV2_State_Map_Path*)features[i]->data;
+            } else if (!strcmp(features[i]->URI, LV2_STATE__freePath)) {
+                free_path = (LV2_State_Free_Path*)features[i]->data;
             }
         }
 
         if (map_path) {
             char* apath = map_path->absolute_path(map_path->handle, (const char*)value);
-            std::memcpy(msg.path, apath, std::min(size, strlen(msg.path) - 1u));
-            free(apath);
+            std::memcpy(msg.path, apath, std::min(strlen(apath), sizeof(msg.path) - 1u));
+            if (free_path) {
+                free_path->free_path(free_path->handle, apath);
+#ifndef _WIN32
+            } else {
+                free(apath);
+#endif
+            }
         } else {
             std::memcpy(msg.path, value, std::min(size, sizeof(msg.path) - 1u));
         }
